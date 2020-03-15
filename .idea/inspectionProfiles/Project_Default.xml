@@ -5,17 +5,18 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="5">
+          <list size="7">
             <item index="0" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="1" class="java.lang.String" itemvalue="main" />
             <item index="2" class="java.lang.String" itemvalue="button" />
             <item index="3" class="java.lang.String" itemvalue="color" />
             <item index="4" class="java.lang.String" itemvalue="item-end" />
+            <item index="5" class="java.lang.String" itemvalue="large" />
+            <item index="6" class="java.lang.String" itemvalue="block" />
           </list>
         </value>
       </option>
       <option name="myCustomValuesEnabled" value="true" />
     </inspection_tool>
-    <inspection_tool class="TsLint" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>
