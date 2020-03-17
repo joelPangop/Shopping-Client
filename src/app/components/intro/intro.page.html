@@ -28,9 +28,9 @@
                         </ion-item>
                     </ion-list>
                     <ion-button expand="full" mat-raised-button type="submit" mat-raised-button [disabled]="!credentialsForm.valid">Login</ion-button>
-                    <ion-button expand="full" type="button" (click)="register()" [disabled]="!credentialsForm.valid">Register
-                    </ion-button>
                 </form>
+                <ion-button expand="full" type="button" (click)="register()">Register
+                </ion-button>
             </div>
           <ion-button expand="block" (click)="loginWithFacebook()">
             <ion-icon slot="start" name="logo-facebook"></ion-icon>

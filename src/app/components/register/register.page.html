@@ -1,0 +1,144 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <form [formGroup]="uploadForm" (ngSubmit)="updateProfile()">
+      <ion-avatar slot="start">
+        <ion-img [src]="imgURL"></ion-img>
+      </ion-avatar>
+      <div class="my-container-label">
+        <ion-label class="my-label-title">{{utilisateur?.username}}</ion-label>
+        <ion-label color="medium">{{utilisateur.contact}}</ion-label>
+      </div>
+      <ion-buttons slot="end">
+        <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
+               class="inputfile"/>
+        <label color="secondary" class="custom-file-upload" for="fileId">
+          <ion-icon name="camera" slot="icon-only"></ion-icon>
+        </label>
+      </ion-buttons>
+    </form>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">
+      Nom d'utilisateur
+    </ion-label>
+    <ion-input type="text" [(ngModel)]="utilisateur.username"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">
+      Email d'utilisateur
+    </ion-label>
+    <ion-input type="text" [(ngModel)]="utilisateur.email"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-item-group>
+      <ion-label>
+        Contacts
+      </ion-label>
+      <ion-item *ngFor="let telephone of authSrv.userInfo.telephones; let i = index">
+        <ion-input required type="text" [(ngModel)]=telephone.numeroTelephone
+                   [ngModelOptions]="{standalone: true}"
+                   placeHolder="Numero"></ion-input>
+        <ion-select [(ngModel)]="telephone.categorieTelephone" placeholder="Categorie"
+                    [ngModelOptions]="{standalone: true}">
+          <ion-select-option *ngFor="let t of options" [value]="t">
+            {{t}}
+          </ion-select-option>
+        </ion-select>
+        <ion-icon (click)="removeControl(i)" name="close-circle"></ion-icon>
+      </ion-item>
+      <ion-button expand="full" color="light" (click)="addTelephone()">Add Telephone</ion-button>
+    </ion-item-group>
+  </ion-item>
+  <ion-card>
+    <ion-card-header>
+      <h4>Adresse</h4>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input name="nomRue" #name="ngModel" required="true"
+                   [(ngModel)]="authSrv.address.roadName" [ngModelOptions]="{standalone: true}"
+                   placeholder="Entrer l'adresse">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="appartNumber" #name="ngModel" [(ngModel)]="authSrv.address.appartNumber"
+                   [ngModelOptions]="{standalone: true}" placeholder="Numero appartement(Facultatif)">
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="ville" #name="ngModel" [(ngModel)]="authSrv.address.town"
+                   [ngModelOptions]="{standalone: true}" placeholder="Ville"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="postalCode" #name="ngModel" [(ngModel)]="authSrv.address.postalCode"
+                   [ngModelOptions]="{standalone: true}" placeholder="Code postal"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="region" #name="ngModel" [(ngModel)]="authSrv.address.region"
+                   [ngModelOptions]="{standalone: true}" placeholder="region"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input name="pays" #name="ngModel" [(ngModel)]="authSrv.address.country"
+                   [ngModelOptions]="{standalone: true}" placeholder="pays"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <form [formGroup]=userForm (ngSubmit)="createProfile()">
+    <ion-item>
+      <ion-item aria-expanded="true">
+        <ion-label>Mot de passe</ion-label>
+        <ion-row>
+          <ion-col size="7">
+            <ion-input [type]="passwordType"
+                       *ngIf="ischanged"
+                       formControlName="passwordToValidate"
+                       placeholder="Entrer le password">
+            </ion-input>
+            <ion-label *ngIf="!ischanged">************
+            </ion-label>
+          </ion-col>
+          <ion-col size=2>
+            <ion-button (click)="togglePassword()" *ngIf="ischanged">
+              <ion-icon name="eye" color="gray" item-end></ion-icon>
+            </ion-button>
+          </ion-col>
+          <ion-col size=1></ion-col>
+          <ion-col size=2>
+            <ion-toggle [(ngModel)]="ischanged" color="primary"
+                        [ngModelOptions]="{standalone: true}" checked>
+            </ion-toggle>
+          </ion-col>
+        </ion-row>
+      </ion-item>
+      <ion-item >
+        <div class="form-group">
+          <ion-input [type]="passwordType" formControlName="passwordConfirm"
+                     placeholder="Confirm Password" [ngModelOptions]="{standalone: true}">
+          </ion-input>
+
+          <div class="text-danger"
+               *ngIf="passwordConfirm?.valid && (passwordConfirm.dirty || passwordConfirm.touched)">
+            <div *ngIf="userForm.errors.passwordMismatch">
+              Password and Confirm Password fields should match
+            </div>
+          </div>
+        </div>
+
+        <!--                        </ion-grid>-->
+      </ion-item>
+    </ion-item>
+    <ion-button expand="block" type="submit" [disabled]="userForm.valid">
+      Mettre a jour
+    </ion-button>
+  </form>
+</ion-content>

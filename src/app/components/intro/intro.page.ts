@@ -67,7 +67,7 @@ export class IntroPage implements OnInit {
             if (event.keyCode == 13 && this.credentialsForm.valid) {
                 await this.authService.login(this.credentialsForm.value).then(res => {
                     // if (res) {
-                        this.navCtrl.navigateForward('/home');
+                    this.navCtrl.navigateForward('/home');
                     // }
                 });
                 //     .subscribe(success => {
@@ -81,7 +81,7 @@ export class IntroPage implements OnInit {
             }
         } else {
 
-           await this.authService.login(this.credentialsForm.value).then(res => {
+            await this.authService.login(this.credentialsForm.value).then(res => {
                 // if (res) {
                 this.navCtrl.navigateForward('/home');
                 // }
@@ -96,15 +96,7 @@ export class IntroPage implements OnInit {
         }
     }
 
-    register() {
-        this.authService.register(this.credentialsForm.value).subscribe(async res => {
-            // Call Login to automatically login the new user
-            await this.authService.login(this.credentialsForm.value).then(res => {
-                // if (res) {
-                this.navCtrl.navigateRoot('/home');
-                // }
-            });
-            // .subscribe();
-        });
+    async register() {
+        await this.navCtrl.navigateRoot('/register');
     }
 }
