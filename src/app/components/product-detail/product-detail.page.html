@@ -1,0 +1,88 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{ articleService.article?.title }}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="share()">
+                <ion-icon slot="icon-only" name="share"></ion-icon>
+            </ion-button>
+            <ion-fab-button (click)="openCart()" #cart color="secondary">
+                <div *ngIf="cartItemCount.value > 0" class="cart-length" style="color: brown">{{cartItemCount | async}}</div>
+                <ion-icon name="cart" class="cart-icon"></ion-icon>
+            </ion-fab-button>
+        </ion-buttons>
+
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+
+  </ion-fab>
+    <ion-card>
+        <ion-slides pager="true" [options]="slidesOpt">
+            <ion-slide (click)="showImage(image, articleService.article.title)" *ngFor="let image of images">
+                <img src="http://192.168.2.58:4000/image/{{image}}"/>
+            </ion-slide>
+        </ion-slides>
+        <ion-card-content>
+            <ion-card-title>
+                <ion-chip color="primary">
+                    <ion-label>{{ articleService.article?.category }}</ion-label>
+                </ion-chip>
+                <ion-chip color="warning">
+                    <ion-label>{{ articleService.article?.state }}</ion-label>
+                </ion-chip>
+                <ion-chip color="secondary">
+                    <ion-label>{{ articleService.article?.availability?.type }}</ion-label>
+                </ion-chip>
+                <ion-chip *ngIf="articleService.article?.availability?.available === true">
+                    <ion-label>Disponible</ion-label>
+                </ion-chip>
+                <ion-chip color="primary">
+                    <ion-label>{{ articleService.article?.city }}</ion-label>
+                </ion-chip>
+                <div class="my-container-label">
+                    <div class="span-container">
+                        <span class="price"> {{articleService.article?.price | currency}}</span>
+                        <span *ngIf="articleService.article?.averageStar >= 1">
+              <ion-icon class="iconStar" name="star"></ion-icon>
+            </span>
+                        <span *ngIf="articleService.article?.averageStar >= 2">
+              <ion-icon class="iconStar" name="star"></ion-icon>
+            </span>
+                        <span *ngIf="articleService.article?.averageStar >= 3">
+              <ion-icon class="iconStar" name="star"></ion-icon>
+            </span>
+                        <span *ngIf="articleService.article?.averageStar >= 4">
+              <ion-icon class="iconStar" name="star"></ion-icon>
+            </span>
+                        <span *ngIf="articleService.article?.averageStar >= 5">
+              <ion-icon class="iconStar" name="star"></ion-icon>
+            </span>
+                    </div>
+                </div>
+            </ion-card-title>
+            <p style="text-align: justify">{{ articleService.article?.description }}</p>
+            <h3 class="title">Laissez une note</h3>
+            <div class="rating-container">
+                <rating
+                        [(ngModel)]="rate"
+                        readonly="false"
+                        size="default"
+                        (ngModelChange)="onModelChange($event)">
+                </rating>
+                <ion-button (click)="leaveNote()" size="small">Noter</ion-button>
+            </div>
+        </ion-card-content>
+    </ion-card>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-button (click)="addToCart(articleService.article)" class="btn-cart" shape="round" size="large"
+                    expand="full">Ajouter au Panier
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

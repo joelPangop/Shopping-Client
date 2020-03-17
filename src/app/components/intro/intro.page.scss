@@ -1,0 +1,26 @@
+ion-slide {
+  flex-direction: column;
+  height: 100vh;
+  background: rgb(35, 45, 54);
+}
+
+.ion-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+  width: 40vh;
+  border: 1px solid white;
+  border-radius: 20vw;
+}
+
+ion-icon {
+  font-size: 80px;
+  color: white;
+}
+
+h2, p {
+  text-align: center;
+  color: white;
+}

@@ -1,0 +1,38 @@
+.custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.iconStar {
+  color: #f4e242;
+}
+
+ion-fab-button {
+  height: 70px;
+  width: 70px;
+}
+
+.cart-icon {
+  font-size: 50px;
+}
+
+.cart-length {
+  color: var(--ion-color-primary);
+  position: absolute;
+  top: 18px;
+  left: 25px;
+  font-weight: 600;
+  font-size: 1em;
+  min-width: 25px;
+  z-index: 10;
+}

@@ -1,0 +1,43 @@
+<ion-content>
+    <ion-slides>
+        <ion-slide>
+            <h2>Slide 1</h2>
+            <div class="icon-container">
+                <ion-icon class="icon" name="card"></ion-icon>
+            </div>
+            <p>Lorembewjgbchjngre nbjfnvjkrevjkschdl bgwehiorhwrhevwihcl eh hwgiufbhivbhuvhgnkbvgne</p>
+        </ion-slide>
+        <ion-slide>
+            <h2>Slide 2</h2>
+          <div class="icon-container">
+            <ion-icon class="icon" name="log-in"></ion-icon>
+          </div>
+          <p>Lorembewjgbchjngre nbjfnvjkrevjkschdl bgwehiorhwrhevwihcl eh hwgiufbhivbhuvhgnkbvgne
+            kfjgwohgwinthwuieg</p>
+            <div>
+                <form [formGroup]="credentialsForm" (keydown)="login($event)" (ngSubmit)="login($event)">
+                    <ion-list>
+                        <ion-item>
+                            <ion-label position="floating">Email</ion-label>
+                            <ion-input type="email" formControlName="email"></ion-input>
+                        </ion-item>
+
+                        <ion-item>
+                            <ion-label position="floating">Password</ion-label>
+                            <ion-input type="password" formControlName="password"></ion-input>
+                        </ion-item>
+                    </ion-list>
+                    <ion-button expand="full" mat-raised-button type="submit" mat-raised-button [disabled]="!credentialsForm.valid">Login</ion-button>
+                    <ion-button expand="full" type="button" (click)="register()" [disabled]="!credentialsForm.valid">Register
+                    </ion-button>
+                </form>
+            </div>
+          <ion-button expand="block" (click)="loginWithFacebook()">
+            <ion-icon slot="start" name="logo-facebook"></ion-icon>
+            Facebook</ion-button>
+          <ion-button expand="block" color="warning">
+            <ion-icon slot="start" name="call"></ion-icon>
+            Telephone</ion-button>
+        </ion-slide>
+    </ion-slides>
+</ion-content>

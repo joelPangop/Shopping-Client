@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="home">
+            </ion-back-button>
+        </ion-buttons>
+        <ion-title>Categorie: {{catTitle}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content
+                pullingIcon="arrow-dropdown"
+                pullingText="Pull to refresh"
+                refreshingSpinner="circles"
+                refreshingText="Loading...">
+        </ion-refresher-content>
+    </ion-refresher>
+    <ion-virtual-scroll [items]="articles" approxItemHeight="82px">
+        <ion-item *virtualItem="let article" (click)="showDetails(article._id)" button>
+            <ion-thumbnail (click)="showImage(article.pictures[0], article.title, $event)">
+                <ion-img
+                        src="http://192.168.2.58:4000/image/{{article.pictures[0]}}"></ion-img>
+            </ion-thumbnail>
+            <ion-label>
+                <h2 class="my-label-title">{{article.title}}</h2>
+                <p color="medium">{{article.description}}</p>
+                <div class="span-container">
+                    <span class="price">{{article.price | currency}}</span>
+                    <span *ngIf="article.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                    <span *ngIf="article.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                    <span *ngIf="article.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                    <span *ngIf="article.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                    <span *ngIf="article.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                </div>
+            </ion-label>
+        </ion-item>
+    </ion-virtual-scroll>
+</ion-content>

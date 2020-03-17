@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home"></ion-back-button>
+        </ion-buttons>
+        <ion-title>About</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div *ngIf="activeParam === 'cc_infos'" class="cc_id" color="grey">
+        <ion-label><h2>Types de carte acceptés:</h2></ion-label>
+        <p>
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="5">BRAND</ion-col>
+                    <ion-col size="2">CVC</ion-col>
+                    <ion-col size="3">DATE</ion-col>
+                </ion-row>
+                <ion-row *ngFor="let cc of credit_cards">
+                    <ion-col size="5">{{cc.brand}}</ion-col>
+                    <ion-col size="2">{{cc.cvc}}</ion-col>
+                    <ion-col size="3">{{cc.date}}</ion-col>
+                </ion-row>
+            </ion-grid>
+        </p>
+    </div>
+
+</ion-content>
