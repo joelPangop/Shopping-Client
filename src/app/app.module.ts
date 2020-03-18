@@ -36,8 +36,9 @@ import {CartPage} from './components/cart/cart.page';
 import {CartPageModule} from './components/cart/cart.module';
 import {WebcamModule} from 'ngx-webcam';
 import { PayPal } from '@ionic-native/paypal/ngx';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 
-// import {IonicStorageModule, Storage} from '@ionic/storage';
+const config:SocketIoConfig = {url: 'http://10.103.4.78:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -61,6 +62,7 @@ export function jwtOptionsFactory(storage) {
         FormsModule,
         CartPageModule,
         WebcamModule,
+        SocketIoModule.forRoot(config),
         JwtModule.forRoot({
             jwtOptionsProvider: {
                 provide: JWT_OPTIONS,

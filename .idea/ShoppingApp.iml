@@ -24,5 +24,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="moment" level="application" />
+    <orderEntry type="library" name="socket.io" level="application" />
   </component>
 </module>

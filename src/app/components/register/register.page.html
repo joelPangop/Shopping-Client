@@ -10,7 +10,7 @@
 
 <ion-content>
   <ion-item>
-    <form [formGroup]="uploadForm" (ngSubmit)="updateProfile()">
+    <form [formGroup]="uploadForm" (ngSubmit)="createProfile()">
       <ion-avatar slot="start">
         <ion-img [src]="imgURL"></ion-img>
       </ion-avatar>
@@ -47,7 +47,7 @@
       <ion-item *ngFor="let telephone of authSrv.userInfo.telephones; let i = index">
         <ion-input required type="text" [(ngModel)]=telephone.numeroTelephone
                    [ngModelOptions]="{standalone: true}"
-                   placeHolder="Numero"></ion-input>
+                   placeholder="Numero"></ion-input>
         <ion-select [(ngModel)]="telephone.categorieTelephone" placeholder="Categorie"
                     [ngModelOptions]="{standalone: true}">
           <ion-select-option *ngFor="let t of options" [value]="t">
