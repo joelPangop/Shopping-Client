@@ -75,7 +75,15 @@ const routes: Routes = [
   {
     path: 'paypal-web/:params',
     loadChildren: () => import('./components/paypal-web/paypal-web.module').then( m => m.PaypalWebPageModule)
+  },  {
+    path: 'register',
+    loadChildren: () => import('./components/register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'live-chat',
+    loadChildren: () => import('./components/live-chat/live-chat.module').then( m => m.LiveChatPageModule)
   }
+
 ];
 
 @NgModule({
