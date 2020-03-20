@@ -48,6 +48,24 @@
                             </div>
                         </ion-item>
                     </ion-menu-toggle>
+                    <ion-menu-toggle>
+                        <ion-item button (click)="goTo('live-chat')">
+                            <ion-icon name="cart" slot="start"></ion-icon>
+                            <div class="my-container-label">
+                                <ion-label class="my-label-title">Live Chat</ion-label>
+                                <ion-label color="medium">Créer votre salon de chat</ion-label>
+                            </div>
+                        </ion-item>
+                    </ion-menu-toggle>
+                    <ion-menu-toggle>
+                        <ion-item button (click)="goTo('intro')">
+                            <ion-icon name="cart" slot="start"></ion-icon>
+                            <div class="my-container-label">
+                                <ion-label class="my-label-title">Login</ion-label>
+                                <ion-label color="medium">Sign In/Out</ion-label>
+                            </div>
+                        </ion-item>
+                    </ion-menu-toggle>
                 </ion-list>
             </ion-content>
         </ion-menu>

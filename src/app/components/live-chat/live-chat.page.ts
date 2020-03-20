@@ -11,10 +11,14 @@ import {text} from 'express';
     styleUrls: ['./live-chat.page.scss'],
 })
 export class LiveChatPage implements OnInit {
-    message = '';
+    message: string = '';
     messages = [];
     currentUser = '';
     utilisateur: Utilisateur;
+    onTyping:any = '';
+    timeout;
+    typing: boolean = false;
+    userTyping = '';
 
     constructor(private socket: Socket, private storage: NativeStorage, private toastCtrl: ToastController) {
     }
@@ -22,14 +26,15 @@ export class LiveChatPage implements OnInit {
     async ngOnInit() {
         this.socket.connect();
         let name = `User-${new Date().getTime()}`;
-        this.currentUser = name;
+        // this.currentUser = name;
 
         await this.storage.getItem('Utilisateur').then(res => {
             this.utilisateur = res;
+            this.currentUser = this.utilisateur.username;
             console.log(res);
         });
 
-        this.socket.emit('set-name', name);
+        this.socket.emit('set-name', this.utilisateur.username);
         // this.socket.emit('set-name', this.utilisateur.username);
 
         this.socket.fromEvent('users-changed').subscribe(data => {
@@ -47,14 +52,44 @@ export class LiveChatPage implements OnInit {
             console.log('New:', message);
             this.messages.push(message);
         });
+
+        this.socket.fromEvent('notify-typing').subscribe(message => {
+            this.onTyping = message;
+            this.userTyping = message['user'];
+            console.log('type:', this.onTyping);
+        });
     }
 
-    sendMessage(){
+    sendMessage() {
         this.socket.emit('send-message', {text: this.message});
         this.message = '';
     }
 
-    ionViewWillLeave(){
+    onType = () => {
+        // this.socket.emit(' typing', {
+        //     text: name + ' is typing ...'
+        // });
+
+        this.typing = true;
+
+        this.socket.emit('typing', {
+            text: this.utilisateur.username + " is typing ..."
+        });
+        clearTimeout(this.timeout);
+        // @ts-ignore
+        this.timeout = setTimeout(this.timeoutFunction, 1000);
+    }
+
+     timeoutFunction = () => {
+        // this.typing = false;
+        //console.log("stopped typing");
+        // socket.emit("typing", false);
+        this.socket.emit('typing', {
+            text: "" //name + " stopped typing"
+        });
+    };
+
+    ionViewWillLeave() {
         this.socket.disconnect();
     }
 

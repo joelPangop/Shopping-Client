@@ -4,7 +4,7 @@ let io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
 
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function () {
         io.emit('users-changed', {user: socket.username, event: 'left'});
     });
 
@@ -16,10 +16,15 @@ io.on('connection', (socket) => {
     socket.on('send-message', (message) => {
         io.emit('message', {msg: message.text, user: socket.username, createdAt: new Date()});
     });
+
+    //listening for typing  event
+    socket.on('typing', (message) => {
+        io.emit('notify-typing',{msg: message.text, user: socket.username});
+    });
 });
 
-var port = process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 
-server.listen(port, function(){
+server.listen(port, function () {
     console.log('listening in http://localhost:' + port);
 });
