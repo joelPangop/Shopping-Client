@@ -33,10 +33,6 @@ const routes: Routes = [
     loadChildren: () => import('./components/create-product/create-product.module').then(m => m.CreateProductPageModule)
   },
   {
-    path: 'preview-image',
-    loadChildren: () => import('./components/preview-image/preview-image.module').then( m => m.PreviewImagePageModule)
-  },
-  {
     path: 'menu',
     loadChildren: () => import('./components/menu/menu.module').then( m => m.MenuPageModule)
   },
@@ -75,7 +71,8 @@ const routes: Routes = [
   {
     path: 'paypal-web/:params',
     loadChildren: () => import('./components/paypal-web/paypal-web.module').then( m => m.PaypalWebPageModule)
-  },  {
+  },
+  {
     path: 'register',
     loadChildren: () => import('./components/register/register.module').then( m => m.RegisterPageModule)
   },

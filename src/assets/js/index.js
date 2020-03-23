@@ -21,6 +21,12 @@ io.on('connection', (socket) => {
     socket.on('typing', (message) => {
         io.emit('notify-typing',{msg: message.text, user: socket.username});
     });
+
+    //listening for notifying  event
+    socket.on('notifying', (message) => {
+        io.emit('notify',{message: message, user: message.user});
+    });
+
 });
 
 const port = process.env.PORT || 3001;

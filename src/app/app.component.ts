@@ -1,12 +1,17 @@
 import {Component} from '@angular/core';
 
-import {NavController, Platform} from '@ionic/angular';
+import {NavController, Platform, ToastController} from '@ionic/angular';
 import {SplashScreen} from '@ionic-native/splash-screen/ngx';
 import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {categories} from './models/Category';
 import {Deeplinks} from '@ionic-native/deeplinks/ngx';
 import {ProductDetailPage} from './components/product-detail/product-detail.page';
+import {Socket} from 'ngx-socket-io';
+import {Utilisateur} from './models/utilisateur-interface';
+import {Message} from './models/message-interface';
+import {ActivatedRoute} from '@angular/router';
+import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
 
 @Component({
     selector: 'app-root',
@@ -15,6 +20,7 @@ import {ProductDetailPage} from './components/product-detail/product-detail.page
 })
 export class AppComponent {
     categories: any[];
+    utilisateur: Utilisateur;
 
     constructor(
         private platform: Platform,
@@ -23,12 +29,17 @@ export class AppComponent {
         private storage: NativeStorage,
         private navCtrl: NavController,
         private deepLinks: Deeplinks,
+        private socket: Socket,
+        private toastCtrl: ToastController,
+        private localNotification: LocalNotifications
     ) {
         this.categories = categories;
         this.initializeApp();
     }
 
-    initializeApp() {
+    async initializeApp() {
+        this.utilisateur = await this.storage.getItem('Utilisateur');
+        this.socket.connect();
         this.platform.ready().then(async () => {
             const loggedIn = await this.storage.getItem('isLoggedIn');
             this.statusBar.backgroundColorByHexString('0bb8cc');
@@ -39,7 +50,7 @@ export class AppComponent {
                 // match.$args - the args passed in the link
                 // match.$link - the full link data
                 console.log('Successfully matched route', match);
-                this.navCtrl.navigateRoot(match.$link.path)
+                this.navCtrl.navigateRoot(match.$link.path);
             }, nomatch => {
                 // nomatch.$link - the full link data
                 console.error('Got a deeplink that didn\'t match', nomatch);
@@ -50,6 +61,29 @@ export class AppComponent {
             }
             this.splashScreen.hide();
         });
+
+        this.socket.fromEvent('notify').subscribe(notification => {
+            console.log('New:', notification);
+            const usr = notification['user'] as Utilisateur;
+            const msg = notification['message'] as Message;
+            this.localNotification.schedule({
+                title: 'Message',
+                text: 'Message recu de ' + usr.username,
+                trigger: {
+                    in: 0,
+                    unit: ELocalNotificationTriggerUnit.SECOND
+                }
+            });
+        });
+    }
+
+    async presentToast(msg: string, duree: number, position) {
+        const toast = await this.toastCtrl.create({
+            message: msg,
+            duration: duree,
+            position: position
+        });
+        await toast.present();
     }
 
     showCategory(title: string) {
@@ -58,7 +92,7 @@ export class AppComponent {
     }
 
     goTo(route: string) {
-      this.navCtrl.navigateForward(`/${route}`);
-      console.log('route', `/${route}`);
+        this.navCtrl.navigateForward(`/${route}`);
+        console.log('route', `/${route}`);
     }
 }

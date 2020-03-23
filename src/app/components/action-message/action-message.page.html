@@ -13,20 +13,35 @@
 </ion-header>
 
 <ion-content>
-    <ion-card *ngIf="uid === '1000'">
-        <ion-item>
-            <ion-avatar slot="start">
-                <ion-img [src]="'http://192.168.2.58:4000/image/'+message.picture"></ion-img>
-            </ion-avatar>
-            <ion-label>{{message?.title}}</ion-label>
-            <ion-note>{{message?.createdAt | date}}</ion-note>
+    <ion-grid *ngIf="uid === '1000'">
+        <ion-row *ngFor="let msg of messages; let i = index">
+            <ion-col size="9" offset="{{msg.title !== utilisateur.username ? 3 : 0}} ">
+                <ion-item lines="none">
+                    <ion-avatar slot="start">
+                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
+                    </ion-avatar>
+                    <ion-label button ion-long-press [interval]="400" (pressup)="handleDeleteButtonClick($event, msg, i)"><p style="text-align: justify">{{ msg.content }}</p></ion-label>
+                    <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">
+                        {{msg.createdAt | date }}
+                    </ion-note>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+<!--    <ion-card *ngIf="uid === '1000'">-->
+<!--        <ion-item>-->
+<!--            <ion-avatar slot="start">-->
+<!--                <ion-img [src]="'http://192.168.2.58:4000/image/'+message.picture"></ion-img>-->
+<!--            </ion-avatar>-->
+<!--            <ion-label>{{message?.title}}</ion-label>-->
+<!--            <ion-note>{{message?.createdAt | date}}</ion-note>-->
 
-            <ion-button *ngIf="action === 'write'" fill="outline" slot="=end">.</ion-button>
-        </ion-item>
-        <ion-card-content>
-            {{message?.content}}
-        </ion-card-content>
-    </ion-card>
+<!--            <ion-button *ngIf="action === 'write'" fill="outline" slot="=end">.</ion-button>-->
+<!--        </ion-item>-->
+<!--        <ion-card-content>-->
+<!--            {{message?.content}}-->
+<!--        </ion-card-content>-->
+<!--    </ion-card>-->
 </ion-content>
 <ion-footer *ngIf="action === 'write'">
     <ion-toolbar color="primary">

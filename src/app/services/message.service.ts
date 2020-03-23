@@ -24,6 +24,11 @@ export class MessageService {
         return this.http.get<Message[]>(url);
     }
 
+    loadMessages(username, interlocutorId){
+        const url = `${environment.api_url}/Messages/all/${username}/interlocutor/${interlocutorId}`;
+        return this.http.get<Message[]>(url);
+    }
+
     loadReceivedNotifications(id): Observable<Notification[]> {
         const url = `${environment.api_url}/Utilisateur/${id}/notifications`;
         return this.http.get<Notification[]>(url);
@@ -39,11 +44,21 @@ export class MessageService {
         return this.http.get<Utilisateur>(url);
     }
 
+    addNotification(notification: Notification) {
+        const url = `${environment.api_url}/notifications`;
+        return this.http.post(url, notification);
+    }
+
     send(url, message) {
         return this.http.post(url, message);
     }
 
+
     changeState(id, body) {
         return this.http.put(`${environment.api_url}/Message/${id}`, body);
+    }
+
+    deleteMessage(msg){
+        return this.http.delete(`${environment.api_url}/Message/${msg._id}`);
     }
 }

@@ -8,6 +8,9 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {NavController} from '@ionic/angular';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {itemCart} from '../models/itemCart-interface';
+import {Socket} from 'ngx-socket-io';
+import {MessageService} from '../services/message.service';
+import {Utilisateur} from '../models/utilisateur-interface';
 
 @Component({
     selector: 'app-home',
@@ -20,15 +23,19 @@ export class HomePage {
     description: string;
     articles: Article[];
     public cartItemCount = new BehaviorSubject(0);
+    utilisateur = {} as Utilisateur;
+    notifications = [];
 
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage,
-                private photoViewer: PhotoViewer, private navCtrl: NavController) {
-
+                private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
+                private msgService: MessageService) {
 
         // this.router.navigateByUrl('/intro');
     }
 
     async ngOnInit() {
+        this.socket.connect();
+        this.utilisateur = await this.storage.getItem('Utilisateur');
         this.loadArticles()
             .subscribe((articles: Article[]) => {
                 this.articles = articles;
@@ -113,5 +120,11 @@ export class HomePage {
 
     showOptions($event: MouseEvent, language: string) {
         
+    }
+
+    loadReceivedNotifications() {
+        this.msgService.loadReceivedNotifications(this.utilisateur._id).subscribe(res => {
+            this.notifications = res;
+        });
     }
 }

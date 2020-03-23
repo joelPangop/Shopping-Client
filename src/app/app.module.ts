@@ -1,6 +1,6 @@
 // @ts-ignore
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {RouteReuseStrategy} from '@angular/router';
 
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
@@ -19,8 +19,6 @@ import {IonicRatingModule} from 'ionic4-rating';
 import {FileOpener} from '@ionic-native/file-opener/ngx';
 import {File} from '@ionic-native/file/ngx'
 import {ImagePicker} from '@ionic-native/image-picker/ngx';
-import {PreviewImagePage} from './components/preview-image/preview-image.page';
-import {PreviewImagePageModule} from './components/preview-image/preview-image.module';
 import {ShowOptionsPageModule} from './components/show-options/show-options.module';
 import {ShowOptionsPage} from './components/show-options/show-options.page';
 import {TopHeaderPageModule} from './components/top-header/top-header.module';
@@ -32,13 +30,17 @@ import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
 import { FileChooser } from '@ionic-native/file-chooser/ngx';
 import { Stripe } from '@ionic-native/stripe/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import {CartPage} from './components/cart/cart.page';
 import {CartPageModule} from './components/cart/cart.module';
 import {WebcamModule} from 'ngx-webcam';
 import { PayPal } from '@ionic-native/paypal/ngx';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {IonicGestureConfig} from './services/ionic-gesture-config';
+import {LongPressModule} from 'ionic-long-press';
+import {AppVersion} from '@ionic-native/app-version/ngx';
 
-const config:SocketIoConfig = {url: 'http://10.103.4.78:3001', options: {}};
+const config:SocketIoConfig = {url: 'http://192.168.2.58:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -51,17 +53,17 @@ export function jwtOptionsFactory(storage) {
 
 @NgModule({
     declarations: [AppComponent],
-    entryComponents: [PreviewImagePage, ShowOptionsPage, CartPage],
+    entryComponents: [ShowOptionsPage, CartPage],
     imports: [BrowserModule,
         IonicModule.forRoot(),
         AppRoutingModule,
         HttpClientModule,
-        PreviewImagePageModule,
         ShowOptionsPageModule,
         ReactiveFormsModule,
         FormsModule,
         CartPageModule,
         WebcamModule,
+        LongPressModule,
         SocketIoModule.forRoot(config),
         JwtModule.forRoot({
             jwtOptionsProvider: {
@@ -89,7 +91,13 @@ export function jwtOptionsFactory(storage) {
         FileChooser,
         File,
         Stripe,
+        LocalNotifications,
         PayPal,
+        AppVersion,
+        {
+            provide: HAMMER_GESTURE_CONFIG,
+            useClass: IonicGestureConfig
+        },
         {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
     ],
     bootstrap: [AppComponent]

@@ -9,7 +9,6 @@ import {itemCart} from '../../models/itemCart-interface';
 import {FormGroup} from '@angular/forms';
 import {ArticleService} from '../../services/article.service';
 import {ImageService} from '../../services/image.service';
-import {PreviewImagePage} from '../preview-image/preview-image.page';
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
 import {CartPage} from '../cart/cart.page';
 
@@ -112,15 +111,15 @@ export class ProductDetailPage implements OnInit {
         } else if (this.platform.is('desktop') || this.platform.is('hybrid')) {
             console.log('platform', this.platform.platforms());
 
-            const modal = await this.modalController.create({
-                component: PreviewImagePage,
-                cssClass: 'my-custom-show-image',
-                componentProps: {
-                    image: imgId,
-                    title: this.articleService.article.title
-                }
-            });
-            await modal.present();
+            // const modal = await this.modalController.create({
+            //
+            //     cssClass: 'my-custom-show-image',
+            //     componentProps: {
+            //         image: imgId,
+            //         title: this.articleService.article.title
+            //     }
+            // });
+            // await modal.present();
         }
     }
 

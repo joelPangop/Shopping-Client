@@ -4,7 +4,7 @@ export interface Notification {
     message: string;
     utilisateurId?: string;
     avatar: string;
-    createAt: number;
+    createdAt?: number;
     read?: boolean;
     sender: string;
 }

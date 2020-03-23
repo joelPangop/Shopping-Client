@@ -39,10 +39,10 @@ export class LiveChatPage implements OnInit {
 
         this.socket.fromEvent('users-changed').subscribe(data => {
             console.log('got data', data);
-            if (data['event'] === 'left') {
+            if (data['event'] === 'left' && this.currentUser !== data['user']) {
                 // @ts-ignore
                 this.showToast(`${data.user} has left`);
-            } else if (data['event'] === 'joined') {
+            } else if (data['event'] === 'joined' && this.currentUser !== data['user']) {
                 // @ts-ignore
                 this.showToast(`${data.user} has joined`);
             }
@@ -78,7 +78,7 @@ export class LiveChatPage implements OnInit {
         clearTimeout(this.timeout);
         // @ts-ignore
         this.timeout = setTimeout(this.timeoutFunction, 1000);
-    }
+    };
 
      timeoutFunction = () => {
         // this.typing = false;
