@@ -12,3 +12,26 @@
   font-size: 17px;
   margin: auto;
 }
+
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.my-message {
+  background: var(--ion-color-medium);
+  color: black;
+}
+
+.other-message {
+  background: var(--ion-color-light-shade);
+  color:black;
+}
+
+.time {
+  color: #dfdfdf;
+  float: right;
+  font-size: x-small;
+}

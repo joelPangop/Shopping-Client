@@ -34,7 +34,7 @@ export class ProductDetailPage implements OnInit {
     images: any;
     public cartItemCount = new BehaviorSubject(0);
 
-    @ViewChild('cart', {static: false, read: ElementRef})fab: ElementRef;
+    @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private storage: NativeStorage, private imageService: ImageService, private sharing: SocialSharing,
@@ -49,7 +49,7 @@ export class ProductDetailPage implements OnInit {
             this.cartItemCount.next(this.cartItems.length);
         });
         console.log(this.id);
-        this.loadArticle();
+        await this.loadArticle();
         if (!this.rate) {
             this.rate = 0;
         }
@@ -66,16 +66,17 @@ export class ProductDetailPage implements OnInit {
 
     animateCSS(animationName, keepAnimated = false) {
         const node = this.fab.nativeElement;
-        node.classList.add('animated', animationName)
+        node.classList.add('animated', animationName);
 
         //https://github.com/daneden/animate.css
         function handleAnimationEnd() {
             if (!keepAnimated) {
                 node.classList.remove('animated', animationName);
             }
-            node.removeEventListener('animationend', handleAnimationEnd)
+            node.removeEventListener('animationend', handleAnimationEnd);
         }
-        node.addEventListener('animationend', handleAnimationEnd)
+
+        node.addEventListener('animationend', handleAnimationEnd);
     }
 
     //  Methode pour partager un article via les reseaux sociaux
@@ -143,15 +144,15 @@ export class ProductDetailPage implements OnInit {
 //  grace à cette methode, on se déplace sur la page 'cart'
     async openCart() {
         await this.storage.setItem('page', 'product-detail/' + this.id);
-        if(this.platform.is('ios') || this.platform.is('android')){
+        if (this.platform.is('ios') || this.platform.is('android')) {
             await this.navCtrl.navigateForward('/cart');
-        } else{
+        } else {
             const modal = await this.modalController.create({
                 component: CartPage,
                 cssClass: '.my-custom-show-image'
             });
             modal.onWillDismiss().then(() => {
-                this.fab.nativeElement.classList.remove('animated', 'bounceOutLeft')
+                this.fab.nativeElement.classList.remove('animated', 'bounceOutLeft');
                 this.animateCSS('bounceInLeft');
             });
             await modal.present();

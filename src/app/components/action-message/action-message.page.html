@@ -4,8 +4,12 @@
             <ion-back-button defaultHref="home">
             </ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="uid === '1000'">{{message.title}}</ion-title>
-        <ion-title *ngIf="uid !== '1000'">Contacter le vendeur</ion-title>
+<!--        <ion-title *ngIf="uid === '1000'">{{message.title}}</ion-title>-->
+<!--        <ion-title *ngIf="uid !== '1000'">Contacter le vendeur</ion-title>-->
+        <ion-avatar slot="start">
+            <ion-img src="http://10.103.4.78:4000/image/{{interlocutor.avatar}}"></ion-img>
+        </ion-avatar>
+        <ion-title>{{interlocutor.username}}</ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="toggleAction()" *ngIf="action === 'read'" fill="outline" slot="=end">Repondre</ion-button>
         </ion-buttons>
@@ -15,16 +19,13 @@
 <ion-content>
     <ion-grid *ngIf="uid === '1000'">
         <ion-row *ngFor="let msg of messages; let i = index">
-            <ion-col size="9" offset="{{msg.title !== utilisateur.username ? 3 : 0}} ">
-                <ion-item lines="none">
-                    <ion-avatar slot="start">
-                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
-                    </ion-avatar>
+            <ion-col size="9" offset="{{msg.title !== utilisateur.username ? 3 : 0}} " class="message {{msg.title !== utilisateur.username ? 'other-message' : 'my-message'}}">
                     <ion-label button ion-long-press [interval]="400" (pressup)="handleDeleteButtonClick($event, msg, i)"><p style="text-align: justify">{{ msg.content }}</p></ion-label>
+                <div class="time" text-right>
                     <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">
                         {{msg.createdAt | date }}
                     </ion-note>
-                </ion-item>
+                </div>
             </ion-col>
         </ion-row>
     </ion-grid>

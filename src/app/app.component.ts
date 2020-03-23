@@ -10,7 +10,6 @@ import {ProductDetailPage} from './components/product-detail/product-detail.page
 import {Socket} from 'ngx-socket-io';
 import {Utilisateur} from './models/utilisateur-interface';
 import {Message} from './models/message-interface';
-import {ActivatedRoute} from '@angular/router';
 import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
 
 @Component({

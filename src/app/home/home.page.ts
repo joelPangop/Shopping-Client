@@ -29,14 +29,12 @@ export class HomePage {
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage,
                 private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private msgService: MessageService) {
-
-        // this.router.navigateByUrl('/intro');
     }
 
     async ngOnInit() {
         this.socket.connect();
         this.utilisateur = await this.storage.getItem('Utilisateur');
-        this.loadArticles()
+        await this.loadArticles()
             .subscribe((articles: Article[]) => {
                 this.articles = articles;
                 for (let i = 0; i < 5; i++) {

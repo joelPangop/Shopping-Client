@@ -39,12 +39,13 @@
                 <ion-item-sliding *ngFor="let msg of messages_received; let i = index">
                     <ion-item button (click)="messageView(msg, i)">
                         <ion-avatar slot="start">
-                            <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
+                            <ion-img src="http://10.103.4.78:4000/image/{{msg.picture}}"></ion-img>
                         </ion-avatar>
                         <ion-label>
                             <h2>{{msg.title}}</h2>
                             <p>{{msg.content}}</p>
                         </ion-label>
+                        <ion-badge *ngIf="unread_number > 0" class="unread">{{unread_number}}</ion-badge>
                         <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">
                             {{msg.createdAt | date }}
                         </ion-note>
@@ -54,7 +55,6 @@
                             <ion-icon name="create" slot="icon-only"></ion-icon>
                         </ion-item-option>
                     </ion-item-options>
-
                 </ion-item-sliding>
             </list>
         </div>
@@ -62,7 +62,7 @@
             <ion-card *ngFor="let msg of messages_sent; let i = index">
                 <ion-item button>
                     <ion-avatar slot="start">
-                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
+                        <ion-img src="http://10.103.4.78:4000/image/{{msg.picture}}"></ion-img>
                     </ion-avatar>
                     <ion-label>{{msg.title}}</ion-label>
                 </ion-item>

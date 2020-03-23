@@ -157,6 +157,21 @@ export class ActionMessagePage implements OnInit {
             };
             console.log('url et message', url, message);
             this.msgService.send(url, message).subscribe(res1 => {
+                this.messages.push(message);
+                const notification: Notification = {
+                    title: 'Nouveaux message',
+                    message: 'Vous avez un nouveau message de ' + this.utilisateur.username,
+                    utilisateurId: this.interlocutor._id,
+                    avatar: this.utilisateur.avatar,
+                    read: false,
+                    sender: this.utilisateur._id
+                };
+                this.msgService.addNotification(notification).subscribe(res => {
+                    this.socket.emit('notifying', {
+                        user: this.utilisateur,
+                        message: message
+                    });
+                });
                 this.presentToast('Message envoye', 1000, 'bottom');
                 this.msgContent = '';
             }, error => {

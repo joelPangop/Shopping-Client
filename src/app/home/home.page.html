@@ -67,7 +67,7 @@
         <ion-item *virtualItem="let article" (click)="showDetails(article._id)" button>
             <ion-thumbnail (click)="showImage(article.pictures[0], article.title, $event)">
                 <ion-img
-                        src="http://192.168.2.58:4000/image/{{article.pictures[0]}}"></ion-img>
+                        src="http://10.103.4.78:4000/image/{{article.pictures[0]}}"></ion-img>
             </ion-thumbnail>
             <ion-label>
                 <h2 class="my-label-title">{{article.title}}</h2>

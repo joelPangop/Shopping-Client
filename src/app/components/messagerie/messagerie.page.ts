@@ -21,6 +21,7 @@ export class MessageriePage implements OnInit {
     messages_sent = [] as Message[];
     notifications = [] as Notification[];
     msgContent: any;
+    unread_number: number = 0;
 
     constructor(public platform: Platform, public msgservice: MessageService, private storage: NativeStorage,
                 private navCtrl: NavController) {
@@ -32,13 +33,22 @@ export class MessageriePage implements OnInit {
         this.loadAll().subscribe(res => {
             console.log('result', res);
             this.messages = res [0];
-            this.messages.sort(this.compare);
-            this.messages_received.push(this.messages[this.messages.length - 1]);
-            for (let i = this.messages.length - 1; i > 0 ; i--) {
-                if (this.messages[i].title !== this.messages[i - 1].title) {
-                    this.messages_received.push(this.messages[i]);
+            if (this.messages.length > 0) {
+                this.messages.sort(this.compare);
+                this.messages_received.push(this.messages[this.messages.length - 1]);
+                for (let i = this.messages.length - 1; i > 0; i--) {
+                    if (this.messages[i].read === false) {
+                        this.unread_number++;
+                    }
+                    if (this.messages[i].title !== this.messages[i - 1].title) {
+                        this.unread_number = 0;
+                        this.messages_received.push(this.messages[i]);
+                    }
                 }
+            } else {
+                this.messages_received = res[0];
             }
+
             this.messages_sent = res [1];
             this.notifications = res [2];
         });
@@ -80,6 +90,7 @@ export class MessageriePage implements OnInit {
     }
 
     messageView(msg: Message, i: number) {
+        this.unread_number = 0;
         this.navCtrl.navigateForward(`/action-message/${msg._id}/read/${1000}`);
     }
 

@@ -12,3 +12,25 @@
   font-size: 17px;
   margin: auto;
 }
+
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.my-message {
+  background: var(--ion-color-tertiary);
+  color: #fff;
+}
+
+.other-message {
+  background: var(--ion-color-secondary);
+  color: #fff;
+}
+
+.unread {
+  background: var(--ion-color-secondary-shade);
+  color: #fff;
+}
