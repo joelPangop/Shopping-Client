@@ -11,6 +11,12 @@ import {itemCart} from '../models/itemCart-interface';
 import {Socket} from 'ngx-socket-io';
 import {MessageService} from '../services/message.service';
 import {Utilisateur} from '../models/utilisateur-interface';
+import {Network} from '@ionic-native/network/ngx';
+import {Dialogs} from '@ionic-native/dialogs/ngx';
+import {NetworkInterface} from '@ionic-native/network-interface/ngx';
+import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
+
+export let ipAddress: any;
 
 @Component({
     selector: 'app-home',
@@ -25,15 +31,26 @@ export class HomePage {
     public cartItemCount = new BehaviorSubject(0);
     utilisateur = {} as Utilisateur;
     notifications = [];
+    ip;
 
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage,
                 private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
-                private msgService: MessageService) {
+                private msgService: MessageService, public network: Network, public dialog: Dialogs,
+                public networkinterface: NetworkInterface) {
+        // @ts-ignore
+        this.networkinterface.getWiFiIPAddress((ip) => {
+            // @ts-ignore
+            ipAddress = ip;
+            this.ip = ipAddress;
+        });
     }
 
     async ngOnInit() {
         this.socket.connect();
+
         this.utilisateur = await this.storage.getItem('Utilisateur');
+        // @ts-ignore
+        this.dialog('IP: ' + this.ip);
         await this.loadArticles()
             .subscribe((articles: Article[]) => {
                 this.articles = articles;
@@ -117,7 +134,7 @@ export class HomePage {
     }
 
     showOptions($event: MouseEvent, language: string) {
-        
+
     }
 
     loadReceivedNotifications() {
