@@ -17,6 +17,7 @@ import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 
 declare function test1(t): any;
+declare function getUserIP(t): any;
 
 export let ipAddress: any;
 
@@ -50,6 +51,7 @@ export class HomePage {
     async ngOnInit() {
         let tst;
         await test1(tst);
+        await getUserIP(tst);
         console.log('ip:', tst);
         this.socket.connect();
 
