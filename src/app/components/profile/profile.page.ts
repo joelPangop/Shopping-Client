@@ -62,7 +62,7 @@ export class ProfilePage implements OnInit {
         this.authSrv.address = this.utilisateur.userInfo.address;
         this.ischanged = false;
         this.passwordShown = false;
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'http://192.168.2.58:4000/image/' + this.utilisateur.avatar;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'http://10.103.4.78:4000/image/' + this.utilisateur.avatar;
         this.loadData();
     }
 

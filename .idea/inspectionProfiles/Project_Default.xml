@@ -5,7 +5,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="9">
+          <list size="11">
             <item index="0" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="1" class="java.lang.String" itemvalue="main" />
             <item index="2" class="java.lang.String" itemvalue="button" />
@@ -15,6 +15,8 @@
             <item index="6" class="java.lang.String" itemvalue="block" />
             <item index="7" class="java.lang.String" itemvalue="ion-button" />
             <item index="8" class="java.lang.String" itemvalue="clear" />
+            <item index="9" class="java.lang.String" itemvalue="offset" />
+            <item index="10" class="java.lang.String" itemvalue="size" />
           </list>
         </value>
       </option>

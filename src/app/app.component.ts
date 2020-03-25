@@ -11,6 +11,7 @@ import {Socket} from 'ngx-socket-io';
 import {Utilisateur} from './models/utilisateur-interface';
 import {Message} from './models/message-interface';
 import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 
 @Component({
     selector: 'app-root',

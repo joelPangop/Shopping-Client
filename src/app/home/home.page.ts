@@ -16,6 +16,8 @@ import {Dialogs} from '@ionic-native/dialogs/ngx';
 import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 
+declare function test1(t): any;
+
 export let ipAddress: any;
 
 @Component({
@@ -46,6 +48,9 @@ export class HomePage {
     }
 
     async ngOnInit() {
+        let tst;
+        await test1(tst);
+        console.log('ip:', tst);
         this.socket.connect();
 
         this.utilisateur = await this.storage.getItem('Utilisateur');

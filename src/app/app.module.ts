@@ -40,8 +40,10 @@ import {IonicGestureConfig} from './services/ionic-gesture-config';
 import {LongPressModule} from 'ionic-long-press';
 import {AppVersion} from '@ionic-native/app-version/ngx';
 import { NetworkInterface } from '@ionic-native/network-interface/ngx'
+import { Network } from '@ionic-native/network/ngx'
+import { Dialogs } from '@ionic-native/dialogs/ngx'
 
-const config:SocketIoConfig = {url: 'http://10.103.4.78:3001', options: {}};
+const config:SocketIoConfig = {url: 'http://localhost:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -96,6 +98,8 @@ export function jwtOptionsFactory(storage) {
         PayPal,
         AppVersion,
         NetworkInterface,
+        Network,
+        Dialogs,
         {
             provide: HAMMER_GESTURE_CONFIG,
             useClass: IonicGestureConfig
