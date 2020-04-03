@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="home"></ion-back-button>
+            <ion-back-button defaultHref="menu"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ articleService.article?.title }}</ion-title>
         <ion-buttons slot="end">
@@ -13,7 +13,6 @@
                 <ion-icon name="cart" class="cart-icon"></ion-icon>
             </ion-fab-button>
         </ion-buttons>
-
     </ion-toolbar>
 </ion-header>
 
@@ -24,7 +23,7 @@
     <ion-card>
         <ion-slides pager="true" [options]="slidesOpt">
             <ion-slide (click)="showImage(image, articleService.article.title)" *ngFor="let image of images">
-                <img src="http://10.103.4.78:4000/image/{{image}}"/>
+                <img src="http://192.168.2.75:4000/image/{{image}}"/>
             </ion-slide>
         </ion-slides>
         <ion-card-content>

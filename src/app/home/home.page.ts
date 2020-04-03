@@ -15,11 +15,11 @@ import {Network} from '@ionic-native/network/ngx';
 import {Dialogs} from '@ionic-native/dialogs/ngx';
 import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {ArticleService} from '../services/article.service';
 
 declare function test1(t): any;
-declare function getUserIP(t): any;
 
-export let ipAddress: any;
+declare function getUserIP(t): any;
 
 @Component({
     selector: 'app-home',
@@ -39,33 +39,19 @@ export class HomePage {
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage,
                 private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs,
-                public networkinterface: NetworkInterface) {
-        // @ts-ignore
-        this.networkinterface.getWiFiIPAddress((ip) => {
-            // @ts-ignore
-            ipAddress = ip;
-            this.ip = ipAddress;
-        });
+                public networkinterface: NetworkInterface, private articleService: ArticleService,) {
+        // // @ts-ignore
+        // this.networkinterface.getWiFiIPAddress((ip) => {
+        //     // @ts-ignore
+        //     ipAddress = ip;
+        // });
     }
 
     async ngOnInit() {
-        let tst;
-        await test1(tst);
-        await getUserIP(tst);
-        console.log('ip:', tst);
         this.socket.connect();
-
         this.utilisateur = await this.storage.getItem('Utilisateur');
-        // @ts-ignore
-        this.dialog('IP: ' + this.ip);
-        await this.loadArticles()
-            .subscribe((articles: Article[]) => {
-                this.articles = articles;
-                for (let i = 0; i < 5; i++) {
-                    this.articles.push(...articles);
-                }
-                console.log('Articles', articles);
-            });
+        await this.loadArticles();
+        this.ip = environment.api_url;
         await this.storage.getItem('cart').then(res => {
             const rep = res as itemCart[];
             this.cartItemCount.next(rep.length);
@@ -74,8 +60,14 @@ export class HomePage {
 
     // @ts-ignore
     loadArticles(): Observable<Article[]> {
-        const url = `${environment.api_url}/article`;
-        return this.http.get<Article[]>(url);
+        this.articleService.loadArticles()
+            .subscribe((articles: Article[]) => {
+            this.articles = articles;
+            for (let i = 0; i < 5; i++) {
+                this.articles.push(...articles);
+            }
+            console.log('Articles', articles);
+        });
         // const xhr = new XMLHttpRequest();
         // xhr.onreadystatechange = () => {
         //     if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -87,6 +79,7 @@ export class HomePage {
         // };
         // xhr.open('GET', url, true);
         // xhr.send(null);
+
     }
 
     insererArticle(): void {

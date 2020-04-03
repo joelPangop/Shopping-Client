@@ -14,7 +14,7 @@
     <ion-list *ngIf="platform.is('ios') || platform.is('android')">
         <ion-item *ngFor="let item of cartItems; let i = index">
             <ion-thumbnail slot="start">
-                <ion-img src="http://10.103.4.78:4000/image/{{item.item.pictures[0]}}"></ion-img>
+                <ion-img src="http://192.168.2.75:4000/image/{{item.item.pictures[0]}}"></ion-img>
             </ion-thumbnail>
             <div class="my-container-label">
                 <ion-label>{{item.item.title}}</ion-label>

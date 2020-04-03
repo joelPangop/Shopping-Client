@@ -1,0 +1,25 @@
+.active-item {
+  bordor-left: 8px solid var(--ion-color-primary);
+}
+
+.my-custom-menu {
+  width: 50px;
+}
+
+.active {
+  --ion-text-color: var(--ion-color-primary);
+  ion-icon {
+    --ion-text-color-rgb: var(--ion-color-primary);
+  };
+  bordor-left: 8px solid var(--ion-color-primary);
+}
+
+.active-parent {
+  font-weight: 500;
+}
+
+.sub-item {
+  padding-left: 20px;
+  font-size: small;
+}
+

@@ -7,6 +7,7 @@ import {Utilisateur} from '../../models/utilisateur-interface';
 import {environment} from '../../models/environements';
 import {HttpClient} from '@angular/common/http';
 import {NavController} from '@ionic/angular';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-intro',
@@ -19,7 +20,7 @@ export class IntroPage implements OnInit {
     credentialsForm: FormGroup;
     utilisateur = {} as Utilisateur;
 
-    constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient,
+    constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient, private router: Router,
                 private authService: AuthService, private storage: NativeStorage, private navCtrl: NavController) {
     }
 
@@ -50,24 +51,28 @@ export class IntroPage implements OnInit {
                     this.http.post(url, this.utilisateur)
                         .subscribe(user => {
                             console.log('user', user);
-                            this.navCtrl.navigateForward('/home');
+                            this.navCtrl.navigateForward('/menu');
                         });
                 });
-            })
-            .catch(e => console.log('Error logging into Facebook', e));
+            }).catch(e => console.log('Error logging into Facebook', e));
     }
 
     loginWithPhone(): void {
 
     }
 
-    async login(event): Promise<void> {
+    async login(event) {
         if (event.keyCode) {
             // tslint:disable-next-line:triple-equals
             if (event.keyCode == 13 && this.credentialsForm.valid) {
-                await this.authService.login(this.credentialsForm.value).then(res => {
+                await this.authService.login(this.credentialsForm.value).subscribe(res => {
+                    if(res){
+                        this.navCtrl.navigateForward("/menu");
+
+                    }
                     // if (res) {
-                    this.navCtrl.navigateForward('/home');
+                    // this.authService.isAdmin();
+                    // this.navCtrl.navigateForward('/home');
                     // }
                 });
                 //     .subscribe(success => {
@@ -80,11 +85,16 @@ export class IntroPage implements OnInit {
                 // });
             }
         } else {
-
-            await this.authService.login(this.credentialsForm.value).then(res => {
-                // if (res) {
-                this.navCtrl.navigateForward('/home');
+            await this.authService.login(this.credentialsForm.value).subscribe(res => {
+                // if(res){
+                    // this.router.navigateByUrl("menu/product-list");
                 // }
+                // if (res) {
+                // this.navCtrl.navigateForward('/home');
+                // }
+                // this.router.navigate(['menu/home']);
+                // this.storage.setItem('page', 'menu/home');
+                // this.authService.isAdmin();
             });
             //     .subscribe(success => {
             //     if (success) {

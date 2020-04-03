@@ -28,21 +28,22 @@
     "@auth0/angular-jwt": "^3.0.1",
     "@capacitor/core": "1.5.1",
     "@ionic-native/app-version": "^5.23.0",
-    "@ionic-native/camera": "^5.20.0",
+    "@ionic-native/camera": "^5.23.0",
     "@ionic-native/core": "^5.20.0",
     "@ionic-native/deeplinks": "^5.22.0",
+    "@ionic-native/device": "^5.23.0",
     "@ionic-native/dialogs": "^5.23.0",
-    "@ionic-native/facebook": "^5.19.1",
-    "@ionic-native/file": "^5.0.0-beta.14",
+    "@ionic-native/facebook": "^5.23.0",
+    "@ionic-native/file": "^5.23.0",
     "@ionic-native/file-chooser": "^5.22.0",
     "@ionic-native/file-opener": "^5.20.0",
     "@ionic-native/file-path": "^5.22.0",
-    "@ionic-native/file-transfer": "^5.22.0",
-    "@ionic-native/http": "^5.20.0",
+    "@ionic-native/file-transfer": "^5.23.0",
+    "@ionic-native/http": "^5.23.0",
     "@ionic-native/image-picker": "^5.20.0",
-    "@ionic-native/ionic-webview": "^5.22.0",
+    "@ionic-native/ionic-webview": "^5.23.0",
     "@ionic-native/local-notifications": "^5.23.0",
-    "@ionic-native/native-storage": "^5.22.0-beta-1",
+    "@ionic-native/native-storage": "^5.23.0",
     "@ionic-native/network": "^5.23.0",
     "@ionic-native/network-interface": "^5.23.0",
     "@ionic-native/paypal": "^5.22.0",
@@ -143,22 +144,19 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-nativestorage": {},
       "cordova-plugin-wkwebview-ionic-xhr": {},
       "com-sarriaroman-photoviewer": {},
       "cordova-plugin-x-socialsharing": {},
-      "cordova-plugin-advanced-http": {
-        "OKHTTP_VERSION": "3.10.0"
-      },
-      "cordova-plugin-camera": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      },
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-camera": {},
       "ionic-plugin-deeplinks": {
         "URL_SCHEME": "myapp",
         "DEEPLINK_SCHEME": "https",
-        "DEEPLINK_HOST": "10.103.4.78",
+        "DEEPLINK_HOST": "192.168.2.75",
         "ANDROID_PATH_PREFIX": "/"
       },
       "com.paypal.cordova.mobilesdk": {},
@@ -170,13 +168,11 @@
       "cordova-plugin-filechooser": {},
       "cordova-plugin-stripe": {},
       "cordova-plugin-networkinterface": {},
-      "cordova-plugin-network-information": {},
-      "cordova-plugin-dialogs": {}
+      "cordova-plugin-nativestorage": {}
     },
     "platforms": [
       "browser",
-      "ios",
-      "android"
+      "ios"
     ]
   },
   "main": "karma.conf.js",

@@ -27,7 +27,7 @@
                             <ion-input type="password" formControlName="password"></ion-input>
                         </ion-item>
                     </ion-list>
-                    <ion-button expand="full" mat-raised-button type="submit" mat-raised-button [disabled]="!credentialsForm.valid">Login</ion-button>
+                    <ion-button expand="full" mat-raised-button type="submit" mat-raised-button [disabled]="!credentialsForm.valid" routerLink="/menu" routerDirection="forward">Login</ion-button>
                 </form>
                 <ion-button expand="full" type="button" (click)="register()">Register
                 </ion-button>

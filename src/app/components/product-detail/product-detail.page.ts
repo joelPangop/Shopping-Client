@@ -44,10 +44,8 @@ export class ProductDetailPage implements OnInit {
 
     async ngOnInit() {
         this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        await this.storage.getItem('cart').then(res => {
-            this.cartItems = res;
-            this.cartItemCount.next(this.cartItems.length);
-        });
+        // this.cartItems = await this.storage.getItem('cart');
+        // this.cartItemCount.next(this.cartItems.length);
         console.log(this.id);
         await this.loadArticle();
         if (!this.rate) {

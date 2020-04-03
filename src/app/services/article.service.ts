@@ -3,6 +3,7 @@ import {Article, Availability} from '../models/article-interface';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../models/environements';
+import {IpAddressService} from './ip-address.service';
 
 @Injectable({
     providedIn: 'root'
@@ -10,10 +11,27 @@ import {environment} from '../models/environements';
 export class ArticleService {
 
     article: Article;
+    articles: Article[];
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, public ipAddressService: IpAddressService) {
         this.article = {} as Article;
         this.article.availability = {} as Availability;
+        this.articles = [] as Article[];
+    }
+
+    // @ts-ignore
+    loadArticles():Observable<Article[]> {
+        // // @ts-ignore
+        // this.ipAddressService.networkinterface.getWiFiIPAddress((ip) => {
+        //     const url = `http://${ip}:4000/article`;
+        //     this.http.get<Article[]>(url).subscribe(res=>{
+        //         this.articles = res;
+        //         console.log(res);
+        //     });
+        // })
+
+        const url = `${environment.api_url}/article`;
+        return this.http.get<Article[]>(url);
     }
 
     // @ts-ignore

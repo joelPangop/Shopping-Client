@@ -1,8 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../../services/auth.service';
-import {Router} from '@angular/router';
-import {NavController, ToastController} from '@ionic/angular';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 
 @Component({
     selector: 'app-menu',
@@ -11,58 +7,77 @@ import {NativeStorage} from '@ionic-native/native-storage/ngx';
 })
 export class MenuPage implements OnInit {
 
-    // tslint:disable-next-line:ban-types
-    username: String = '';
+    pages = [
+        {
+            title: 'Home',
+            url: '/menu/product-list',
+            icon: 'home'
+        },
+        {
+            title: 'Categories',
+            children: [
+                {
+                    title: 'Vetements',
+                    description: 'description',
+                    icon: 'shirt',
+                    url: '/menu/category/Vetements'
+                },
+                {
+                    title: 'Electroniques',
+                    description: 'description',
+                    icon: 'phone-portrait',
+                    url: '/menu/category/electroniques'
+                },
+                {
+                    title: 'Mode & Accessoires',
+                    description: 'description',
+                    icon: 'bowtie',
+                    url: '/menu/category/Mode & Accessoires'
+                },
+                {
+                    title: 'Chaussures',
+                    description: 'description',
+                    icon: 'archive',
+                    url: '/menu/category/Chaussures'
+                }
+            ]
+        },
+        {
+            title: 'Mon compte',
+            children: [
+                {
+                    title: 'Profile',
+                    url: '/menu/profile',
+                    icon: 'person'
+                },
+                {
+                    title: 'Message',
+                    url: '/menu/messagerie',
+                    icon: 'mail'
+                },
+                {
+                    title: 'Live chat',
+                    url: '/menu/live-chat',
+                    icon: 'chatbubbles'
+                },
+                {
+                    title: 'Panier',
+                    url: '/menu/live-chat',
+                    icon: 'cart'
+                },
+                {
+                    title: 'logOut',
+                    url: '/menu/intro',
+                    icon: 'log-out'
+                }
+            ]
+        }
+    ];
 
-    pages = [];
-    selectedPath = '';
-
-    constructor(private authService: AuthService, private storage: NativeStorage, private router: Router,
-                private toastController: ToastController, private navCtrl: NavController) {
+    constructor() {
     }
 
     ngOnInit() {
     }
-
-    ionViewWillEnter() {
-        this.pages = [
-            {
-                title: 'Vetements',
-                description: 'description',
-                icon: 'shirt',
-                url: '/category/Vetements'
-            },
-            {
-                title: 'Electroniques',
-                description: 'description',
-                icon: 'phone-portrait',
-                url: '/category/electroniques'
-            },
-            {
-                title: 'Mode & Accessoires',
-                description: 'description',
-                icon: 'bowtie',
-                url: '/category/Mode & Accessoires'
-            },
-            {
-                title: 'Chaussures',
-                description: 'description',
-                icon: 'archive',
-                url: '/category/Chaussures'
-            }
-        ];
-
-        this.username = this.authService.currentUser.username;
-    }
-
-  showCategory(title: string) {
-    this.navCtrl.navigateForward('/category/' + title);
-    console.log('catTitle', title);
-  }
-
-  goTo(route: string) {
-    this.navCtrl.navigateForward(`/${route}`);
-    console.log('route', `/${route}`);
-  }
 
 }

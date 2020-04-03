@@ -1,24 +1,22 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {AuthGuardService} from './services/auth-guard.service';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'intro', pathMatch: 'full' },
+  {
+    path: 'menu',
+    loadChildren: () => import('./components/menu/menu.module').then( m => m.MenuPageModule),
+    canActivate: [AuthGuardService]
+  },
   { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)},
   {
     path: 'intro',
     loadChildren: () => import('./components/intro/intro.module').then(m => m.IntroPageModule)
   },
   {
-    path: 'category/:catTitle',
-    loadChildren: () => import('./components/category/category.module').then(m => m.CategoryPageModule)
-  },
-  {
     path: 'profile',
     loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfilePageModule)
-  },
-  {
-    path: 'messagerie',
-    loadChildren: () => import('./components/messagerie/messagerie.module').then(m => m.MessageriePageModule)
   },
   {
     path: 'cart',
@@ -31,10 +29,6 @@ const routes: Routes = [
   {
     path: 'create-product',
     loadChildren: () => import('./components/create-product/create-product.module').then(m => m.CreateProductPageModule)
-  },
-  {
-    path: 'menu',
-    loadChildren: () => import('./components/menu/menu.module').then( m => m.MenuPageModule)
   },
   {
     path: 'show-options',
@@ -79,8 +73,11 @@ const routes: Routes = [
   {
     path: 'live-chat',
     loadChildren: () => import('./components/live-chat/live-chat.module').then( m => m.LiveChatPageModule)
+  },
+  {
+    path: 'product-list',
+    loadChildren: () => import('./components/product-list/product-list.module').then( m => m.ProductListPageModule)
   }
-
 ];
 
 @NgModule({

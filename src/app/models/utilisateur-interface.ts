@@ -1,6 +1,8 @@
 import {UserInfo} from './userInfo-interface';
+import {RoleType} from './roleType';
 
 export interface Utilisateur {
+    role?: RoleType;
     username: string;
     email ?: string;
     contact?: string;

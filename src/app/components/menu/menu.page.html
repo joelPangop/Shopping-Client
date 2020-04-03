@@ -1,52 +1,41 @@
-<ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" class="my-custom-menu">
+<ion-menu contentId="content">
+    <ion-header>
         <ion-header>
-            <ion-toolbar>
+            <ion-toolbar color="primary">
                 <ion-title>Menu</ion-title>
             </ion-toolbar>
         </ion-header>
-        <ion-content>
-            <ion-item-divider color="primary">Categories</ion-item-divider>
-            <ion-list>
-                <ion-menu-toggle auto-hide="false" *ngFor="let p of pages">
-                    <ion-item button routerDirection="root" [class.active-item]="selectedPath.startsWith(p.url)" (click)="showCategory(p.title)" *ngFor="let p of pages">
-                        <ion-icon [name]=p.icon slot="start"></ion-icon>
-                        <div class="my-container-label">
-                            <ion-label class="my-label-title">{{p.title}}</ion-label>
-                            <ion-label color="medium">{{p.description}}</ion-label>
-                        </div>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-item-divider color="primary">Mon Compte</ion-item-divider>
+    </ion-header>
+    <ion-content>
+        <div *ngFor="let p of pages">
+            <ion-menu-toggle *ngIf="p.url">
+                <ion-item [routerLink]="p.url" routerDirection="root" routerLinkActive="active">
+                    <ion-icon [name]="p.icon" slot="start"></ion-icon>
+                    <ion-label>
+                        {{p.title}}
+                    </ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+            <ion-item button *ngIf="p.children?.length > 0" (click)="p.open = !p.open"
+                    [class.active-parent] = "p.open" detail="false">
+                <ion-icon name="arrow-forward" slot="start" *ngIf="!p.open"></ion-icon>
+                <ion-icon name="arrow-down" slot="start" *ngIf="p.open"></ion-icon>
+                <ion-label>
+                    {{p.title}}
+                </ion-label>
+            </ion-item>
+            <ion-list *ngIf="p.open">
                 <ion-menu-toggle>
-                    <ion-item button (click)="goTo('profile')">
-                        <ion-icon name="contact" slot="start"></ion-icon>
-                        <div class="my-container-label">
-                            <ion-label class="my-label-title">Profile</ion-label>
-                            <ion-label color="medium">Bienvenue !</ion-label>
-                        </div>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="goTo('message')">
-                        <ion-icon name="mail" slot="start"></ion-icon>
-                        <div class="my-container-label">
-                            <ion-label class="my-label-title">Message</ion-label>
-                            <ion-label color="medium">Consultez vos messages</ion-label>
-                        </div>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="goTo('panier')">
-                        <ion-icon name="cart" slot="start"></ion-icon>
-                        <div class="my-container-label">
-                            <ion-label class="my-label-title">Panier</ion-label>
-                            <ion-label color="medium">Consultez votre panier</ion-label>
-                        </div>
+                    <ion-item class="sub-item" *ngFor="let sub of p.children" [routerLink]="sub.url"
+                              routerDirection="root" routerLinkActive="active">
+                        <ion-icon [name]="sub.icon" slot="start"></ion-icon>
+                        <ion-label>
+                            {{sub.title}}
+                        </ion-label>
                     </ion-item>
                 </ion-menu-toggle>
             </ion-list>
-        </ion-content>
-    </ion-menu>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-</ion-split-pane>
+        </div>
+    </ion-content>
+</ion-menu>
+<ion-router-outlet id="content"></ion-router-outlet>

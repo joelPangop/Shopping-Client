@@ -104,5 +104,5 @@ function getUserIP(onNewIP) { //  onNewIp - your listener function for new IPs
 // Usage
 
 getUserIP(function(ip){
-    alert("Got IP! :" + ip);
+    // alert("Got IP! :" + ip);
 });

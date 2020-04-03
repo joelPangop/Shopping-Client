@@ -42,8 +42,9 @@ import {AppVersion} from '@ionic-native/app-version/ngx';
 import { NetworkInterface } from '@ionic-native/network-interface/ngx'
 import { Network } from '@ionic-native/network/ngx'
 import { Dialogs } from '@ionic-native/dialogs/ngx'
+import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
 
-const config:SocketIoConfig = {url: 'http://localhost:3001', options: {}};
+const config:SocketIoConfig = {url: 'http://192.168.2.75:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -74,7 +75,7 @@ export function jwtOptionsFactory(storage) {
                 useFactory: jwtOptionsFactory,
                 deps: [NativeStorage],
             }
-        }), TopHeaderPageModule],
+        })],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [
         StatusBar,
@@ -104,7 +105,10 @@ export function jwtOptionsFactory(storage) {
             provide: HAMMER_GESTURE_CONFIG,
             useClass: IonicGestureConfig
         },
-        {provide: RouteReuseStrategy, useClass: IonicRouteStrategy}
+        {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
+        {provide: APP_BASE_HREF, useValue: '/'},
+        {provide: LocationStrategy, useClass: PathLocationStrategy},
+        {provide: HAMMER_GESTURE_CONFIG, useClass: IonicGestureConfig}
     ],
     bootstrap: [AppComponent]
 })
