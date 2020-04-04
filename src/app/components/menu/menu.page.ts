@@ -9,33 +9,33 @@ export class MenuPage implements OnInit {
 
     pages = [
         {
-            title: 'Home',
+            title: 'MENU.main',
             url: '/menu/product-list',
             icon: 'home'
         },
         {
-            title: 'Categories',
+            title: 'MENU.categorie',
             children: [
                 {
-                    title: 'Vetements',
+                    title: 'MENU.habit',
                     description: 'description',
                     icon: 'shirt',
                     url: '/menu/category/Vetements'
                 },
                 {
-                    title: 'Electroniques',
+                    title: 'MENU.electronique',
                     description: 'description',
                     icon: 'phone-portrait',
                     url: '/menu/category/Electroniques'
                 },
                 {
-                    title: 'Mode & Accessoires',
+                    title: 'MENU.mode_accessoire',
                     description: 'description',
                     icon: 'bowtie',
                     url: '/menu/category/Mode & Accessoires'
                 },
                 {
-                    title: 'Chaussures',
+                    title: 'MENU.chaussure',
                     description: 'description',
                     icon: 'archive',
                     url: '/menu/category/Chaussures'
@@ -43,7 +43,7 @@ export class MenuPage implements OnInit {
             ]
         },
         {
-            title: 'Mon compte',
+            title: 'MENU.compte',
             children: [
                 {
                     title: 'Profile',
@@ -51,7 +51,7 @@ export class MenuPage implements OnInit {
                     icon: 'person'
                 },
                 {
-                    title: 'Message',
+                    title: 'MENU.message',
                     url: '/menu/messagerie',
                     icon: 'mail'
                 },
@@ -61,12 +61,12 @@ export class MenuPage implements OnInit {
                     icon: 'chatbubbles'
                 },
                 {
-                    title: 'Panier',
+                    title: 'MENU.panier',
                     url: '/menu/live-chat',
                     icon: 'cart'
                 },
                 {
-                    title: 'logOut',
+                    title: 'MENU.connexion',
                     url: '/menu/intro',
                     icon: 'log-out'
                 }

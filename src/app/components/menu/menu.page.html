@@ -12,7 +12,7 @@
                 <ion-item [routerLink]="p.url" routerDirection="root" routerLinkActive="active">
                     <ion-icon [name]="p.icon" slot="start"></ion-icon>
                     <ion-label>
-                        {{p.title}}
+                        {{p.title | translate}}
                     </ion-label>
                 </ion-item>
             </ion-menu-toggle>
@@ -21,7 +21,7 @@
                 <ion-icon name="arrow-forward" slot="start" *ngIf="!p.open"></ion-icon>
                 <ion-icon name="arrow-down" slot="start" *ngIf="p.open"></ion-icon>
                 <ion-label>
-                    {{p.title}}
+                    {{p.title | translate}}
                 </ion-label>
             </ion-item>
             <ion-list *ngIf="p.open">
@@ -30,7 +30,7 @@
                               routerDirection="root" routerLinkActive="active">
                         <ion-icon [name]="sub.icon" slot="start"></ion-icon>
                         <ion-label>
-                            {{sub.title}}
+                            {{sub.title | translate}}
                         </ion-label>
                     </ion-item>
                 </ion-menu-toggle>

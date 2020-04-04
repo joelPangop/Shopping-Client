@@ -1,6 +1,19 @@
 {
   "HOME": {
     "annonces1": "Nouvelles offrandes",
-    "annonces2": "Meilleures ventes"
+    "annonces2": "Meilleures ventes",
+    "action": "Vendre"
+  },
+  "MENU": {
+    "main": "Accueil",
+    "categorie": "Categories",
+    "habit": "Vêtements",
+    "electronique": "Electroniques",
+    "mode_accessoire": "Mode & Accessoires",
+    "chaussure": "Chaussures",
+    "compte": "Mon compte",
+    "message": "Messages",
+    "panier": "Mon panier",
+    "connexion": "Deconnexion"
   }
 }

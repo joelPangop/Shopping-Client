@@ -1,6 +1,19 @@
 {
   "HOME": {
     "annonces1": "New offers",
-    "annonces2": "Best Sales"
+    "annonces2": "Best Sales",
+    "action": "Sale"
+  },
+  "MENU": {
+    "main": "Home",
+    "categorie": "Categories",
+    "habit": "Clothes",
+    "electronique": "Electroniques",
+    "mode_accessoire": "Mode & Accessors",
+    "chaussure": "Shoes",
+    "compte": "Mon account",
+    "message": "Messages",
+    "Panier": "Mon cart",
+    "connexion": "Sign out"
   }
 }
