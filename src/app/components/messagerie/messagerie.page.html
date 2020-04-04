@@ -39,7 +39,7 @@
                 <ion-item-sliding *ngFor="let msg of messages_received; let i = index">
                     <ion-item button (click)="messageView(msg, i)">
                         <ion-avatar slot="start">
-                            <ion-img src="http://10.103.4.78:4000/image/{{msg.picture}}"></ion-img>
+                            <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
                         </ion-avatar>
                         <ion-label>
                             <h2>{{msg.title}}</h2>
@@ -62,7 +62,7 @@
             <ion-card *ngFor="let msg of messages_sent; let i = index">
                 <ion-item button>
                     <ion-avatar slot="start">
-                        <ion-img src="http://10.103.4.78:4000/image/{{msg.picture}}"></ion-img>
+                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
                     </ion-avatar>
                     <ion-label>{{msg.title}}</ion-label>
                 </ion-item>

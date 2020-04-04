@@ -9,7 +9,6 @@
 </ion-header>
 
 <ion-content>
-
   <ion-grid>
     <ion-text color="medium" text-center>
       <p>You joined the chat as {{ currentUser }}</p>
@@ -32,9 +31,7 @@
     <ion-row *ngIf="userTyping !== currentUser" class="typing">
       <ion-label>{{onTyping.msg}}</ion-label>
     </ion-row>
-
   </ion-grid>
-
 </ion-content>
 
 <ion-footer>

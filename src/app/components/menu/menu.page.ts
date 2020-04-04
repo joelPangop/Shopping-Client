@@ -26,7 +26,7 @@ export class MenuPage implements OnInit {
                     title: 'Electroniques',
                     description: 'description',
                     icon: 'phone-portrait',
-                    url: '/menu/category/electroniques'
+                    url: '/menu/category/Electroniques'
                 },
                 {
                     title: 'Mode & Accessoires',

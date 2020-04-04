@@ -157,7 +157,7 @@ export class CreateProductPage implements OnInit {
                             console.log('image', image);
                             let base64Image = 'data:image/jpeg;base64,' + image;
                             let src = this.webView.convertFileSrc(image);
-                            this.myPictures.push(src);
+                            this.myPictures.push(base64Image);
                         });
 
                     }

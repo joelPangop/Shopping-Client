@@ -18,13 +18,12 @@ export class MessageService {
         const url = `${environment.api_url}/Utilisateur/${id}/messages`;
         return this.http.get<Message[]>(url);
     }
-
     loadSent(username): Observable<Message[]> {
         const url = `${environment.api_url}/Messages/sent/${username}`;
         return this.http.get<Message[]>(url);
     }
 
-    loadMessages(username, interlocutorId){
+    loadMessages(username, interlocutorId) {
         const url = `${environment.api_url}/Messages/all/${username}/interlocutor/${interlocutorId}`;
         return this.http.get<Message[]>(url);
     }
@@ -58,7 +57,7 @@ export class MessageService {
         return this.http.put(`${environment.api_url}/Message/${id}`, body);
     }
 
-    deleteMessage(msg){
+    deleteMessage(msg) {
         return this.http.delete(`${environment.api_url}/Message/${msg._id}`);
     }
 }

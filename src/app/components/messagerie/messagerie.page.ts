@@ -7,6 +7,7 @@ import {Message} from '../../models/message-interface';
 import {forkJoin, Observable} from 'rxjs';
 import {Notification} from '../../models/notification-interface';
 import {environment} from '../../models/environements';
+import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 
 @Component({
     selector: 'app-messagerie',
