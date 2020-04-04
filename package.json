@@ -39,6 +39,7 @@
     "@ionic-native/file-opener": "^5.20.0",
     "@ionic-native/file-path": "^5.22.0",
     "@ionic-native/file-transfer": "^5.23.0",
+    "@ionic-native/globalization": "^5.23.0",
     "@ionic-native/http": "^5.23.0",
     "@ionic-native/image-picker": "^5.20.0",
     "@ionic-native/ionic-webview": "^5.23.0",
@@ -54,6 +55,8 @@
     "@ionic-native/stripe": "^5.22.0",
     "@ionic/angular": "^4.7.1",
     "@ionic/storage": "^2.2.0",
+    "@ngx-translate/core": "^12.1.2",
+    "@ngx-translate/http-loader": "^4.0.0",
     "angular-ionic-cli-builders": "^2.1.4",
     "animate.css": "^3.7.2",
     "card.io.cordova.mobilesdk": "^2.1.0",
@@ -71,6 +74,7 @@
     "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-filechooser": "^1.2.0",
     "cordova-plugin-filepath": "^1.5.8",
+    "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-nativestorage": "^2.3.2",
     "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-networkinterface": "^2.0.0",
@@ -168,7 +172,8 @@
       "cordova-plugin-filechooser": {},
       "cordova-plugin-stripe": {},
       "cordova-plugin-networkinterface": {},
-      "cordova-plugin-nativestorage": {}
+      "cordova-plugin-nativestorage": {},
+      "cordova-plugin-globalization": {}
     },
     "platforms": [
       "browser",

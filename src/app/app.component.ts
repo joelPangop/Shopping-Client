@@ -9,11 +9,10 @@ import {Deeplinks} from '@ionic-native/deeplinks/ngx';
 import {ProductDetailPage} from './components/product-detail/product-detail.page';
 import {Socket} from 'ngx-socket-io';
 import {Utilisateur} from './models/utilisateur-interface';
-import {Message} from './models/message-interface';
-import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
-import {NetworkInterface} from '@ionic-native/network-interface/ngx';
+import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 import {Router} from '@angular/router';
 import {AuthService} from './services/auth.service';
+import {LanguageService} from './services/language.service';
 
 @Component({
     selector: 'app-root',
@@ -75,7 +74,6 @@ export class AppComponent {
                     this.router.navigate(['intro']);
                 }
             });
-
         });
 
         // this.socket.fromEvent('notify').subscribe(notification => {

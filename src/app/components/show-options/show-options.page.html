@@ -1,44 +1,19 @@
 <ion-list *ngIf="option === 'language'">
-    <ion-menu-toggle auto-hide="false">
-<!--        <ion-item button [class.active-item]>-->
-<!--            <ion-label>Rus</ion-label>-->
-<!--        </ion-item>-->
-        <ion-item button>
-            <span>En</span>
+    <ion-radio-group value="{{language}}">
+        <ion-item button *ngFor="let l of languages | keyvalue" [class.active-item] (click)="setLanguage(l.key)">
+            <ion-label>{{l.key}}</ion-label>
+            <ion-radio slot="end" value="{{l.key}}"></ion-radio>
         </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>Fr</ion-label>
-        </ion-item>
-<!--        <ion-item [class.active-item]>-->
-<!--            <ion-label>Spa</ion-label>-->
-<!--        </ion-item>-->
-    </ion-menu-toggle>
+    </ion-radio-group>
 </ion-list>
 <ion-list *ngIf="option === 'currency'">
-    <ion-menu-toggle auto-hide="false">
-        <ion-item button [class.active-item]>
-            <ion-label>USD</ion-label>
+    <ion-radio-group value="{{currency}}">
+        <ion-item button *ngFor="let c of currencies | keyvalue" [class.active-item] (click)="setCurrency(c.key)">
+            <ion-label>
+                <ion-icon src="{{'assets/' + c.value + '.svg'}}" slot="icon-only"></ion-icon>
+                {{c.key}}
+            </ion-label>
+            <ion-radio slot="end" value="{{c.key}}"></ion-radio>
         </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>CAD</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>EUR</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>XAF</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>XOF</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>GBP</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>CNY</ion-label>
-        </ion-item>
-        <ion-item button [class.active-item]>
-            <ion-label>BRC</ion-label>
-        </ion-item>
-    </ion-menu-toggle>
+    </ion-radio-group>
 </ion-list>

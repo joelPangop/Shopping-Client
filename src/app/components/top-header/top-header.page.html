@@ -28,13 +28,13 @@
       <ion-item lines="none">
         <ion-button (click)="showOptions($event, 'language')">
           <ion-icon src="assets/globe.svg"></ion-icon>
-          <span>En</span>
+          <span>{{language}}</span>
         </ion-button>
       </ion-item>
       <ion-item lines="none">
         <ion-button (click)="showOptions($event, 'currency')">
-          <ion-icon src="assets/flag-for-flag-canada.svg"></ion-icon>
-          <span>CAD</span>
+          <ion-icon src="{{'assets/' + currencyIcon + '.svg'}}"></ion-icon>
+          <span>{{currency}}</span>
         </ion-button>
       </ion-item>
       <ion-item lines="none">
@@ -59,11 +59,11 @@
     </ion-button>
     <ion-button (click)="showOptions($event, 'language')" *ngIf="!isSearch">
       <ion-icon src="assets/globe.svg"></ion-icon>
-      <span>En</span>
+      <span>{{language}}</span>
     </ion-button>
     <ion-button (click)="showOptions($event, 'currency')" *ngIf="!isSearch">
-      <ion-icon src="assets/flag-for-flag-canada.svg"></ion-icon>
-      <span>CAD</span>
+      <ion-icon src="{{'assets/' + currencyIcon + '.svg'}}"></ion-icon>
+      <span>{{currency}}</span>
     </ion-button>
     <ion-button *ngIf="!isSearch" (click)="openCart()">
       <ion-icon slot="icon-only" src="assets/shopping-cart.svg"></ion-icon>
@@ -72,4 +72,8 @@
       <ion-icon slot="icon-only" src="assets/notifications-sharp.svg"></ion-icon>
     </ion-button>
   </ion-buttons>
+</ion-toolbar>
+
+<ion-toolbar *ngIf="showLoadingSpining">
+  <h2 class="loading">Loading products</h2>
 </ion-toolbar>

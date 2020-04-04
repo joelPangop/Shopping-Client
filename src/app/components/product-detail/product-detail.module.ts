@@ -8,6 +8,7 @@ import {ProductDetailPageRoutingModule} from './product-detail-routing.module';
 
 import {ProductDetailPage} from './product-detail.page';
 import {IonicRatingModule} from 'ionic4-rating/dist';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
@@ -16,7 +17,8 @@ import {IonicRatingModule} from 'ionic4-rating/dist';
         IonicModule,
         ProductDetailPageRoutingModule,
         ReactiveFormsModule,
-        IonicRatingModule
+        IonicRatingModule,
+        TranslateModule
     ],
     declarations: [ProductDetailPage],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
