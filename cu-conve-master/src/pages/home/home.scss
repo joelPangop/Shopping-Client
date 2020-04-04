@@ -1,0 +1,96 @@
+$colors: (
+  primary:    #5f04c0,
+  secondary:  #32db64,
+  danger:     #f53d3d,
+  light:      #f3f3f3,
+  dark:       #222
+);
+
+$font-stack: Roboto , 'sans-serif';
+$font-secondary: Open Sans, 'sans-serif'; 
+
+page-home {}
+
+.header p{
+    margin: 5% 2.5% 0% 2.5%;
+    color: #f3f3f3;
+    font-size: 40px;
+    font-style: $font-secondary;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.contents {
+    margin: 10% 0 0 0;
+}
+
+.value-input {
+    font: 25px $font-stack;
+    font-weight: 300;
+    margin: 5% 2.5%;
+    width: 100%;
+    padding: 0 3%;
+    color: #222;
+    border-radius: 7px;
+    box-shadow: 0 10px 10px 0 rgba(34, 34, 34, 0.404);
+    border: solid 0.5px rgba(236, 236, 236, 0.65);
+    background-color: #ffffff;
+}
+
+.select-list {
+    appearance: none;    
+    margin: 5% auto;
+    padding: 15px;
+    display: block;
+    box-shadow: 0 10px 10px 0 rgba(34, 34, 34, 0.404);
+    background-color: #9700ed;
+    border: 0 transparent;
+    border-radius: 10px;
+    font-family: $font-stack;
+    font-weight: 300;
+    font-size: 40px;
+    color: #f3f3f3;
+}
+
+.selectors {
+    border-right: 1px solid #cacaca;
+}
+
+.selector-txts p{
+    font-size: 16px;
+    font-weight: 300;
+    color: #d8d8d8;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: block;
+    text-align: center;
+}
+
+.title p{
+    text-transform: uppercase;
+    font-family: Open Sans, 'Courier New', Courier, monospace;
+    font-weight: bolder;
+    font-size: 2em;
+    padding: 10% 0 0 0;
+    text-align: start;
+}
+
+.card-view {
+    background-color: #2C1247;
+    border-radius: 10px;
+    margin: 5% auto;
+    padding: 2.5% 0;
+    box-shadow: 5px 10px 28px rgba(34, 34, 34, 0.6);
+}
+
+.card-header p{
+    color: #E0E0E0;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.card-contents p{
+    color: #E0E0E0;
+    font-size: 18px;
+    font-weight: 300;
+}

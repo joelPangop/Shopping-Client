@@ -1,0 +1,68 @@
+<ion-header>
+    <app-top-header></app-top-header>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content
+                pullingIcon="arrow-dropdown"
+                pullingText="Pull to refresh"
+                refreshingSpinner="circles"
+                refreshingText="Loading...">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-grid>
+
+    </ion-grid>
+    <ion-grid>
+        <ion-row style="height: 200px">
+            <ion-slides pager="true" [options]="slideOpts">
+                <ion-slide>
+                    <h1>{{'HOME.annonces1' | translate}}</h1>
+                </ion-slide>
+                <ion-slide>
+                    <h1>{{'HOME.annonces2' | translate}}</h1>
+                </ion-slide>
+            </ion-slides>
+        </ion-row>
+        <ion-row>
+            <ion-virtual-scroll [items]="articleService.articles" approxItemHeight="82px">
+                <ion-item *virtualItem="let article" (click)="showDetails(article._id)" button>
+                    <ion-thumbnail (click)="showImage(article.pictures[0], article.title, $event)">
+                        <ion-img
+                                src="{{ip}}/image/{{article.pictures[0]}}"></ion-img>
+                    </ion-thumbnail>
+                    <ion-label>
+                        <h2 class="my-label-title">{{article.title}}</h2>
+                        <p color="medium">{{article.description}}</p>
+                        <div class="span-container">
+                            <span class="price">{{article.price | currency:cuService.toCurrOptionSubject:'symbol-narrow':'.2'}}</span>
+                            <span *ngIf="article.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            <span *ngIf="article.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            <span *ngIf="article.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            <span *ngIf="article.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            <span *ngIf="article.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                        </div>
+                    </ion-label>
+                </ion-item>
+            </ion-virtual-scroll>
+        </ion-row>
+    </ion-grid>
+
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-button (click)="goToCreate()">Vendre</ion-button>
+    </ion-toolbar>
+</ion-footer>
