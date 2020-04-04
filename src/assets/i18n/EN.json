@@ -15,5 +15,26 @@
     "message": "Messages",
     "Panier": "Mon cart",
     "connexion": "Sign out"
+  },
+  "CREATE": {
+    "create": "New article",
+    "image_produit": "Product image",
+    "delete": "Remove",
+    "detail": "Product detail",
+    "nom": "Name",
+    "prix": "Price",
+    "categorie": "Product category",
+    "location": "Where is the product",
+    "produit_state": "Product condition",
+    "state": "Sate",
+    "state1": "Brand new",
+    "state2": "Already used",
+    "delivery": "Mode of acquisition",
+    "delivery1": "Delivery",
+    "delivery2": "Available in store",
+    "delivery3": "Hand to hand",
+    "delivery4": "Delivery fee",
+    "address": "Store Address",
+    "save": "Create"
   }
 }

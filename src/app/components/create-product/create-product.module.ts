@@ -8,6 +8,7 @@ import { CreateProductPageRoutingModule } from './create-product-routing.module'
 
 import { CreateProductPage } from './create-product.page';
 import {TopHeaderPageModule} from '../top-header/top-header.module';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
@@ -16,7 +17,8 @@ import {TopHeaderPageModule} from '../top-header/top-header.module';
         IonicModule,
         CreateProductPageRoutingModule,
         ReactiveFormsModule,
-        TopHeaderPageModule
+        TopHeaderPageModule,
+        TranslateModule
     ], schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [CreateProductPage]
 })
