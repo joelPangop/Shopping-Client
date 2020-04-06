@@ -72,6 +72,7 @@ export class ProfilePage implements OnInit {
     }
 
     // @ts-ignore
+    // passwordConfirm: any;
     loadData(): Observable<Article[]> {
         this.articleService.loadArticleByUser(this.utilisateur._id).subscribe(res => {
             this.articles = res as Article[];

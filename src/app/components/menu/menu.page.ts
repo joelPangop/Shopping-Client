@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
     selector: 'app-menu',
@@ -23,7 +24,7 @@ export class MenuPage implements OnInit {
                     url: '/menu/category/Vetements'
                 },
                 {
-                    title: 'MENU.electronique',
+                    title: 'MENU.electroniques',
                     description: 'description',
                     icon: 'phone-portrait',
                     url: '/menu/category/Electroniques'
@@ -39,6 +40,18 @@ export class MenuPage implements OnInit {
                     description: 'description',
                     icon: 'archive',
                     url: '/menu/category/Chaussures'
+                },
+                {
+                    title: 'MENU.automobile',
+                    description: 'description',
+                    icon: 'car',
+                    url: '/menu/category/Automobiles'
+                },
+                {
+                    title: 'MENU.home',
+                    description: 'description',
+                    icon: 'home',
+                    url: '/menu/category/Maison & Jardin'
                 }
             ]
         },
@@ -74,7 +87,7 @@ export class MenuPage implements OnInit {
         }
     ];
 
-    constructor() {
+    constructor(private languageService: LanguageService) {
     }
 
     ngOnInit() {

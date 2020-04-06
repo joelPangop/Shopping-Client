@@ -51,7 +51,6 @@ export class ShowOptionsPage implements OnInit {
             console.log('item value:', Currencies[item]);
             this.currencies.set(item, Currencies[item]);
         }
-
     }
 
     setLanguage(l: string) {
@@ -77,5 +76,4 @@ export class ShowOptionsPage implements OnInit {
           }
         });
     }
-
 }

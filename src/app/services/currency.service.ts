@@ -23,18 +23,15 @@ export class CurrencyService {
         return this.http.get(`https://free.currencyconverterapi.com/api/v6/currencies?apiKey=${this.API_KEY}`).toPromise();
     }
 
-    getExchangeRate() {
-        return this.http.get(`http://free.currencyconverterapi.com/api/v5/convert?q=${this.fromCurrOptionSubject}_${this.toCurrOptionSubject}&compact=y&apiKey=${this.API_KEY}`).toPromise();
+    getExchangeRate(from, to) {
+        return this.http.get(`http://free.currencyconverterapi.com/api/v5/convert?q=${from}_${to}&compact=y&apiKey=${this.API_KEY}`).toPromise();
     }
 
     async getCurrencyRate() {
         let res = false;
         try {
-            const exchangeRate = await this.getExchangeRate();
+            const exchangeRate = await this.getExchangeRate(this.fromCurrOptionSubject, this.toCurrOptionSubject);
             let rate = exchangeRate[this.fromCurrOptionSubject + '_' + this.toCurrOptionSubject].val;
-            if (this.fromCurrOptionSubject === 'CAD') {
-                this.cad_rate = rate;
-            }
             this.event.publish('rate', rate);
             this.showLoadingSpining = false;
             this.event.publish('showLoadingSpining', false);

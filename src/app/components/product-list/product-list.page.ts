@@ -45,19 +45,10 @@ export class ProductListPage implements OnInit {
                 private event: Events) {
         this.event.subscribe('rate', (rate) => {
             this.resultRate = rate;
-            this.articleService.loadArticles()
-                .subscribe((articles: Article[]) => {
-                    this.articleService.articles = articles;
-                    for (let article of this.articleService.articles) {
-                        if(this.cuService.fromCurrOptionSubject !== 'CAD'){
-                            article.price = article.price / parseFloat(this.cuService.cad_rate);
-                        }
-                        article.price = article.price * parseFloat(this.resultRate);
-                        console.log(article.price);
-                    }
-                    console.log('Articles', articles);
-                });
-
+            for (let article of this.articleService.articles) {
+                article.price = article.price * parseFloat(this.resultRate);
+                console.log(article.price);
+            }
         });
     }
 
@@ -104,7 +95,7 @@ export class ProductListPage implements OnInit {
 
     showImage(imgId: string, title: string, event) {
         event.stopPropagation();
-        this.photoViewer.show('https://mysite.com/path/to/image.jpg', title, {share: true});
+        this.photoViewer.show(`${environment.api_url}/image/${imgId}`, title, {share: true});
     }
 
     showDetails(id: string) {

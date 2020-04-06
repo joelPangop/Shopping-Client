@@ -8,9 +8,11 @@
     "main": "Accueil",
     "categorie": "Categories",
     "habit": "Vêtements",
-    "electronique": "Electroniques",
+    "electroniques": "Electroniques",
     "mode_accessoire": "Mode & Accessoires",
     "chaussure": "Chaussures",
+    "home": "Maison & Jardin",
+    "automobile": "Automobiles",
     "compte": "Mon compte",
     "message": "Messages",
     "panier": "Mon panier",
@@ -36,5 +38,14 @@
     "delivery4": "Frais de livraison",
     "address": "Adresse Magasin",
     "save": "Créer"
+  },
+  "HEADER": {
+    "categorie": "Categorie",
+    "Vetements": "Vetements",
+    "Electroniques": "Electroniques",
+    "Mode & Accessoires": "Mode & Accessoires",
+    "Chaussures": "Chaussures",
+    "Maison & Jardin": "Maison & Jardin",
+    "Automobiles": "Automobiles"
   }
 }

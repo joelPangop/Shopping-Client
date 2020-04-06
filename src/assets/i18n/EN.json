@@ -8,9 +8,11 @@
     "main": "Home",
     "categorie": "Categories",
     "habit": "Clothes",
-    "electronique": "Electroniques",
+    "electroniques": "Electroniques",
     "mode_accessoire": "Mode & Accessors",
     "chaussure": "Shoes",
+    "home": "House & Garden",
+    "automobile": "Automobiles",
     "compte": "Mon account",
     "message": "Messages",
     "Panier": "Mon cart",
@@ -36,5 +38,14 @@
     "delivery4": "Delivery fee",
     "address": "Store Address",
     "save": "Create"
+  },
+  "HEADER": {
+    "categorie": "Category",
+    "Vetements": "Clothes",
+    "Electroniques": "Electroniques",
+    "Mode & Accessoires": "Mode & Accessors",
+    "Chaussures": "Shoes",
+    "Maison & Jardin": "House & Garden",
+    "Automobiles": "Automobiles"
   }
 }

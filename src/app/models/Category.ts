@@ -18,4 +18,14 @@ export const categories = [
         title: 'Chaussures',
         description: 'description',
         icon: 'archive'
+    },
+    {
+        title: 'Automobiles',
+        description: 'description',
+        icon: 'car'
+    },
+    {
+        title: 'Maison & Jardin',
+        description: 'description',
+        icon: 'home'
     }]

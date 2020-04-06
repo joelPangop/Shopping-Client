@@ -46,7 +46,7 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {IonicStorageModule, Storage} from '@ionic/storage';
 
-const config:SocketIoConfig = {url: 'http://192.168.2.75:3001', options: {}};
+const config:SocketIoConfig = {url: 'http://localhost:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {

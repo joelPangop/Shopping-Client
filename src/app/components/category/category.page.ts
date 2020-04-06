@@ -29,7 +29,6 @@ export class CategoryPage implements OnInit {
         });
     }
 
-    // @ts-ignore
     loadArticles(): Observable<Article[]> {
         const url = `${environment.api_url}/article/category/` + this.catTitle;
         return this.http.get<Article[]>(url);
