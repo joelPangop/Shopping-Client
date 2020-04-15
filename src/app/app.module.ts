@@ -45,8 +45,10 @@ import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/co
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {IonicStorageModule, Storage} from '@ionic/storage';
+import {ShowNotificationPage} from './components/show-notification/show-notification.page';
+import {ShowNotificationPageModule} from './components/show-notification/show-notification.module';
 
-const config:SocketIoConfig = {url: 'http://localhost:3001', options: {}};
+const config:SocketIoConfig = {url: 'http://192.168.2.58:3001', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -64,12 +66,13 @@ export function HttpLoaderFactory(http: HttpClient) {
 // @ts-ignore
 @NgModule({
     declarations: [AppComponent],
-    entryComponents: [ShowOptionsPage, CartPage],
+    entryComponents: [ShowOptionsPage, CartPage, ShowNotificationPage],
     imports: [BrowserModule,
         IonicModule.forRoot(),
         AppRoutingModule,
         HttpClientModule,
         ShowOptionsPageModule,
+        ShowNotificationPageModule,
         ReactiveFormsModule,
         FormsModule,
         IonicStorageModule.forRoot(),

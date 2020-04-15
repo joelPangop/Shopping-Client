@@ -47,6 +47,7 @@
     "@ionic-native/native-storage": "^5.23.0",
     "@ionic-native/network": "^5.23.0",
     "@ionic-native/network-interface": "^5.23.0",
+    "@ionic-native/onesignal": "^5.23.0",
     "@ionic-native/paypal": "^5.22.0",
     "@ionic-native/photo-viewer": "^5.19.1",
     "@ionic-native/social-sharing": "^5.22.0",
@@ -62,7 +63,8 @@
     "card.io.cordova.mobilesdk": "^2.1.0",
     "com-sarriaroman-photoviewer": "^1.2.4",
     "com.paypal.cordova.mobilesdk": "^3.5.0",
-    "cordova-android": "^8.1.0",
+    "compare-func": "^1.3.2",
+    "cordova-android": "^9.0.0-nightly.2020.4.10.6402e7b7",
     "cordova-browser": "6.0.0",
     "cordova-ios": "^5.1.1",
     "cordova-plugin-accountkit": "^1.4.0",
@@ -83,6 +85,7 @@
     "cordova-plugin-wkwebview-ionic-xhr": "^2.1.1",
     "cordova-plugin-x-socialsharing": "^5.6.3",
     "cordova-sms-plugin": "^1.0.0",
+    "cordova-support-google-services": "^1.3.2",
     "core-js": "^2.5.4",
     "cross-spawn": "^7.0.1",
     "emulate": "1.0.2",
@@ -94,11 +97,15 @@
     "ionic-long-press": "^2.0.3",
     "ionic-plugin-deeplinks": "^1.0.20",
     "ionic4-rating": "^1.0.9",
+    "moment": "^2.24.0",
     "ng2-file-upload": "^1.4.0",
     "ngx-socket-io": "^3.0.1",
     "ngx-webcam": "^0.2.6",
     "nodemon": "^2.0.2",
-    "rxjs": "~6.5.1",
+    "onesignal-cordova-plugin": "^2.9.0",
+    "phonegap-plugin-multidex": "^1.0.0",
+    "phonegap-plugin-push": "^2.3.0",
+    "rxjs": "^6.5.5",
     "stripe": "^8.32.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"
@@ -173,7 +180,12 @@
       "cordova-plugin-stripe": {},
       "cordova-plugin-networkinterface": {},
       "cordova-plugin-nativestorage": {},
-      "cordova-plugin-globalization": {}
+      "cordova-plugin-globalization": {},
+      "onesignal-cordova-plugin": {},
+      "phonegap-plugin-push": {
+        "ANDROID_SUPPORT_V13_VERSION": "27.+",
+        "FCM_VERSION": "17.0.+"
+      }
     },
     "platforms": [
       "browser",

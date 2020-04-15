@@ -1,0 +1,36 @@
+<ion-list>
+    <ion-item button (click)="goToMessages()">
+        <div *ngIf="this.messageService.messageNotifications.length !== 0">
+            <ion-label>
+                You have {{this.messageService.messageNotifications.length}} messages
+                <div class="time">
+                    <ion-note color="secondary">
+                        {{getMomentFromNow(this.messageService.messageNotifications[this.messageService.messageNotifications.length - 1].createdAt)}}
+                    </ion-note>
+                </div>
+            </ion-label>
+        </div>
+        <div *ngIf="this.messageService.messageNotifications.length === 0">
+            <ion-label>
+                You have {{this.messageService.messageNotifications.length}} messages
+            </ion-label>
+        </div>
+    </ion-item>
+    <ion-item button (click)="goToLikes()">
+        <div *ngIf="this.messageService.likeNotifications.length !== 0">
+            <ion-label>
+                You have {{this.messageService.likeNotifications.length}} likes
+                <div class="time">
+                    <ion-note color="secondary">
+                        {{getMomentFromNow(this.messageService.likeNotifications[this.messageService.likeNotifications.length - 1].createdAt)}}
+                    </ion-note>
+                </div>
+            </ion-label>
+        </div>
+        <div *ngIf="this.messageService.likeNotifications.length === 0">
+            <ion-label>
+                You have {{this.messageService.likeNotifications.length}} likes
+            </ion-label>
+        </div>
+    </ion-item>
+</ion-list>

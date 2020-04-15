@@ -5,11 +5,12 @@ import {Message} from '../../models/message-interface';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {environment} from '../../models/environements';
-import {AlertController, Platform, ToastController} from '@ionic/angular';
+import {AlertController, Events, Platform, ToastController} from '@ionic/angular';
 import {AuthService} from '../../services/auth.service';
 import {Socket} from 'ngx-socket-io';
 import {Notification} from '../../models/notification-interface';
 import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {NotificationType} from '../../models/notificationType';
 
 @Component({
     selector: 'app-action-message',
@@ -30,7 +31,7 @@ export class ActionMessagePage implements OnInit {
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private alertController: AlertController,
                 private socket: Socket, private storage: NativeStorage, private msgService: MessageService, private authSrv: AuthService,
-                private platform: Platform, private localNotification: LocalNotifications) {
+                private platform: Platform, private localNotification: LocalNotifications, private event: Events) {
     }
 
     async ngOnInit() {
@@ -48,10 +49,10 @@ export class ActionMessagePage implements OnInit {
         this.socket.fromEvent('notify').subscribe(notification => {
             console.log('New:', notification);
             const usr = notification['user'] as Utilisateur;
-            const msg = notification['message'] as Message;
+            const msg = notification['message'];
             if (usr.username !== this.utilisateur.username) {
-                this.presentToast('Message recu de ' + usr.username, 1000, 'top');
-                this.messages.push(msg);
+                // this.presentToast('Message recu de ' + usr.username, 1000, 'top');
+                this.messages.push(msg.message);
             }
             // this.messages.push(message);
         });
@@ -110,13 +111,15 @@ export class ActionMessagePage implements OnInit {
         this.msgService.send(url, message).subscribe(res1 => {
             console.log('data', this.interlocutor);
             this.messages.push(message);
-
+            const msg = res1 as Message;
             const notification: Notification = {
                 title: 'Nouveaux message',
                 message: 'Vous avez un nouveau message de ' + this.utilisateur.username,
+                message_id: msg._id,
                 utilisateurId: this.interlocutor._id,
                 avatar: this.utilisateur.avatar,
                 read: false,
+                type: NotificationType.MESSAGE,
                 sender: this.utilisateur._id
             };
             this.msgService.addNotification(notification).subscribe(res => {
@@ -124,6 +127,13 @@ export class ActionMessagePage implements OnInit {
                     user: this.utilisateur,
                     message: message
                 });
+                // this.localNotification.schedule({
+                //     id: 1,
+                //     title: notification.message,
+                //     text: message.content,
+                //     icon: 'assets/cart.png',
+                //     data: { notification: notification }
+                // });
             });
             this.presentToast('Message envoye', 1000, 'bottom');
             this.msgContent = '';
@@ -158,12 +168,15 @@ export class ActionMessagePage implements OnInit {
             console.log('url et message', url, message);
             this.msgService.send(url, message).subscribe(res1 => {
                 this.messages.push(message);
+                const msg = res1 as Message;
                 const notification: Notification = {
                     title: 'Nouveaux message',
                     message: 'Vous avez un nouveau message de ' + this.utilisateur.username,
+                    message_id: msg._id,
                     utilisateurId: this.interlocutor._id,
                     avatar: this.utilisateur.avatar,
                     read: false,
+                    type: NotificationType.MESSAGE,
                     sender: this.utilisateur._id
                 };
                 this.msgService.addNotification(notification).subscribe(res => {
@@ -171,6 +184,7 @@ export class ActionMessagePage implements OnInit {
                         user: this.utilisateur,
                         message: message
                     });
+                    this.event.publish('addNotif', 1);
                 });
                 this.presentToast('Message envoye', 1000, 'bottom');
                 this.msgContent = '';

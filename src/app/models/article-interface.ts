@@ -4,6 +4,7 @@ export interface Article {
     description: string;
     category: string;
     pictures: string[];
+    likes?: string[];
     averageStar?: number;
     state: string;
     city: string;

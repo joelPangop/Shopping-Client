@@ -42,3 +42,34 @@ ion-item{
 
 @keyframes spin  { to { transform: translateY( -6.0em); } }
 
+ion-toolbar {
+  .notification-icon-button {
+    --overflow: visible;
+
+    ion-badge {
+      position: absolute;
+      background: #f70b0b;
+      border-radius: 50%;
+      opacity: 0.9;
+      top: 0.1rem;
+      left: 0.2rem;
+    }
+  }
+
+  ion-icon {
+    &.big {
+      width: 70px;
+      height: 50px;
+      //color: #464646;
+    }
+
+    &.bigger {
+      width: 100px;
+      height: 100px;
+    }
+
+    &.red {
+      color: red;
+    }
+  }
+}

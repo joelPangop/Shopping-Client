@@ -1,0 +1,69 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="menu">
+            </ion-back-button>
+        </ion-buttons>
+        <ion-title>notification</ion-title>
+    </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-segment [(ngModel)]="notifType" (ionChange)="segmentChanged($event)">
+            <ion-segment-button value="messages" layout="icon-start">
+                <ion-icon name="mail"></ion-icon>
+                <ion-label>Messages</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="likes" layout="icon-start">
+                <ion-icon name="heart"></ion-icon>
+                <ion-label>Likes</ion-label>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="loadAll($event)">
+        <ion-refresher-content
+                pullingIcon="arrow-dropdown"
+                pullingText="Pull to refresh"
+                refreshingSpinner="circles"
+                refreshingText="Loading...">
+        </ion-refresher-content>
+    </ion-refresher>
+    <div [ngSwitch]="notifType">
+        <div *ngSwitchCase="'messages'">
+            <list>
+                <ion-item button *ngFor="let msgNotif of messageNotifications; let i = index" (click)="messageView(msgNotif)">
+                    <ion-col class="col">
+                        <ion-label>
+                            {{msgNotif.message}}
+                        </ion-label>
+                        <div class="time">
+                            <ion-note slot="end">
+                                {{getMomentDate(msgNotif.createdAt)}}
+                            </ion-note>
+                        </div>
+                    </ion-col>
+                </ion-item>
+            </list>
+        </div>
+        <div *ngSwitchCase="'likes'">
+            <list>
+                <list>
+                    <ion-item *ngFor="let likeNotif of likeNotifications; let i = index">
+                        <ion-thumbnail>
+                            <img src="http://192.168.2.58:4000/image/{{likeNotif.avatar}}"/>
+                        </ion-thumbnail>
+                        <ion-label>
+                            {{likeNotif.message}}
+                        </ion-label>
+                        <div class="time">
+                            <ion-note slot="end">
+                                {{getMomentDate(likeNotif.createdAt)}}
+                            </ion-note>
+                        </div>
+                    </ion-item>
+                </list>
+            </list>
+        </div>
+    </div>
+</ion-content>

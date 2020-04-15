@@ -9,7 +9,8 @@
                 <ion-icon slot="icon-only" name="share"></ion-icon>
             </ion-button>
             <ion-fab-button (click)="openCart()" #cart color="secondary">
-                <div *ngIf="cartItemCount.value > 0" class="cart-length" style="color: brown">{{cartItemCount | async}}</div>
+                <div *ngIf="cartItemCount.value > 0" class="cart-length"
+                     style="color: brown">{{cartItemCount | async}}</div>
                 <ion-icon name="cart" class="cart-icon"></ion-icon>
             </ion-fab-button>
         </ion-buttons>
@@ -17,10 +18,12 @@
 </ion-header>
 
 <ion-content>
-  <ion-fab vertical="top" horizontal="end" slot="fixed">
-
-  </ion-fab>
     <ion-card>
+        <ion-fab horizontal="end" vertical="center" slot="fixed">
+            <ion-fab-button color="medium-shade" (click)="checkLike()">
+                <ion-icon name="heart" color="{{like === true ? 'danger':'dark-tint'}}"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
         <ion-slides pager="true" [options]="slidesOpt">
             <ion-slide (click)="showImage(image, articleService.article.title)" *ngFor="let image of images">
                 <img src="http://192.168.2.58:4000/image/{{image}}"/>

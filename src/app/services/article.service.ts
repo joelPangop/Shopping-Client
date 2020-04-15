@@ -67,6 +67,11 @@ export class ArticleService {
         return this.http.put(url, averageStar);
     }
 
+    checkLike(utilisateurId, articleId, likes) {
+        const url = `${environment.api_url}/article/like/utilisateurId/${utilisateurId}/articleId/${articleId}`;
+        return this.http.put(url, likes);
+    }
+
     updateArticle() {
         // tslint:disable-next-line:max-line-length
         return this.http.put(`${environment.api_url}/article/` + this.article._id, this.article, {headers: {'content-Type': 'application/json'}});

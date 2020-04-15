@@ -1,0 +1,14 @@
+.time {
+  float: right;
+  font-size: x-small;
+}
+
+table{
+  .col {
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-bottom: medium gray(34);
+  }
+}

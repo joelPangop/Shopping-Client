@@ -138,7 +138,7 @@ export class HomePage {
     }
 
     loadReceivedNotifications() {
-        this.msgService.loadReceivedNotifications(this.utilisateur._id).subscribe(res => {
+        this.msgService.loadReceivedMessagesNotifications(this.utilisateur._id).subscribe(res => {
             this.notifications = res;
         });
     }

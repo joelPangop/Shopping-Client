@@ -75,12 +75,12 @@ export class MenuPage implements OnInit {
                 },
                 {
                     title: 'MENU.panier',
-                    url: '/menu/live-chat',
+                    url: '/menu/cart',
                     icon: 'cart'
                 },
                 {
                     title: 'MENU.connexion',
-                    url: '/menu/intro',
+                    url: '/intro',
                     icon: 'log-out'
                 }
             ]

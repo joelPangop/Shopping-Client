@@ -15,7 +15,7 @@ import {NetworkInterface} from '@ionic-native/network-interface/ngx';
     styleUrls: ['./messagerie.page.scss'],
 })
 export class MessageriePage implements OnInit {
-    messageType = 'received';
+    messageType = 'messages';
     utilisateur = {} as Utilisateur;
     messages = [] as Message[];
     messages_received = [] as Message[];
@@ -83,7 +83,7 @@ export class MessageriePage implements OnInit {
     }
 
     loadReceivedNotifications() {
-        return this.msgservice.loadReceivedNotifications(this.utilisateur._id);
+        return this.msgservice.loadReceivedMessagesNotifications(this.utilisateur._id);
     }
 
     messageWrite(msg: Message, i: number) {

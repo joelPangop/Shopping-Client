@@ -3,7 +3,7 @@
     <name>EGoal</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.2.58:8102" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -20,6 +20,7 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="loadUrlTimeoutValue" value="70000" />
+    <preference name="AndroidLaunchMode" value="standard" />
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">
             <application android:networkSecurityConfig="@xml/network_security_config" />
@@ -100,6 +101,7 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^4.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
+    <plugin name="onesignal-cordova-plugin" spec="^2.9.0" />
     <allow-navigation href="http://192.168.2.58:8100" sessionid="2d685346" />
     <allow-navigation href="http://localhost:8100" sessionid="2d685346" />
     <allow-navigation href="http://localhost:8101" sessionid="be18f959" />
@@ -107,5 +109,4 @@
     <allow-navigation href="http://10.103.4.78:8100" sessionid="579cd1d0" />
     <allow-navigation href="http://192.168.2.75:8101" sessionid="da2bcb66" />
     <allow-navigation href="http://192.168.2.75:8102" sessionid="7d67fb6a" />
-    <allow-navigation href="http://192.168.2.58:8102" sessionid="a6d99c34" />
 </widget>

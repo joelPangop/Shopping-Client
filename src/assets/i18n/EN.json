@@ -8,14 +8,14 @@
     "main": "Home",
     "categorie": "Categories",
     "habit": "Clothes",
-    "electroniques": "Electroniques",
+    "electroniques": "Electronics",
     "mode_accessoire": "Mode & Accessors",
     "chaussure": "Shoes",
     "home": "House & Garden",
     "automobile": "Automobiles",
     "compte": "Mon account",
     "message": "Messages",
-    "Panier": "Mon cart",
+    "panier": "Mon cart",
     "connexion": "Sign out"
   },
   "CREATE": {

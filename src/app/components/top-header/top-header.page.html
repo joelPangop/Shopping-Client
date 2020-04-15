@@ -4,7 +4,7 @@
     <ion-title size="10" style="width: -moz-fit-content">
       <ion-label>
         <div id="nav-logo">
-          <ion-icon id="titleId" src="assets/e-com-img.svg"></ion-icon>
+          <ion-icon id="titleId" src="assets/e-com-img.svg" style="zoom: 1.0;"></ion-icon>
         </div>
       </ion-label>
     </ion-title>
@@ -44,6 +44,7 @@
       </ion-item>
       <ion-item lines="none">
         <ion-button>
+          <ion-badge color="danger">{{notif_number}}</ion-badge>
           <ion-icon slot="icon-only" src="assets/notifications-sharp.svg"></ion-icon>
         </ion-button>
       </ion-item>
@@ -53,7 +54,6 @@
     <ion-button (click)="openSearch()" *ngIf="!isSearch">
       <ion-icon name="search"></ion-icon>
     </ion-button>
-
     <ion-button *ngIf="!isSearch" (click)="openProfil()">
       <ion-icon name="person" slot="icon-only"></ion-icon>
     </ion-button>
@@ -68,7 +68,8 @@
     <ion-button *ngIf="!isSearch" (click)="openCart()">
       <ion-icon slot="icon-only" src="assets/shopping-cart.svg"></ion-icon>
     </ion-button>
-    <ion-button *ngIf="!isSearch">
+    <ion-button *ngIf="!isSearch" (click) = "showNotifcation($event)" class="notification-icon-button">
+      <ion-badge class="notification-badge" *ngIf="notif_number != 0">{{notif_number}}</ion-badge>
       <ion-icon slot="icon-only" src="assets/notifications-sharp.svg"></ion-icon>
     </ion-button>
   </ion-buttons>
