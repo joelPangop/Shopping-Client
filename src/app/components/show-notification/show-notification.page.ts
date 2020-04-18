@@ -17,7 +17,7 @@ export class ShowNotificationPage implements OnInit {
     messageNotifications: Notification[] = [];
     utilisateur = {} as Utilisateur;
 
-    constructor(private storage: NativeStorage, private messageService: MessageService, private navCtrl: NavController,
+    constructor(private storage: NativeStorage, public messageService: MessageService, private navCtrl: NavController,
                 public navParams: NavParams, private event: Events) {
         this.messageNotifications = [] as Notification[];
     }

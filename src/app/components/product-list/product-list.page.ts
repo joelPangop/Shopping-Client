@@ -41,7 +41,7 @@ export class ProductListPage implements OnInit {
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage,
                 private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs,
-                private articleService: ArticleService, protected cuService: CurrencyService,
+                public articleService: ArticleService, public cuService: CurrencyService,
                 private event: Events) {
         this.event.subscribe('rate', (rate) => {
             this.resultRate = rate;

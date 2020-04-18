@@ -116,7 +116,7 @@ export class ProductDetailPage implements OnInit {
     // methode pour visionner une image avec option de partage
     async showImage(imgId: string, imgTitle: string) {
         if (this.platform.is('android') || this.platform.is('ios')) {
-            this.photoViewer.show(`http://192.168.2.58:4000/image/${imgId}`,
+            this.photoViewer.show(`https://egoalservice.uc.r.appspot.com/image/${imgId}`,
                 imgTitle, {share: true});
         } else if (this.platform.is('desktop') || this.platform.is('hybrid')) {
             console.log('platform', this.platform.platforms());

@@ -28,6 +28,7 @@ export class RegisterPage implements OnInit {
     passwordShown: boolean;
     private message: string;
     newImg: any;
+    passwordConfirm: any;
 
     constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,

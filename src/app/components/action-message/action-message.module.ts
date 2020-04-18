@@ -7,15 +7,14 @@ import { IonicModule } from '@ionic/angular';
 import { ActionMessagePageRoutingModule } from './action-message-routing.module';
 
 import { ActionMessagePage } from './action-message.page';
-import {LongPressModule} from 'ionic-long-press';
+// import {LongPressModule} from 'ionic-long-press';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ActionMessagePageRoutingModule,
-    LongPressModule
+    ActionMessagePageRoutingModule
   ],
   declarations: [ActionMessagePage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]

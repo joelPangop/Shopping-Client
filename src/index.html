@@ -2,30 +2,57 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8"/>
   <title>Ionic App</title>
 
-  <base href="/" />
+  <base href="/"/>
 
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="format-detection" content="telephone=no" />
-  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="format-detection" content="telephone=no"/>
+  <meta name="msapplication-tap-highlight" content="no"/>
 
-  <link rel="icon" type="image/png" href="assets/icon/e-com-icon.png" />
-  <script src="https://js.stripe.com/v3/" async></script>
+  <link rel="icon" type="image/png" href="assets/icon/e-com-icon.png"/>
+  <script src="https://js.stripe.com/v3/" async=""></script>
   <script src="assets/js/imagePick.js" type="application/javascript"></script>
   <script src="assets/js/index.js" type="application/javascript"></script>
   <script src="assets/js/networkInfos.js" type="application/javascript"></script>
   <!-- add to homescreen for ios -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1976d2">
 </head>
 
 <body>
   <app-root></app-root>
-  <script src="https://www.paypal.com/sdk/js?client-id=AW_6b6jtwQ-erzTNpij929f3--m_jXImBcHdhYI_n_hom6Nv7EgIewumGIuua9W8x1TTqZQz_BLYWv2H&currency=USD"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AW_6b6jtwQ-erzTNpij929f3--m_jXImBcHdhYI_n_hom6Nv7EgIewumGIuua9W8x1TTqZQz_BLYWv2H&amp;currency=USD"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/7.14.0/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/7.14.0/firebase-analytics.js"></script>
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPhAsMPLUjU8eCDWOE17_yoIyaCu7D3kU",
+      authDomain: "egoal-shopping.firebaseapp.com",
+      databaseURL: "https://egoal-shopping.firebaseio.com",
+      projectId: "egoal-shopping",
+      storageBucket: "egoal-shopping.appspot.com",
+      messagingSenderId: "135938716350",
+      appId: "1:135938716350:web:8d5e38fada46137f26a4ef",
+      measurementId: "G-1QECVFYK2L"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 
 </html>

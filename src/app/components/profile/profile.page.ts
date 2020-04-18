@@ -62,7 +62,7 @@ export class ProfilePage implements OnInit {
         this.authSrv.address = this.utilisateur.userInfo.address;
         this.ischanged = false;
         this.passwordShown = false;
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'http://192.168.2.58:4000/image/' + this.utilisateur.avatar;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.uc.r.appspot.com/image/' + this.utilisateur.avatar;
         this.loadData();
     }
 
@@ -71,8 +71,8 @@ export class ProfilePage implements OnInit {
         this.profileType = event.detail.value;
     }
 
+    passwordConfirm: any;
     // @ts-ignore
-    // passwordConfirm: any;
     loadData(): Observable<Article[]> {
         this.articleService.loadArticleByUser(this.utilisateur._id).subscribe(res => {
             this.articles = res as Article[];

@@ -36,7 +36,6 @@ import {WebcamModule} from 'ngx-webcam';
 import {PayPal} from '@ionic-native/paypal/ngx';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {IonicGestureConfig} from './services/ionic-gesture-config';
-import {LongPressModule} from 'ionic-long-press';
 import {AppVersion} from '@ionic-native/app-version/ngx';
 import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 import {Network} from '@ionic-native/network/ngx';
@@ -44,11 +43,13 @@ import {Dialogs} from '@ionic-native/dialogs/ngx';
 import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
-import {IonicStorageModule, Storage} from '@ionic/storage';
+import {IonicStorageModule} from '@ionic/storage';
 import {ShowNotificationPage} from './components/show-notification/show-notification.page';
 import {ShowNotificationPageModule} from './components/show-notification/show-notification.module';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {environment} from '../environments/environment';
 
-const config:SocketIoConfig = {url: 'http://192.168.2.58:3001', options: {}};
+const config:SocketIoConfig = {url: 'https://egoalservice.uc.r.appspot.com', options: {}};
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -78,7 +79,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         IonicStorageModule.forRoot(),
         CartPageModule,
         WebcamModule,
-        LongPressModule,
         SocketIoModule.forRoot(config),
         TranslateModule.forRoot({
            loader: {
@@ -93,7 +93,8 @@ export function HttpLoaderFactory(http: HttpClient) {
                 useFactory: jwtOptionsFactory,
                 deps: [NativeStorage],
             }
-        })],
+        }),
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [
         StatusBar,

@@ -35,7 +35,7 @@ export class TopHeaderPage implements OnInit {
     private utilisateur: Utilisateur;
     notif_number: number;
 
-    constructor(private platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
+    constructor(public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
                 private navCtrl: NavController, private languageService: LanguageService, private cuService: CurrencyService,
                 private event: Events, private msgservice: MessageService, private storage: NativeStorage, private socket: Socket,
                 private alertController: AlertController) {
