@@ -1,0 +1,30 @@
+#search {
+  ion-searchbar {
+    --background: var(--ion-color-white);
+    border: 1px solid var(--ion-color-medium);
+    border-radius: 25px !important;
+  }
+
+  .card-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 150px;
+  }
+
+  .product-name {
+    font-size: 1.2rem;
+    color: rgba(8, 8, 8, 0.58);
+  }
+
+  .previous-price {
+    text-decoration: line-through;
+    font-size: 0.8rem;
+  }
+
+  ion-fab-button {
+    --background: transparent;
+    --background-focused: transparent;
+    --background-activated: transparent;
+  }
+}

@@ -29,4 +29,38 @@
   --height:20px;
   --backgroung: var(--ion-color-light-shade);
 }
+.slide-zoom{
+  max-width: 100% !important;
+  max-height: 100% !important;
+  img{
+    max-width:100% !important;
+    max-height:100% !important;
+    border-radius: 5px;
+  }
+}
 
+#product-details{
+  ion-slides {
+    --bullet-background: var(--ion-color-light);
+    --bullet-background-active: var(--ion-color-white);
+
+    img {
+      border-radius: 10px;
+      width: 750px;
+      height: 300px
+    }
+  }
+}
+
+#top-slider {
+  ion-slides {
+    --bullet-background: var(--ion-color-light);
+    --bullet-background-active: var(--ion-color-white);
+
+    img {
+      border-radius: 10px;
+      width: 750px;
+      height: 300px
+    }
+  }
+}

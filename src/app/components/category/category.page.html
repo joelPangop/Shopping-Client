@@ -1,14 +1,23 @@
 <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="menu">
-            </ion-back-button>
+            <!--            <ion-menu-toggle menu="pages">-->
+            <!--                <ion-button color="color1">-->
+            <!--                    <ion-icon name="md-list" slot="icon-only"></ion-icon>-->
+            <!--                </ion-button>-->
+            <!--            </ion-menu-toggle>-->
+            <ion-back-button color="color1" defaultHref="tabs" routerDirection="root"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{"HEADER.categorie" | translate}}: {{'HEADER.'+catTitle | translate}}</ion-title>
+        <ion-title class="title">{{!cat[0] ? "" : 'HEADER.' + cat[0] | translate}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button color="white" (click)="gotoCartPage()">
+                <ion-icon name="cart"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content id="category" class="ion-padding">
     <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
         <ion-refresher-content
                 pullingIcon="arrow-dropdown"
@@ -17,33 +26,206 @@
                 refreshingText="Loading...">
         </ion-refresher-content>
     </ion-refresher>
-    <ion-virtual-scroll [items]="articles" approxItemHeight="82px">
-        <ion-item *virtualItem="let article" (click)="showDetails(article._id)" button>
-            <ion-thumbnail (click)="showImage(article.pictures[0], article.title, $event)">
-                <ion-img src="http://192.168.2.58:4000/image/{{article.pictures[0]}}"></ion-img>
-            </ion-thumbnail>
-            <ion-label>
-                <h2 class="my-label-title">{{article.title}}</h2>
-                <p color="medium">{{article.description}}</p>
-                <div class="span-container">
-                    <span class="price">{{article.price | currency}}</span>
-                    <span *ngIf="article.averageStar >= 1">
+    <ion-item-divider color="white" class="ion-padding-top">
+        <ion-label color="dark" class="ion-margin-start" size="large"
+                   slot="start">{{'HEADER.' + sousTitre | translate}}</ion-label>
+        <!--             {{!cat[2] ? "" : ' > ' + 'HEADER.' + cat[2] | translate}}</ion-label>-->
+
+        <!--        <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear" routerLink="/tabs/categories"-->
+        <!--                    routerDirection="root">Sell All</ion-button>-->
+    </ion-item-divider>
+    <!-- Category View Options -->
+    <div class="ion-text-end">
+
+        <!-- One Column Option -->
+        <ion-button fill="clear" [color]="oneColumn ? 'color1' : 'color2'" class="ion-no-padding"
+                    (click)="showOneColumn()">
+            <ion-icon slot="icon-only" name="square"></ion-icon>
+        </ion-button>
+
+        <!-- Grid View Option -->
+        <ion-button fill="clear" [color]="grid ? 'color1' : 'color2'" class="ion-no-padding" (click)="showGrid()">
+            <ion-icon slot="icon-only" name="grid"></ion-icon>
+        </ion-button>
+
+        <!-- List view option -->
+        <ion-button fill="clear" [color]="list ? 'color1' : 'color2'" class="ion-no-padding" (click)="showList()">
+            <ion-icon slot="icon-only" name="list"></ion-icon>
+        </ion-button>
+    </div>
+    <!-- When search result is empty -->
+    <!-- No products Found -->
+    <ion-grid class="ion-padding" id="empty" *ngIf="articles.length == 0" style="height: 100%">
+        <ion-row class="ion-align-items-center ion-justify-content-center" style="height: 100%; flex-direction: column">
+            <div class="ion-text-center ion-padding">
+                <ion-icon name="search" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No Search Found</h4>
+                <p>Looks like there are no products available at this moment</p>
+            </div>
+        </ion-row>
+    </ion-grid>
+
+    <ion-grid id="grid" *ngIf="grid">
+        <ion-row>
+            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles">
+                <ion-card class="ion-no-margin">
+
+                    <!-- Product Image -->
+                    <div class="card-img"
+                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                         (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                    <ion-fab vertical="top" horizontal="end">
+                        <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                        <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                    </ion-fab>
+                    <ion-fab vertical="bottom" horizontal="end">
+                        <ion-icon color="color1" name="eye" (click)="showDetails(item._id)"></ion-icon>
+                    </ion-fab>
+
+                    <!-- Product Contents -->
+                    <ion-card-content>
+                        <ion-row>
+                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                            <div class="span-container">
+                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>
+                                <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
-                    <span *ngIf="article.averageStar >= 2">
+                                <span *ngIf="item.averageStar >= 2">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
-                    <span *ngIf="article.averageStar >= 3">
+                                <span *ngIf="item.averageStar >= 3">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
-                    <span *ngIf="article.averageStar >= 4">
+                                <span *ngIf="item.averageStar >= 4">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
-                    <span *ngIf="article.averageStar >= 5">
+                                <span *ngIf="item.averageStar >= 5">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
-                </div>
-            </ion-label>
-        </ion-item>
-    </ion-virtual-scroll>
+                            </div>
+                        </ion-row>
+                        <ion-row>
+                            <h4 class="product-name" (click)="goToProductDetails(item)">{{item.title | slice:0:30}}</h4>
+                        </ion-row>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <!-- One Column View Contents -->
+    <ion-grid id="oneColumn" *ngIf="oneColumn">
+        <ion-row>
+            <ion-col size="12" *ngFor="let item of articles">
+                <ion-card class="ion-no-margin">
+
+                    <!-- Product Image -->
+                    <div class="card-img"
+                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                         (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                    <ion-fab vertical="top" horizontal="end">
+                        <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                        <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                    </ion-fab>
+                    <ion-fab vertical="bottom" horizontal="end">
+                        <ion-icon color="color1" name="eye" (click)="showDetails(item._id)"></ion-icon>
+                    </ion-fab>
+
+                    <!-- Product Contents -->
+                    <ion-card-content>
+                        <ion-row>
+                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                            <div class="span-container">
+                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>
+                                <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            </div>
+                        </ion-row>
+                        <ion-row>
+                            <h4 class="product-name" (click)="goToProductDetails(item)">{{item.title | slice:0:30}}</h4>
+                        </ion-row>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <!-- List View Contents -->
+    <div id="list" *ngIf="list">
+        <ion-card *ngFor="let item of articles">
+            <ion-list lines="none">
+                <ion-item class="ion-no-padding">
+
+                    <!-- Product Image -->
+                    <ion-thumbnail slot="start" (click)="showImage(item.pictures[0], item.title, $event)">
+                        <img style="vertical-align: middle;"
+                             [src]="'https://egoalservice.azurewebsites.net/image/'+item.pictures[0]">
+                    </ion-thumbnail>
+
+                    <!--                     Wish Button or Product Like/Dislike Button Option -->
+                    <ion-fab vertical="top" horizontal="end">
+                        <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                        <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                    </ion-fab>
+                    <ion-fab vertical="bottom" horizontal="end">
+                        <ion-icon color="color1" name="eye" (click)="showDetails(item._id)"></ion-icon>
+                    </ion-fab>
+                    <!--                     Product Contents -->
+                    <ion-label class="ion-text-wrap">
+                        <ion-row>
+                            <h4 class="product-name" (click)="goToProductDetails(item)">{{item.title | slice:0:30}}</h4>
+                        </ion-row>
+                        <!--                        <ion-row>-->
+                        <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                        <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                        <!--                        </ion-row>-->
+                        <ion-row>
+                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                            <div class="span-container">
+                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>
+                                <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                            </div>
+                        </ion-row>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        </ion-card>
+    </div>
 </ion-content>
+<!--<ion-footer text-center>-->
+<!--    <p text-center>&copy; 2020 egoal-shopping.com-->
+<!--    <p>-->
+<!--</ion-footer>-->

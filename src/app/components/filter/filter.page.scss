@@ -1,0 +1,27 @@
+#filter {
+  ion-range {
+    --bar-height: 3px;
+    --bar-border-radius: 10px;
+    --bar-background-active: var(--ion-color-color1) !important;
+    --knob-background: var(--ion-color-color1);
+    --knob-box-shadow: -1px 1px 17px -3px var(--ion-color-color1);
+  }
+
+  .title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding-left: 30px;
+    font-family: serif;
+  }
+
+  .border-style {
+    border: 4px solid;
+    width: 60px;
+    border-radius: 15%;
+  }
+
+  .size-label {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+}

@@ -1,3 +1,5 @@
+import {Article} from './article-interface';
+
 export interface Message {
     _id?: string;
     title?: string;
@@ -5,6 +7,7 @@ export interface Message {
     utilisateurId?: string;
     content: string;
     createdAt: number;
+    article?: Article;
     read: boolean;
     messageTo?: string;
 }

@@ -1,0 +1,83 @@
+<!--
+  - Home Screen
+  - @author    ThemesBuckets <themesbuckets@gmail.com>
+  - @copyright Copyright (c) 2020
+  - @license   AppsPlaces
+-->
+
+<!-- Header -->
+<ion-header no-border>
+
+    <ion-toolbar color="color1">
+
+        <!-- Menu Option -->
+        <ion-buttons slot="start">
+            <ion-menu-button auto-hide="false"></ion-menu-button>
+
+            <!-- Title of the app -->
+            <ion-title>Egoal Store</ion-title>
+        </ion-buttons>
+
+        <!-- Cart Button Option -->
+        <ion-buttons slot="end">
+            <ion-button (click)="showOptions($event, 'language')">
+                <ion-icon src="assets/globe.svg"></ion-icon>
+                <span>{{language}}</span>
+            </ion-button>
+
+            <ion-button (click)="showOptions($event, 'currency')">
+                <ion-icon src="{{'assets/' + currencyIcon + '.svg'}}"></ion-icon>
+                <span>{{currency}}</span>
+            </ion-button>
+
+            <ion-button (click)="gotoCartPage()" #cart color="clear">
+                <div class="cart-length">{{ cartItemCount | async }}</div>
+                <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<!-- Contents -->
+<ion-content [fullscreen] padding>
+
+    <!-- Search bar -->
+    <app-searchbar></app-searchbar>
+
+    <!-- Top Banner Slider -->
+    <app-home-top-slider></app-home-top-slider>
+<!--    <div id="searchbar">-->
+<!--        <ion-searchbar placeholder="Search your product" (ionFocus)="gotoSearchPage()"></ion-searchbar>-->
+<!--    </div>-->
+
+    <!-- Categories -->
+    <div id="categories">
+        <ion-item-divider color="white" class="ion-padding-top">
+            <ion-label color="dark" class="text-bold">Categories</ion-label>
+            <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear"
+                        routerLink="/tabs/categories"
+                        routerDirection="root">Sell All
+            </ion-button>
+        </ion-item-divider>
+
+        <ion-grid>
+            <ion-row>
+                <ion-col size="6" *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
+                    <ion-card class="ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
+                        <img [src]="shuffleImage(item.image)[0]"  alt=""/>
+                        <ion-card-header>
+                            <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
+                        </ion-card-header>
+                    </ion-card>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+<!--     Featured Products-->
+    <app-featured-products></app-featured-products>
+
+<!--     Hot Deals-->
+    <app-hot-deals></app-hot-deals>
+
+</ion-content>

@@ -6,7 +6,7 @@
         </ion-item>
     </ion-radio-group>
 </ion-list>
-<ion-list *ngIf="option === 'currency'">
+<ion-list *ngIf="option === 'currency' || option === 'userCurrency'">
     <ion-radio-group value="{{currency}}">
         <ion-item button *ngFor="let c of currencies | keyvalue" [class.active-item] (click)="setCurrency(c.key)">
             <ion-label>

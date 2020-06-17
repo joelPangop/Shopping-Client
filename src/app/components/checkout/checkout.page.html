@@ -1,0 +1,236 @@
+<!--
+  - Checkout Screen
+  - @author    ThemesBuckets <themesbuckets@gmail.com>
+  - @copyright Copyright (c) 2020
+  - @license   AppsPlaces
+-->
+
+<!-- Header -->
+<ion-header no-border>
+    <ion-toolbar color="color1">
+
+        <!-- Back to previous page option button -->
+        <ion-buttons slot="start">
+            <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="arrow-round-back">
+            </ion-back-button>
+        </ion-buttons>
+
+        <!-- Page title -->
+        <ion-title>Checkout</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<!-- Contents -->
+<ion-content id="checkout">
+
+    <!-- Steps of Checkout, steps are - (Billing, Payment, Confirm) -->
+    <ion-grid class="ion-padding">
+        <ion-row class="ion-text-center">
+            <ion-col *ngFor="let item of steps" [ngClass]="{selected: item.isSelected}">
+                <ion-icon name="radio-button-on" style="zoom:1.5;" [hidden]="!item.isSelected"></ion-icon>
+                <ion-icon name="radio-button-off" style="zoom:1.5;" [hidden]="item.isSelected"></ion-icon>
+                <br/>
+                <ion-text>{{item.step}}</ion-text>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <!-- Content of Checkout Steps -->
+
+    <!-- Billing Section -->
+    <div id="billing" *ngIf="steps[0].isSelected">
+
+        <form class="ion-padding">
+            <!-- Full Name -->
+            <ion-item>
+                <ion-input type="text" placeholder="Full Name" name="name"></ion-input>
+            </ion-item>
+
+            <!-- Address 1 -->
+            <ion-item class="ion-padding-top">
+                <ion-input type="text" placeholder="Address 1" name="address1"></ion-input>
+            </ion-item>
+
+            <!-- Address 2 -->
+            <ion-item class="ion-padding-top">
+                <ion-input type="text" placeholder="Address 2" name="address2"></ion-input>
+            </ion-item>
+
+            <ion-row>
+                <ion-col>
+                    <!-- City -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="City" name="city"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <!-- State -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="state" name="state"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <!-- Zip Code -->
+            <ion-item class="ion-padding-top">
+                <ion-input type="text" placeholder="Zip Code" name="zipcode"></ion-input>
+            </ion-item>
+        </form>
+    </div>
+    <!-- End billing section -->
+
+    <!-- Payment Section -->
+    <div id="payment" *ngIf="steps[1].isSelected">
+
+        <p class="title">Select Payment</p>
+
+        <!-- Payment Card Options -->
+        <ion-radio-group>
+            <ion-row>
+                <ion-col *ngFor="let item of cards | keyvalue">
+                    <ion-item lines="none">
+                        <ion-radio color="color1" mode="ios" [value]="item.key"
+                                   (click)="showPaymentOption(item.key)"></ion-radio>
+                        <img [src]="item.value">
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-radio-group>
+
+        <div *ngIf="cc">
+            <!-- Card Information Form -->
+            <form class="ion-padding">
+                <!-- Cardholder Name -->
+                <ion-item>
+                    <ion-input type="text" placeholder="Cardholder Name" name="name"></ion-input>
+                </ion-item>
+
+                <!-- Card Number -->
+                <ion-item class="ion-padding-top">
+                    <ion-input type="text" placeholder="Card Number" name="cardnumber"></ion-input>
+                </ion-item>
+
+                <ion-row>
+                    <ion-col>
+                        <!-- MM -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="MM" name="mm"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col>
+                        <!-- YY -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="YY" name="yy"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+
+                <!-- CVV -->
+                <ion-item class="ion-padding-top">
+                    <ion-input type="text" placeholder="CVV" name="cvv"></ion-input>
+                </ion-item>
+                <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>
+
+            </form>
+            <!--            <ion-grid text-center>-->
+            <!--                <ion-row>-->
+            <!--                    <ion-col>-->
+            <!--                        Use this Pay button in your PWA's payment page with the attached logic.-->
+            <!--                    </ion-col>-->
+            <!--                </ion-row>-->
+            <!--            </ion-grid>-->
+            <!--            <ion-card class="welcome-card">-->
+            <!--                <ion-img src="/assets/stripe.png"></ion-img>-->
+            <!--                <ion-card-header>-->
+            <!--                    <ion-card-subtitle>Get Started</ion-card-subtitle>-->
+            <!--                    <ion-card-title>Stripe Sample</ion-card-title>-->
+            <!--                    <ion-row>-->
+            <!--                        <ion-col>Total Payment</ion-col>-->
+            <!--                        <ion-col> {{currencyIcon}}{{paymentAmount}} </ion-col>-->
+            <!--                    </ion-row>-->
+            <!--                </ion-card-header>-->
+            <!--                <ion-card-content>-->
+            <!--                    <form action="/" method="post" id="payment-form">-->
+            <!--                        <div class="form-row">-->
+            <!--                            <div id="card-element"> &lt;!&ndash; a Stripe Element will be inserted here. &ndash;&gt; </div>-->
+            <!--                            &lt;!&ndash; Used to display Element errors &ndash;&gt;-->
+            <!--                            <div id="card-errors" role="alert"></div>-->
+            <!--                        </div>-->
+            <!--                        <ion-button type="submit" color="success" expand="full">Make Payment</ion-button>-->
+            <!--                    </form>-->
+            <!--                </ion-card-content>-->
+            <!--            </ion-card>-->
+        </div>
+        <div *ngIf="paypal">
+            <form class="ion-padding" id="paypalFormId">
+                <ion-grid>
+                    <ion-row>
+                        <ion-col>
+                            Use this Pay button in your app's payment page with the attached logic.
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+                <ion-card class="welcome-card">
+                    <ion-img src="/assets/paypal.jpg"></ion-img>
+                    <ion-card-header>
+                        <ion-card-subtitle>Get Started</ion-card-subtitle>
+                        <ion-card-title>PayPal Sample</ion-card-title>
+                        <ion-row>
+                            <ion-col>
+                                Total Payment
+                            </ion-col>
+                            <ion-col>
+                                {{currencyIcon}}{{paymentAmount}}
+                            </ion-col>
+                        </ion-row>
+                    </ion-card-header>
+                    <ion-card-content  *ngIf="platform.is('ios') || platform.is('android')" >
+                        <ion-button expand="full" color="success"
+                                    (click)="payWithPaypal()">Pay with PayPal
+                        </ion-button>
+                    </ion-card-content>
+                    <div *ngIf="!platform.is('ios') && !platform.is('android')" id="paypal-button-container"></div>
+                </ion-card>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Complete Section -->
+    <!-- Confirm Screen -->
+    <div id="complete-section" *ngIf="steps[2].isSelected" style="height: 70%">
+        <ion-grid class="ion-padding" style="height: 100%">
+            <ion-row class="ion-align-items-center ion-justify-content-center"
+                     style="height: 100%; flex-direction: column">
+                <div class="ion-text-center ion-padding">
+                    <ion-icon name="md-checkmark-circle-outline" style="zoom:10.0;" color="medium"></ion-icon>
+                    <h2>Order Success</h2>
+                    <p>Your order has been placed successfully</p>
+                </div>
+            </ion-row>
+        </ion-grid>
+    </div>
+</ion-content>
+
+<!-- Footer -->
+<ion-footer no-border>
+    <ion-toolbar class="ion-padding" transparent>
+
+        <!-- Go To Next Section Button Option  -->
+        <!-- This button only visible Step 1 & 2 -->
+        <ion-button *ngIf="!steps[2].isSelected" color="color1" expand="block" (click)="next()">Next
+        </ion-button>
+
+        <!-- Go To Order Page Button Option  -->
+        <!-- This Option will be visible on Step 3 -->
+        <ion-button *ngIf="steps[2].isSelected" color="color1" fill="outline" expand="block" (click)="gotoOrderPage()">
+            My
+            Orders
+        </ion-button>
+
+        <!-- Go To Products Page Button Option  -->
+        <!-- This Option will be visible on Step 3 -->
+        <ion-button *ngIf="steps[2].isSelected" color="color1" expand="block" (click)="gotoProductsPage()">Continue
+            Shopping
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

@@ -1,5 +1,5 @@
 .active-item {
-  bordor-left: 8px solid var(--ion-color-primary);
+  bordor-left: 8px solid var(--ion-color-color1);
 }
 
 .my-custom-menu {
@@ -7,11 +7,13 @@
 }
 
 .active {
-  --ion-text-color: var(--ion-color-primary);
+  --ion-text-color: var(--ion-color-color1);
+
   ion-icon {
-    --ion-text-color-rgb: var(--ion-color-primary);
-  };
-  bordor-left: 8px solid var(--ion-color-primary);
+    --ion-text-color-rgb: var(--ion-color-color1);
+  }
+;
+  bordor-left: 8px solid var(--ion-color-color1);
 }
 
 .active-parent {
@@ -25,6 +27,19 @@
 
 .body {
   background-color: #0bb8cc;
+}
+
+//.tds-class {
+//  background-image: url('../images/makeup1.jpg');
+//}
+.toolbar-background {
+  //--background: url('../images/makeup1.jpg') no-repeat 100% 100%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: #383a3e;
+  color: #cccccc;
+  font-style: oblique;
 }
 
 

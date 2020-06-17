@@ -1,4 +1,5 @@
 import {Message} from './message-interface';
+import {Article} from './article-interface';
 
 export interface Notification {
     _id?: string;
@@ -6,7 +7,7 @@ export interface Notification {
     message: string;
     message_id?: string;
     utilisateurId?: string;
-    article_id?: string;
+    article: Article;
     avatar: string;
     createdAt?: number;
     read?: boolean;

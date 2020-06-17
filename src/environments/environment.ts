@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  url: 'http://192.168.2.75:4000'
+  url: 'http://192.168.2.58:4000'
+  // url: 'https://egoalservice.uc.r.appspot.com'
 };
 
 /*

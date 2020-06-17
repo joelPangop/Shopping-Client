@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-toolbar color="color1">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="tabs/categories" routerDirection="root"></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{category.name}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content id="prevCat">
+    <div id="top-slider">
+        <ion-slides pager="false" [options]="slideOpts" class="ion-padding-top">
+            <ion-slide *ngFor="let img of images">
+                <img [src]="img"/>
+            </ion-slide>
+        </ion-slides>
+    </div>
+    <ion-grid id="grid" *ngIf="grid">
+        <ion-row>
+            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of sousCats">
+                <ion-card class="ion-no-margin">
+                    <ion-card-header>
+                        <ion-card-title>
+                            <ion-card-subtitle text-center size="large">
+                                <ion-label><h3>{{item}}</h3></ion-label>
+                            </ion-card-subtitle>
+                        </ion-card-title>
+                    </ion-card-header>
+
+                    <ion-card-content>
+                        <ion-list lines="none">
+                            <div class="ion-text-center">
+                                <ion-item *ngFor="let cat of getSousCatOptions(item)" class="ion-no-margin"
+                                          lines="none">
+                                    <ion-router-link routerDirection="root" (click)="goToCat(cat)" class="underline">
+                                        {{cat[2] ? cat[2] : cat[1]}}
+                                    </ion-router-link>
+                                </ion-item>
+                            </div>
+                        </ion-list>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

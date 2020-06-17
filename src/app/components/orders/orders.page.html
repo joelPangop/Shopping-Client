@@ -1,0 +1,71 @@
+<ion-header no-border>
+  <ion-toolbar>
+
+    <!-- Side menu option -->
+    <ion-buttons slot="start">
+      <ion-menu-toggle menu="pages">
+        <ion-button color="color1">
+          <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+
+    <!-- Page Title -->
+    <ion-title>My Orders</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="orders" fullscreen>
+
+  <!-- Orders Options -->
+  <!-- Options are - Delivered, Processing, Cancelled  -->
+  <div class="ion-padding ion-text-center">
+    <ion-chip *ngFor="let item of options; let i = index" [ngClass]="{ionChip: item.isSelected}"
+              (click)="changeOption(item, i)">
+      <ion-label>{{item.title}}</ion-label>
+    </ion-chip>
+  </div>
+
+
+  <!-- When Cart is Empty -->
+  <ion-grid class="ion-padding" id="empty" *ngIf="commandes.length == 0" style="height: 100%">
+    <ion-row class="ion-align-items-center ion-justify-content-center"
+             style="height: 100%; flex-direction: column">
+      <div class="ion-text-center ion-padding">
+        <ion-icon name="cart" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>Nothing here</h4>
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <!-- List of orders -->
+  <ion-card *ngFor="let item of commandes">
+    <ion-card-header>
+      <ion-row>
+
+        <!-- Order Id -->
+        <ion-col>
+          <ion-card-title>Order #{{item.num_commande}}</ion-card-title>
+        </ion-col>
+
+        <!-- Order Date -->
+        <ion-col class="col-right">
+          <ion-text>{{item.completed ? item.updatedAt : item.createdAt}}</ion-text>
+        </ion-col>
+      </ion-row>
+
+      <!-- Order Tracking Number -->
+      <ion-row>
+        <ion-col>Tracking Number: {{item.trackingNumber}}</ion-col>
+      </ion-row>
+
+      <!-- Order Quantity & Price -->
+      <ion-row>
+        <ion-col>Quantity: {{item.quantity}}</ion-col>
+        <ion-col>Total Price: ${{item.amount}}</ion-col>
+      </ion-row>
+
+      <ion-button color="color1" size="small" (click)="showDetails(item)">Details</ion-button>
+    </ion-card-header>
+  </ion-card>
+</ion-content>

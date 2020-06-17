@@ -1,5 +1,6 @@
 import {UserInfo} from './userInfo-interface';
 import {RoleType} from './roleType';
+import {Store} from './store-interface';
 
 export interface Utilisateur {
     role?: RoleType;
@@ -10,5 +11,11 @@ export interface Utilisateur {
     type ?: string;
     password ?: string;
     userInfo: UserInfo;
+    currency?: Currency;
     _id ?: string;
+}
+
+export interface Currency {
+    currency: string,
+    icon: string;
 }

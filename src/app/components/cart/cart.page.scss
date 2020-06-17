@@ -7,3 +7,48 @@
 .btn-cart{
   text-transform: none !important;
 }
+
+#cart {
+  .item {
+    ion-thumbnail {
+      width: 140px;
+      height: 90px;
+
+      img {
+        width: 140px;
+        height: 90px;
+        border-radius: 5px;
+      }
+    }
+
+
+
+    ion-note {
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+  }
+
+  #empty {
+
+    h4 {
+      color: #888888;
+      font-weight: bolder;
+    }
+
+    p {
+      color: #888888;
+    }
+  }
+}
+
+ion-footer {
+  ion-toolbar {
+    --background-color: transparent;
+    --ion-color-base: transparent !important;
+  }
+
+  ion-button {
+    --box-shadow: -1px 1px 17px -3px var(--ion-color-color1);
+  }
+}

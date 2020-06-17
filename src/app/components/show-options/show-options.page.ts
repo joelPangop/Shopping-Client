@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Events, NavController, NavParams} from '@ionic/angular';
+import {NavController, NavParams} from '@ionic/angular';
 import {CategorieTelephone} from '../../models/CategorieTelephone';
 import {Languages} from '../../models/Languages';
 import {Currencies} from '../../models/Currencies';
@@ -8,6 +8,10 @@ import {BehaviorSubject} from 'rxjs';
 import {LanguageService} from '../../services/language.service';
 import {ArticleService} from '../../services/article.service';
 import {CurrencyService} from '../../services/currency.service';
+import {NativeStorage} from '@ionic-native/native-storage/ngx';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {TranslateService} from '@ngx-translate/core';
+import {Storage} from '@ionic/storage';
 
 @Component({
     selector: 'app-show-options',
@@ -27,7 +31,8 @@ export class ShowOptionsPage implements OnInit {
     currIconOptionSubject: BehaviorSubject<any>;
 
     constructor(public navParams: NavParams, private languageService: LanguageService, private cuService: CurrencyService,
-                private event: Events) {
+                private userStorageUtils: UserStorageUtils, private localStorage: Storage,
+                private storage: NativeStorage) {
         this.option = this.navParams.get('option');
         this.language = this.navParams.get('language');
         this.currency = this.navParams.get('currency');
@@ -62,18 +67,34 @@ export class ShowOptionsPage implements OnInit {
         this.languageService.setInitialAppLanguage(this.language);
     }
 
-    setCurrency(c: string) {
-        this.currency = c;
-        this.event.publish('showLoadingSpining', true);
-        console.log(this.currency);
-        this.currOptionSubject.next(this.currency);
-        this.currIconOptionSubject.next(Currencies[this.currency]);
-        this.cuService.toCurrOptionSubject = this.currency;
-        this.cuService.getCurrencyRate().then( (res) => {
-          if(res){
-              const popover = this.navParams.get('popover');
-              popover.dismiss(Currencies[this.currency]);
-          }
-        });
+    async setCurrency(c: string) {
+        if (this.option === 'userCurrency') {
+            const popover = this.navParams.get('popover');
+            popover.dismiss({
+                currency: c,
+                icon: Currencies[c]
+            });
+        } else {
+            this.currency = c;
+            this.cuService.setShowLoadingSpinningSubjectObservale(true);
+            console.log(this.currency);
+            this.currOptionSubject.next(this.currency);
+            this.currIconOptionSubject.next(Currencies[this.currency]);
+            this.cuService.toCurrOptionSubject = this.currency;
+            await this.localStorage.set('currency', {
+                currency: this.currency,
+                icon: Currencies[this.currency]
+            });
+            await this.storage.setItem('currency', {
+                currency: this.currency,
+                icon: Currencies[this.currency]
+            });
+            this.cuService.getCurrencyRate().then((res) => {
+                if (res) {
+                    const popover = this.navParams.get('popover');
+                    popover.dismiss(Currencies[this.currency]);
+                }
+            });
+        }
     }
 }

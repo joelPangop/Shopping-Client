@@ -1,3 +1,92 @@
 <ion-app>
     <ion-router-outlet></ion-router-outlet>
 </ion-app>
+<!--<ion-app>-->
+<!--    &lt;!&ndash;    <ion-split-pane contentId="content">&ndash;&gt;-->
+<!--    <ion-menu side="start" menuId="pages" type="overlay" contentId="content">-->
+
+<!--        &lt;!&ndash; Header &ndash;&gt;-->
+<!--        <ion-header *ngIf="isMain">-->
+<!--            <div class="logo-section">-->
+<!--                <div class="logo-section__wrapper">-->
+<!--                    <img class="logo-section__logo" src="assets/cart.png"/>-->
+<!--                    <h3 class="logo-section__title">-->
+<!--                        Egoal Shopping-->
+<!--                    </h3>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </ion-header>-->
+<!--        <ion-header *ngIf="!isMain">-->
+<!--            <ion-buttons>-->
+<!--                <ion-button (click)="backToMain()">-->
+<!--                    <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>-->
+<!--                </ion-button>-->
+<!--                <ion-title>Menu Principal</ion-title>-->
+<!--            </ion-buttons>-->
+<!--        </ion-header>-->
+
+<!--        &lt;!&ndash; Content Options &ndash;&gt;-->
+<!--        &lt;!&ndash; Menus &ndash;&gt;-->
+<!--        <ion-content style="height: 80%">-->
+<!--            <ion-item-divider color="black" *ngIf="catTitle">-->
+<!--                <ion-label text-center>{{catTitle}}</ion-label>-->
+<!--            </ion-item-divider>-->
+<!--            <ion-list class="ion-padding" lines="none">-->
+<!--                <div *ngFor="let p of appPages">-->
+<!--                    <ion-menu-toggle auto-hide="false" *ngIf="p.url">-->
+<!--                        <ion-item [routerDirection]="'root'" [routerLink]="[p.url]" [routerLinkActive]="'active'">-->
+<!--                            <ion-icon size="small" slot="start" [name]="p.icon" [src]="p.src"></ion-icon>-->
+<!--                            <ion-label>-->
+<!--                                {{p.title | translate}}-->
+<!--                            </ion-label>-->
+<!--                        </ion-item>-->
+<!--                    </ion-menu-toggle>-->
+<!--                    <ion-item button *ngIf="p.children?.length > 0" (click)="p.open = !p.open"-->
+<!--                              [class.active-parent]="p.open" detail="false">-->
+<!--                        <ion-icon size="small" slot="start" [name]="p.icon" [src]="p.src"></ion-icon>-->
+<!--                        <ion-label>-->
+<!--                            {{p.title | translate}}-->
+<!--                        </ion-label>-->
+<!--                        <button>-->
+<!--                            <ion-icon name="arrow-forward-circle-outline" slot="start" *ngIf="!p.open"></ion-icon>-->
+<!--                            <ion-icon name="arrow-back-circle-outline" slot="start" *ngIf="p.open"></ion-icon>-->
+<!--                        </button>-->
+<!--                    </ion-item>-->
+<!--                    <ion-list *ngIf="p.open" size="x-small" style="font-style: oblique">-->
+<!--                        <div *ngFor="let sub of p.children" class="sub-item">-->
+<!--                            <ion-nav-link #content *ngIf="sub.isParent">-->
+<!--                                <ion-item (click)="goToSubMain(sub)">-->
+<!--                                    <ion-icon [name]="sub.icon" [src]="sub.src" slot="start"></ion-icon>-->
+<!--                                    <ion-label>-->
+<!--                                        {{sub.title | translate}}-->
+<!--                                    </ion-label>-->
+<!--                                </ion-item>-->
+<!--                            </ion-nav-link>-->
+<!--                            <ion-menu-toggle auto-hide="false" *ngIf="!sub.isParent">-->
+<!--                                <ion-item [routerLink]="sub.url"-->
+<!--                                          [routerDirection]="'root'" routerLinkActive="active">-->
+<!--                                    <ion-icon [name]="sub.icon" [src]="sub.src" slot="start"></ion-icon>-->
+<!--                                    <ion-label>-->
+<!--                                        {{sub.title | translate}}-->
+<!--                                    </ion-label>-->
+<!--                                </ion-item>-->
+<!--                            </ion-menu-toggle>-->
+<!--                        </div>-->
+<!--                    </ion-list>-->
+<!--                </div>-->
+<!--            </ion-list>-->
+<!--        </ion-content>-->
+
+<!--        &lt;!&ndash; Footer &ndash;&gt;-->
+<!--        <ion-footer no-border>-->
+<!--            <div class="ion-padding">-->
+<!--                <ion-button color="color1" expand="block" (click)="signout()">-->
+<!--                    Signout-->
+<!--                </ion-button>-->
+<!--            </div>-->
+<!--        </ion-footer>-->
+<!--    </ion-menu>-->
+
+<!--    <ion-router-outlet id="content"></ion-router-outlet>-->
+<!--    &lt;!&ndash;    </ion-split-pane>&ndash;&gt;-->
+<!--</ion-app>-->

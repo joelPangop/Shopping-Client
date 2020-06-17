@@ -1,0 +1,43 @@
+#wishlist {
+  .card-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 150px;
+  }
+
+  .product-name {
+    font-size: 1.2rem;
+    color: rgba(8, 8, 8, 0.58);
+  }
+
+  .previous-price {
+    text-decoration: line-through;
+    font-size: 0.8rem;
+  }
+  .price {
+    font-weight: bold;
+  }
+  ion-fab-button {
+    --background: transparent;
+    --background-focused: transparent;
+    --background-activated: transparent;
+  }
+}
+
+.cart-icon {
+  font-size: 25px;
+}
+
+.cart-length {
+  color: var(--ion-color-dark-contrast);
+  position: absolute;
+  top: 0px;
+  left: 15px;
+  font-weight: 600;
+  font-size: 1em;
+  min-width: 25px;
+  z-index: 10;
+  font-style: inherit;
+}
+

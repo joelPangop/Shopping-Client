@@ -10,6 +10,9 @@ import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Address} from '../models/address-interface';
 import {UserInfo} from '../models/userInfo-interface';
 import {RoleType} from '../models/roleType';
+import {Storage} from '@ionic/storage';
+import {Router} from '@angular/router';
+import {AuthResponse} from '../models/auth-response';
 
 const TOKEN_KEY = 'access_token';
 
@@ -17,16 +20,18 @@ const TOKEN_KEY = 'access_token';
     providedIn: 'root'
 })
 export class AuthService {
-    url = environment.api_url;
+
+    url = 'http://192.168.2.58:4000';
     user = {} as Utilisateur;
     authenticationState = new BehaviorSubject(false);
     currentUser: Utilisateur;
     isPasswordForgotten = false;
     address = {} as Address;
     userInfo = {} as UserInfo;
+    local;
 
-    constructor(private http: HttpClient, public helper: JwtHelperService, public storage: NativeStorage,
-                private plt: Platform, private alertController: AlertController) {
+    constructor(private http: HttpClient, public helper: JwtHelperService, public storage: NativeStorage, private router: Router,
+                private plt: Platform, private alertController: AlertController, public localStorage: Storage) {
         this.currentUser = {} as Utilisateur;
         this.plt.ready().then(() => {
             this.checkToken();
@@ -50,7 +55,7 @@ export class AuthService {
     }
 
     register(credentials) {
-        return this.http.post(`${this.url}/api/register`, credentials).pipe(
+        return this.http.post(`${environment.api_url}/api/register`, credentials).pipe(
             catchError(e => {
                 this.showAlert(e.error.msg);
                 throw new Error(e);
@@ -58,76 +63,59 @@ export class AuthService {
         );
     }
 
-    login(credentials):Observable<any>{
-        // const xhr = new XMLHttpRequest();
-        // const stor = this.storage;
-        // const auth = this.authenticationState;
-        // xhr.open('POST', `${environment.api_url}/login`, true);
-        // xhr.responseType = 'json';
-        // // Website you wish to allow to connect
-        // xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://localhost:8100');
-        // xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://localhost:8101');
-        // xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://localhost:8102');
-        //
-        // // Request methods you wish to allow
-        // xhr.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        //
-        // // Request headers you wish to allow
-        // xhr.setRequestHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        // // Set to true if you need the website to include cookies in the requests sent
-        // // to the API (e.g. in case you use sessions)
-        // xhr.setRequestHeader('Access-Control-Allow-Credentials', String(true));
-        //
-        // // Send the proper header information along with the request
-        // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        //
-        // xhr.send('email=' + credentials.email + '&password=' + credentials.password);
-        // try {
-        //     // tslint:disable-next-line:only-arrow-functions
-        //     xhr.onload = async () => {
-        //         if (xhr.readyState === 4 && xhr.status === 200) {
-        //             // alert(xhr.response);
-        //             await this.storage.setItem(TOKEN_KEY, xhr.response.access_token);
-        //
-        //             this.user = this.helper.decodeToken(xhr.response.access_token);
-        //             this.currentUser = xhr.response.user[0];
-        //             await this.storage.setItem('Utilisateur', xhr.response.user[0]).then(async data => {
-        //                 await this.storage.setItem('IsLogginIn', true);
-        //
-        //                 this.authenticationState.next(true);
-        //             });
-        //         }
-        //         console.log(xhr.response.user);
-        //
-        //         return xhr.response;
-        //     };
-        // } catch (e) {
-        //     this.showAlert('Incorrect username or/and password');
-        //     this.isPasswordForgotten = true;
-        //     throw new Error(e);
-        // }
+    login(credentials): Observable<AuthResponse> {
+        console.log(this.plt.platforms());
         return this.http.post<any>(`${environment.api_url}/login`, credentials)
-        .pipe(
-            tap(async res => {
-                // this.storage.set(TOKEN_KEY, res.token);
-                // this.user = this.helper.decodeToken(res.token);
-                await this.storage.setItem(TOKEN_KEY, res['access_token']);
-                this.user = this.helper.decodeToken(res['access_token']);
-                this.currentUser = res.user[0];
-                await this.storage.setItem('Utilisateur', res.user[0]);
-                await this.storage.setItem('IsLogginIn', true);
-                this.authenticationState.next(true);
-            }),
-            catchError(e => {
-                this.showAlert('incorrect username or/and password');
-                this.isPasswordForgotten = true;
-                throw new Error(e);
-            })
-        );
+            .pipe(
+                tap(async (res: AuthResponse) => {
+                    if (this.plt.is('android') || this.plt.is('ios')) {
+                        await this.storage.setItem(TOKEN_KEY, res['access_token']);
+                        this.user = this.helper.decodeToken(res['access_token']);
+                        this.currentUser = res.user[0];
+                        await this.storage.setItem('Utilisateur', res.user[0]);
+                        await this.storage.setItem('IsLogginIn', true);
+                    } else if (!this.plt.is('android') && !this.plt.is('ios')) {
+                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                        this.user = this.helper.decodeToken(res['access_token']);
+                        this.currentUser = res.user[0];
+                        await this.localStorage.set('Utilisateur', res.user[0]);
+                        await this.localStorage.set('IsLogginIn', true);
+                    }
+                    this.authenticationState.next(true);
+                }),
+                catchError(e => {
+                    this.showAlert('incorrect username or/and password');
+                    this.isPasswordForgotten = true;
+                    throw new Error(e);
+                })
+            );
     }
 
     updateProfile(utilisateur) {
-        return this.http.put(this.url + '/user', utilisateur);
+        return this.http.put<any>(`${environment.api_url}/user`, utilisateur)
+            .pipe(
+                tap(async res => {
+                    if (this.plt.is('android') || this.plt.is('ios')) {
+                        await this.storage.setItem(TOKEN_KEY, res['access_token']);
+                        this.user = this.helper.decodeToken(res['access_token']);
+                        this.currentUser = res.user[0];
+                        await this.storage.setItem('Utilisateur', res.user[0]);
+                        await this.storage.setItem('IsLogginIn', true);
+                    } else if (!this.plt.is('android') && !this.plt.is('ios')) {
+                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                        this.user = this.helper.decodeToken(res['access_token']);
+                        this.currentUser = res.user[0];
+                        await this.localStorage.set('Utilisateur', res.user[0]);
+                        await this.localStorage.set('IsLogginIn', true);
+                    }
+                    this.authenticationState.next(true);
+                }),
+                catchError(e => {
+                    this.showAlert('incorrect username or/and password');
+                    this.isPasswordForgotten = true;
+                    throw new Error(e);
+                })
+            );
     }
 
     //
@@ -152,13 +140,67 @@ export class AuthService {
             this.authenticationState.next(false);
         });
 
+        this.localStorage.remove(TOKEN_KEY).then(() => {
+            this.authenticationState.next(false);
+        });
+
         this.storage.remove('page').then(() => {
             console.log('route page removed');
         });
 
-        this.storage.remove('user').then(() => {
+        this.localStorage.remove('page').then(() => {
+            console.log('route page removed');
+        });
+
+        this.storage.remove('Utilisateur').then(() => {
             console.log('user removed');
         });
+
+        this.localStorage.remove('Utilisateur').then(() => {
+            console.log('user removed');
+        });
+
+        this.storage.remove('IsLogginIn').then(() => {
+            console.log('logged out');
+        });
+
+        this.localStorage.remove('IsLogginIn').then(() => {
+            console.log('logged out');
+        });
+
+        this.storage.remove('cart').then(() => {
+            console.log('cart removed');
+        });
+
+        this.localStorage.remove('cart').then(() => {
+            console.log('cart removed');
+        });
+
+        this.storage.remove('currency').then(() => {
+            console.log('currency removed');
+        });
+
+        this.localStorage.remove('currency').then(() => {
+            console.log('currency removed');
+        });
+
+        this.storage.remove('__paypal_storage__').then(() => {
+            console.log('paypal_storage removed');
+        });
+
+        this.localStorage.remove('__paypal_storage__').then(() => {
+            console.log('paypal_storage removed');
+        });
+
+        this.storage.remove('SELECTED_LANGUAGE').then(() => {
+            console.log('SELECTED_LANGUAGE removed');
+        });
+
+        this.localStorage.remove('SELECTED_LANGUAGE').then(() => {
+            console.log('SELECTED_LANGUAGE removed');
+        });
+        this.router.navigate(['/onbroading']);
+
     }
 
     getSpecialData() {
@@ -175,7 +217,7 @@ export class AuthService {
     }
 
     isAuthenticated() {
-        return this.authenticationState.value;
+        return this.authenticationState;
     }
 
     showAlert(msg) {
@@ -184,8 +226,7 @@ export class AuthService {
             header: 'Error',
             buttons: ['OK']
         });
-        +
-            alert.then(alt => alt.present());
+        alert.then(alt => alt.present());
     }
 
     getUserById(id): Observable<Utilisateur> {

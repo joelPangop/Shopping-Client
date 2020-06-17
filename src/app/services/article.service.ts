@@ -4,6 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../models/environements';
 import {IpAddressService} from './ip-address.service';
+import {ArticleStatus} from '../models/ArticleStatus';
 
 @Injectable({
     providedIn: 'root'
@@ -34,21 +35,14 @@ export class ArticleService {
         return this.http.get<Article[]>(url);
     }
 
-    // @ts-ignore
     loadArticle(id): Observable<Article> {
         const url = `${environment.api_url}/article/` + id;
         return this.http.get<Article>(url);
-        // const xhr = new XMLHttpRequest();
-        // xhr.onreadystatechange = async () => {
-        //     if (xhr.readyState === XMLHttpRequest.DONE) {
-        //         // alert(xhr.responseText);
-        //         console.log(JSON.parse(xhr.response));
-        //         this.article = JSON.parse(xhr.response);
-        //         return JSON.parse(xhr.response);
-        //     }
-        // };
-        // xhr.open('GET', url, true);
-        // xhr.send(null);
+    }
+
+    loadArticleByStore(store){
+        const url = `${environment.api_url}/article/store/` + store;
+        return this.http.get<Article[]>(url);
     }
 
     loadArticleByUser(userId): Observable<Article[]> {
@@ -56,9 +50,16 @@ export class ArticleService {
         return this.http.get<Article[]>(url);
     }
 
+    loadArticlesByCategory(catTitle: any): Observable<Article[]> {
+        const url = `${environment.api_url}/article/category/` + catTitle;
+        // const url = 'http://192.168.2.58:8080/article/category/' + catTitle;
+        return this.http.get<Article[]>(url);
+    }
+
     createArticle(article: Article, utilisateurId) {
         // return this.http.post(`${environment.url}/article`, article);
         // tslint:disable-next-line:max-line-length
+        article.status = ArticleStatus.AVAILABLE;
         return this.http.post(`${environment.api_url}/article/utilisateurId/${utilisateurId}`, article, {headers: {'content-Type': 'application/json'}});
     }
 

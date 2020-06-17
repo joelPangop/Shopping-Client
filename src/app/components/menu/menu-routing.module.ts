@@ -7,15 +7,17 @@ import {AuthGuardService} from '../../services/auth-guard.service';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/menu/product-list',
+    redirectTo: '/menu/tabs',
     pathMatch: 'full'
   },
   {
     path: '',
     component: MenuPage,
     children: [
+      { path: 'tabs', loadChildren: () => import('../tabs/tabs.module').then(m => m.TabsPageModule),
+        canActivate: [AuthGuardService] },
       {
-        path: 'product-list',
+        path: 'products',
         loadChildren: () => import('../product-list/product-list.module').then( m => m.ProductListPageModule)
       },
       {
@@ -47,7 +49,7 @@ const routes: Routes = [
         loadChildren: () => import('../edit-product/edit-product.module').then( m => m.EditProductPageModule)
       },
       {
-        path: 'action-message/:id/:action/:uid',
+        path: 'action-message/:id/:action/:uid/:artId',
         loadChildren: () => import('../action-message/action-message.module').then( m => m.ActionMessagePageModule)
       },
       {
@@ -65,6 +67,14 @@ const routes: Routes = [
       {
         path: 'live-chat',
         loadChildren: () => import('../live-chat/live-chat.module').then( m => m.LiveChatPageModule)
+      },
+      {
+        path: 'tds-sneaker-page',
+        loadChildren: () => import('../tds-sneaker-page/tds-sneaker-page.module').then( m => m.TdsSneakerPagePageModule)
+      },
+      {
+        path: 'store',
+        loadChildren: () => import('../store/store.module').then( m => m.StorePageModule)
       }
     ]
   }

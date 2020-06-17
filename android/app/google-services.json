@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "135938716350",
+    "firebase_url": "https://egoal-shopping.firebaseio.com",
+    "project_id": "egoal-shopping",
+    "storage_bucket": "egoal-shopping.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135938716350:android:b3fed26c5a82e66426a4ef",
+        "android_client_info": {
+          "package_name": "com.egoal.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135938716350-t38miofp539tt8heiqk1vfnnhnj7ntfd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD66IrlQOYgAD7w1XMm45kNXQgF533XiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "135938716350-t38miofp539tt8heiqk1vfnnhnj7ntfd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

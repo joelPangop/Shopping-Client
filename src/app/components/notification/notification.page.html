@@ -1,12 +1,15 @@
 <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="menu">
-            </ion-back-button>
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
         </ion-buttons>
         <ion-title>notification</ion-title>
     </ion-toolbar>
-    <ion-toolbar color="primary">
+    <ion-toolbar color="color1">
         <ion-segment [(ngModel)]="notifType" (ionChange)="segmentChanged($event)">
             <ion-segment-button value="messages" layout="icon-start">
                 <ion-icon name="mail"></ion-icon>
@@ -51,7 +54,7 @@
                 <list>
                     <ion-item *ngFor="let likeNotif of likeNotifications; let i = index">
                         <ion-thumbnail>
-                            <img src="http://192.168.2.58:4000/image/{{likeNotif.avatar}}"/>
+                            <img src="https://egoalservice.azurewebsites.net/image/{{likeNotif.avatar}}"/>
                         </ion-thumbnail>
                         <ion-label>
                             {{likeNotif.message}}

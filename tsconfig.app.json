@@ -1,16 +1,28 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-      "baseUrl": ".",
-      "paths": { "*": ["types/*"] },
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "types/*"
+      ]
+    },
     "outDir": "./out-tsc/app",
     "types": []
   },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
     "src/test.ts",
     "src/**/*.spec.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "enableIvy": false
+  }
 }

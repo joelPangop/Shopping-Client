@@ -21,7 +21,7 @@
   <ion-buttons color="primary" slot="end" *ngIf="platform.is('desktop') || platform.is('hybrid') && !platform.is('mobile')">
     <ion-row>
       <ion-item lines="none">
-        <ion-button (click)="openProfil()">
+        <ion-button (click)="showProfile($event)">
           <ion-icon name="person" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-item>
@@ -54,7 +54,7 @@
     <ion-button (click)="openSearch()" *ngIf="!isSearch">
       <ion-icon name="search"></ion-icon>
     </ion-button>
-    <ion-button *ngIf="!isSearch" (click)="openProfil()">
+    <ion-button *ngIf="!isSearch" (click)="showProfile($event)">
       <ion-icon name="person" slot="icon-only"></ion-icon>
     </ion-button>
     <ion-button (click)="showOptions($event, 'language')" *ngIf="!isSearch">

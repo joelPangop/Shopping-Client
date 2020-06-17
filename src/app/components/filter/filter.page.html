@@ -1,0 +1,90 @@
+<!--
+  - Filter Screen
+  - @author    ThemesBuckets <themesbuckets@gmail.com>
+  - @copyright Copyright (c) 2020
+  - @license   AppsPlaces
+-->
+
+<!-- Header -->
+<ion-header no-border>
+  <ion-toolbar color="color1">
+
+    <!-- Page Title -->
+    <ion-title>Filter</ion-title>
+
+    <!-- Close Button of Filter page -->
+    <ion-buttons slot="end">
+      <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="close">
+      </ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- Contents -->
+<ion-content id="filter" fullscreen>
+  <ion-list lines="none">
+
+    <!-- Price Section -->
+    <p class="title">Price</p>
+
+    <ion-item>
+      <ion-range pin="true" [(ngModel)]="priceRange" dual-knobs pin color="dark">
+      </ion-range>
+    </ion-item>
+
+    <!-- Colors Section -->
+    <p class="title">Colors</p>
+
+    <ion-radio-group>
+      <ion-row class="ion-padding-start">
+        <ion-col size="3" *ngFor="let item of colors">
+          <ion-item class="border-style" lines="none" [style.border-color]="item">
+            <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-radio-group>
+
+    <!-- Size Section -->
+    <p class="title">Sizes</p>
+
+    <ion-radio-group>
+      <ion-row class="ion-padding-start">
+        <ion-col size="3" *ngFor="let item of sizes">
+          <ion-item lines="none">
+            <ion-label class="size-label">{{item}}</ion-label>
+            <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-radio-group>
+
+    <!-- Brand Section -->
+    <p class="title">Brands</p>
+
+    <ion-radio-group allow-empty-selection>
+      <ion-item *ngFor="let item of brands">
+        <ion-label>{{item}}</ion-label>
+        <ion-radio slot="start" color="color1" mode="ios" [value]="item"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</ion-content>
+
+
+<!-- Footer -->
+<ion-footer no-border>
+  <ion-toolbar class="ion-padding" transparent>
+    <ion-row>
+      <!-- Cancel Button -->
+      <ion-col>
+        <ion-button class="add-to-cart" color="color2" fill="outline" expand="block">Cancel</ion-button>
+      </ion-col>
+
+      <!-- Filter Apply Button -->
+      <ion-col>
+        <ion-button class="add-to-cart" color="color1" fill="outline" expand="block">Apply</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

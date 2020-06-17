@@ -24,6 +24,7 @@ export class LiveChatPage implements OnInit {
     }
 
     async ngOnInit() {
+        this.socket.ioSocket('ws://192.168.2.58:4000', {transports: ['websocket']});
         this.socket.connect();
         let name = `User-${new Date().getTime()}`;
         // this.currentUser = name;

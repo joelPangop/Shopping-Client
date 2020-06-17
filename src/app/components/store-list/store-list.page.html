@@ -1,0 +1,8 @@
+<ion-list>
+    <ion-item button *ngFor="let s of stores" [class.active-item] (click)="setStore(s)">
+        <ion-thumbnail>
+            <ion-img src="{{ip}}/image/{{s.image}}">{{s}}</ion-img>
+        </ion-thumbnail>
+        <ion-label slot="end">{{s.name}}</ion-label>
+    </ion-item>
+</ion-list>

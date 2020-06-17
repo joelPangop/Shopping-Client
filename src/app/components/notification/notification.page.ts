@@ -5,8 +5,9 @@ import {Notification} from '../../models/notification-interface';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {forkJoin} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
-import {Events, NavController} from '@ionic/angular';
+import {NavController} from '@ionic/angular';
 import * as moment from 'moment';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
 
 @Component({
     selector: 'app-notification',
@@ -21,13 +22,13 @@ export class NotificationPage implements OnInit {
     utilisateur = {} as Utilisateur;
 
     constructor(private storage: NativeStorage, private messageService: MessageService, private activatedRoute: ActivatedRoute,
-                private navCtrl: NavController, private event: Events) {
+                private navCtrl: NavController, private userStorageUtils: UserStorageUtils) {
         this.likeNotifications = [] as Notification[];
         this.messageNotifications = [] as Notification[];
     }
 
     async ngOnInit() {
-        this.utilisateur = await this.storage.getItem('Utilisateur');
+        this.utilisateur = await this.userStorageUtils.getUser();
         this.notifType = this.activatedRoute.snapshot.paramMap.get('params');
         console.log(this.notifType);
         this.loadAll();
@@ -60,6 +61,7 @@ export class NotificationPage implements OnInit {
                     title: this.messageService.messageNotifications.find(m => m.sender === sender).type,
                     message: this.messageService.messageNotifications.find(m => m.sender === sender).message,
                     message_id: this.messageService.messageNotifications.find(m => m.sender === sender).message_id,
+                    article: this.messageService.messageNotifications.find(m => m.sender === sender).article,
                     utilisateurId: this.messageService.messageNotifications.find(m => m.sender === sender).utilisateurId,
                     avatar: this.messageService.messageNotifications.find(m => m.sender === sender).avatar,
                     createdAt: this.messageService.messageNotifications.find(m => m.sender === sender).createdAt,
@@ -118,7 +120,7 @@ export class NotificationPage implements OnInit {
                 });
             }
         }
-        this.event.publish("nbNotif", i);
-        this.navCtrl.navigateForward(`/action-message/${msgNotif.message_id}/read/${1000}`);
+        // this.event.publish("nbNotif", i);
+        this.navCtrl.navigateForward(`/action-message/${msgNotif.message_id}/read/${1000}/${msgNotif.article._id}`);
     }
 }

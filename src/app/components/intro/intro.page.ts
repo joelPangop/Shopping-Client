@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {environment} from '../../models/environements';
 import {HttpClient} from '@angular/common/http';
 import {NavController} from '@ionic/angular';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-intro',
@@ -21,15 +21,24 @@ export class IntroPage implements OnInit {
     utilisateur = {} as Utilisateur;
 
     constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient, private router: Router,
-                private authService: AuthService, private storage: NativeStorage, private navCtrl: NavController) {
+                private authService: AuthService, private storage: NativeStorage, private navCtrl: NavController,
+                private activatedRoute: ActivatedRoute) {
+
+        this.credentialsForm = this.formBuilder.group({
+            password: ['', [Validators.required, Validators.minLength(6),
+                Validators.maxLength(30)]],
+            email: ['', [Validators.required, Validators.minLength(6)]]
+        });
     }
 
     ngOnInit() {
-        this.credentialsForm = this.formBuilder.group({
-            email: ['', [Validators.required, Validators.minLength(6)]],
-            password: ['', [Validators.required, Validators.minLength(6),
-                Validators.maxLength(30)]]
+        this.activatedRoute.queryParams.subscribe(params => {
+            if (params && params.special) {
+                this.utilisateur = JSON.parse(params.special);
+            }
         });
+        this.credentialsForm.value.password = !this.utilisateur.password ? '' : this.utilisateur.password;
+        this.credentialsForm.value.email = !this.utilisateur.email ? '' : this.utilisateur.email;
     }
 
     loginWithFacebook(): void {
@@ -43,7 +52,7 @@ export class IntroPage implements OnInit {
                         contact: email,
                         type: 'email',
                         avatar: '',
-                        username: ''
+                        username: '',
                     };
                     await this.storage.setItem('Utilisateur', this.utilisateur);
                     await this.storage.setItem('isLoggedIn', true);
@@ -66,8 +75,8 @@ export class IntroPage implements OnInit {
             // tslint:disable-next-line:triple-equals
             if (event.keyCode == 13 && this.credentialsForm.valid) {
                 await this.authService.login(this.credentialsForm.value).subscribe(res => {
-                    if(res){
-                        this.navCtrl.navigateForward("/menu");
+                    if (res) {
+                        this.navCtrl.navigateRoot('/tabs/tab1');
 
                     }
                     // if (res) {
@@ -87,7 +96,7 @@ export class IntroPage implements OnInit {
         } else {
             await this.authService.login(this.credentialsForm.value).subscribe(res => {
                 // if(res){
-                    // this.router.navigateByUrl("menu/product-list");
+                // this.router.navigateByUrl("menu/product-list");
                 // }
                 // if (res) {
                 // this.navCtrl.navigateForward('/home');
@@ -107,6 +116,7 @@ export class IntroPage implements OnInit {
     }
 
     async register() {
+        // await this.navCtrl.navigateRoot('/register');
         await this.navCtrl.navigateRoot('/register');
     }
 }

@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {Storage} from '@ionic/storage';
 import {Languages} from '../models/Languages';
+import {NativeStorage} from '@ionic-native/native-storage/ngx';
+import {StorageService} from './storage.service';
 
 const LNG_KEY = 'SELECTED_LANGUAGE';
 
@@ -11,18 +12,20 @@ const LNG_KEY = 'SELECTED_LANGUAGE';
 export class LanguageService {
     selected = '';
 
-    constructor(private translate: TranslateService, private storage: Storage) {
+    constructor(private translate: TranslateService, private localStorage: StorageService, private storage: NativeStorage) {
     }
 
-    setInitialAppLanguage(defLanguage) {
+    async setInitialAppLanguage(defLanguage) {
         let language = this.translate.getBrowserLang();
-        if(!defLanguage){
+        if (!defLanguage) {
             defLanguage = language;
         }
 
         this.translate.setDefaultLang(defLanguage);
+        this.localStorage.set(LNG_KEY, defLanguage).then();
+        await this.storage.setItem(LNG_KEY, defLanguage);
 
-        this.storage.get(LNG_KEY).then(val => {
+        this.localStorage.get(LNG_KEY).then(val => {
             if (val) {
                 this.setLanguage(val);
             }
@@ -36,9 +39,10 @@ export class LanguageService {
         ];
     }
 
-    private setLanguage(lng) {
+    private async setLanguage(lng) {
         this.translate.use(lng);
         this.selected = lng;
-        this.storage.set(LNG_KEY, lng);
+        await this.localStorage.set(LNG_KEY, lng);
+        await this.storage.setItem(LNG_KEY, lng);
     }
 }

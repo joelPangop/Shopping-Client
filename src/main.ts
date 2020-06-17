@@ -1,3 +1,5 @@
+import './polyfills';
+import { JitCompiler } from "@angular/compiler";
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
@@ -7,7 +9,8 @@ import { environment } from './environments/environment';
 import "hammerjs"; // HAMMER TIME
 
 if (environment.production) {
-  enableProdMode();
+  // enableProdMode();
+  // JitCompiler.apply(this)
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)

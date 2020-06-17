@@ -1,59 +1,93 @@
 <ion-header>
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="menu/messagerie">
+            <ion-back-button defaultHref="/menu/messagerie">
             </ion-back-button>
         </ion-buttons>
-<!--        <ion-title *ngIf="uid === '1000'">{{message.title}}</ion-title>-->
-<!--        <ion-title *ngIf="uid !== '1000'">Contacter le vendeur</ion-title>-->
-        <ion-avatar slot="start">
-            <ion-img src="http://192.168.2.58:4000/image/{{interlocutor.avatar}}"></ion-img>
-        </ion-avatar>
-        <ion-title>{{interlocutor.username}}</ion-title>
+        <!--        <ion-title *ngIf="uid === '1000'">{{message.title}}</ion-title>-->
+        <!--        <ion-title *ngIf="uid !== '1000'">Contacter le vendeur</ion-title>-->
+        <ion-buttons>
+            <ion-avatar>
+                <ion-img src="https://egoalservice.azurewebsites.net/image/{{interlocutor.avatar}}"></ion-img>
+            </ion-avatar>
+            <ion-title slot="start">{{interlocutor.username}}</ion-title>
+        </ion-buttons>
+
         <ion-buttons slot="end">
-            <ion-button (click)="toggleAction()" *ngIf="action === 'read'" fill="outline" slot="=end">Repondre</ion-button>
+            <ion-button (click)="toggleAction()" *ngIf="action === 'read'" fill="outline" slot="=end">Repondre
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-header>
+    <ion-toolbar color="dark-tint">
+        <ion-buttons (click)="showDetails(article._id)">
+            <ion-thumbnail slot="start">
+                <ion-img src="http://192.168.2.58:4000/image/{{image}}"></ion-img>
+            </ion-thumbnail>
+            <div class="title">
+                <p text-center>
+                    {{article_title}}
+
+                    {{articleService.article.price | currency:cuService.toCurrOptionSubject:'symbol-narrow':'.2'}}
+                </p>
+            </div>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <ion-grid *ngIf="uid === '1000'">
+    <ion-grid>
         <ion-row *ngFor="let msg of messages; let i = index">
-            <ion-col size="9" offset="{{msg.title !== utilisateur.username ? 3 : 0}} " class="message {{msg.title !== utilisateur.username ? 'other-message' : 'my-message'}}">
-                    <ion-label button  (pressup)="handleDeleteButtonClick($event, msg, i)"><p style="text-align: justify">{{ msg.content }}</p></ion-label>
+            <ion-col size="9" offset="{{msg.title !== utilisateur.username ? 3 : 0}} "
+                     class="message {{msg.title !== utilisateur.username ? 'other-message' : 'my-message'}}">
+                <ion-buttons>
+                    <ion-label class="title" color="dark-shade">
+                        <p>{{msg.title !== utilisateur.username ? msg.title : 'Me'}}</p>
+                    </ion-label>
+                </ion-buttons>
+                <ion-label button (pressup)="handleDeleteButtonClick($event, msg, i)"><p
+                        style="text-align: justify; font-size: large">{{ msg.content }}</p>
+                </ion-label>
                 <div class="time" text-right>
-                    <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">
+                    <ion-note [color]="msg.read === false && msg.title !== utilisateur.username ? 'secondary' : 'dark'" slot="end">
                         {{msg.createdAt | date }}
                     </ion-note>
                 </div>
             </ion-col>
         </ion-row>
     </ion-grid>
-<!--    <ion-card *ngIf="uid === '1000'">-->
-<!--        <ion-item>-->
-<!--            <ion-avatar slot="start">-->
-<!--                <ion-img [src]="'http://192.168.2.58:4000/image/'+message.picture"></ion-img>-->
-<!--            </ion-avatar>-->
-<!--            <ion-label>{{message?.title}}</ion-label>-->
-<!--            <ion-note>{{message?.createdAt | date}}</ion-note>-->
+    <!--    <ion-card *ngIf="uid === '1000'">-->
+    <!--        <ion-item>-->
+    <!--            <ion-avatar slot="start">-->
+    <!--                <ion-img [src]="'http://192.168.2.58:4000/image/'+message.picture"></ion-img>-->
+    <!--            </ion-avatar>-->
+    <!--            <ion-label>{{message?.title}}</ion-label>-->
+    <!--            <ion-note>{{message?.createdAt | date}}</ion-note>-->
 
-<!--            <ion-button *ngIf="action === 'write'" fill="outline" slot="=end">.</ion-button>-->
-<!--        </ion-item>-->
-<!--        <ion-card-content>-->
-<!--            {{message?.content}}-->
-<!--        </ion-card-content>-->
-<!--    </ion-card>-->
+    <!--            <ion-button *ngIf="action === 'write'" fill="outline" slot="=end">.</ion-button>-->
+    <!--        </ion-item>-->
+    <!--        <ion-card-content>-->
+    <!--            {{message?.content}}-->
+    <!--        </ion-card-content>-->
+    <!--    </ion-card>-->
 </ion-content>
 <ion-footer *ngIf="action === 'write'">
     <ion-toolbar color="primary">
-        <ion-input class="message-editor" type="text" [(ngModel)]="msgContent" placeholder="Tapez votre message"></ion-input>
+        <ion-input class="message-editor" type="text" [(ngModel)]="msgContent"
+                   placeholder="Tapez votre message"></ion-input>
         <ion-buttons slot="end">
-            <ion-button *ngIf="uid === '1000'" class="message-editor-button" color="light" (click)="send()">
+            <ion-button class="message-editor-button" color="light" (click)="send()">
                 <ion-icon name="send" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="uid !== '1000'" class="message-editor-button" color="light" (click)="contact()">
-                <ion-icon name="send" slot="icon-only"></ion-icon>
-            </ion-button>
+            <!--            <ion-button *ngIf="uid !== '1000'" class="message-editor-button" color="light" (click)="contact()">-->
+            <!--                <ion-icon name="send" slot="icon-only"></ion-icon>-->
+            <!--            </ion-button>-->
         </ion-buttons>
     </ion-toolbar>
+</ion-footer>
+
+<ion-footer text-center>
+    <p text-center>&copy; 2020 egoal-shopping.com
+    <p>
 </ion-footer>

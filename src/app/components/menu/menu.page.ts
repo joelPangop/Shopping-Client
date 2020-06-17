@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {LanguageService} from '../../services/language.service';
+import {AuthService} from '../../services/auth.service';
+import {Router} from '@angular/router';
+import {MenuController} from '@ionic/angular';
+import {Utilisateur} from '../../models/utilisateur-interface';
+import {PagesService} from '../../services/pages.service';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
 
 @Component({
     selector: 'app-menu',
@@ -7,90 +13,95 @@ import {LanguageService} from '../../services/language.service';
     styleUrls: ['./menu.page.scss'],
 })
 export class MenuPage implements OnInit {
+    categories: any[];
+    utilisateur: Utilisateur;
 
-    pages = [
-        {
-            title: 'MENU.main',
-            url: '/menu/product-list',
-            icon: 'home'
-        },
-        {
-            title: 'MENU.categorie',
-            children: [
-                {
-                    title: 'MENU.habit',
-                    description: 'description',
-                    icon: 'shirt',
-                    url: '/menu/category/Vetements'
-                },
-                {
-                    title: 'MENU.electroniques',
-                    description: 'description',
-                    icon: 'phone-portrait',
-                    url: '/menu/category/Electroniques'
-                },
-                {
-                    title: 'MENU.mode_accessoire',
-                    description: 'description',
-                    icon: 'bowtie',
-                    url: '/menu/category/Mode & Accessoires'
-                },
-                {
-                    title: 'MENU.chaussure',
-                    description: 'description',
-                    icon: 'archive',
-                    url: '/menu/category/Chaussures'
-                },
-                {
-                    title: 'MENU.automobile',
-                    description: 'description',
-                    icon: 'car',
-                    url: '/menu/category/Automobiles'
-                },
-                {
-                    title: 'MENU.home',
-                    description: 'description',
-                    icon: 'home',
-                    url: '/menu/category/Maison & Jardin'
-                }
-            ]
-        },
-        {
-            title: 'MENU.compte',
-            children: [
-                {
-                    title: 'Profile',
-                    url: '/menu/profile',
-                    icon: 'person'
-                },
-                {
-                    title: 'MENU.message',
-                    url: '/menu/messagerie',
-                    icon: 'mail'
-                },
-                {
-                    title: 'Live chat',
-                    url: '/menu/live-chat',
-                    icon: 'chatbubbles'
-                },
-                {
-                    title: 'MENU.panier',
-                    url: '/menu/cart',
-                    icon: 'cart'
-                },
-                {
-                    title: 'MENU.connexion',
-                    url: '/intro',
-                    icon: 'log-out'
-                }
-            ]
-        }
-    ];
+    public appPages = [];
+    isMain: boolean = true;
+    public catTitle: string;
 
-    constructor(private languageService: LanguageService) {
+    tdsPage = {
+        title: 'TDS Sneaker',
+        url: '/tds-sneaker-page/all',
+        src: 'assets/tds.svg'
+    };
+
+    status: boolean;
+
+    log = {
+        title: status ? 'MENU.deconnexion' : 'MENU.connexion',
+        icon: status ? 'log-out' : 'log-in'
+    };
+
+    store = {
+        title: 'MENU.store',
+        url: '/menu/store',
+        src: 'assets/bxs-store-alt.svg'
+    };
+
+    constructor(private languageService: LanguageService, private authService: AuthService, private router: Router,
+                private menuController: MenuController,
+                private pagesService: PagesService,
+                private userStorageUtils: UserStorageUtils) {
+        // this.menuController.enable(true); // Enable side menu
     }
 
     ngOnInit() {
+        this.appPages = this.pagesService.getPages();
+        this.authService.isAuthenticated().subscribe((state) => {
+            if (state) {
+                this.status = true;
+            } else {
+                this.status = false;
+            }
+        });
     }
 
+    logOut() {
+        this.router.navigate(['intro']).then(r => this.authService.logout());
+    }
+
+    async signout() {
+        await this.menuController.enable(false); // Make Sidemenu disable
+        await this.router.navigate(['onbroading']).then(r => this.authService.logout());
+    }
+
+    backToMain() {
+        this.isMain = true;
+        this.catTitle = '';
+        this.appPages = this.pagesService.getPages();
+    }
+
+    goToSubMain(sub) {
+        if (sub.isParent) {
+            this.isMain = false;
+            this.menuController.isOpen('true');
+            switch (sub.cat) {
+                case 'Automobile':
+                    this.appPages = this.pagesService.getAutoPages();
+                    this.catTitle = 'Automobile';
+                    break;
+                case 'Mode':
+                    this.appPages = this.pagesService.getModePages();
+                    this.catTitle = 'Mode';
+                    break;
+                case 'Electronique':
+                    this.appPages = this.pagesService.getElectroniquesPages();
+                    this.catTitle = 'Electronique';
+                    break;
+                case 'House':
+                    this.appPages = this.pagesService.getHousePages();
+                    this.catTitle = 'House';
+                    break;
+                case 'Office-industrie':
+                    this.appPages = this.pagesService.getWorkIndustriePages();
+                    this.catTitle = 'Office & Industry';
+                    break;
+                case 'Gadget':
+                    this.appPages = this.pagesService.getGadgetPages();
+                    this.catTitle = 'Gadget';
+                    break;
+            }
+        }
+    }
 }

@@ -10,8 +10,10 @@ import {AuthService} from '../../services/auth.service';
 import {ImageService} from '../../services/image.service';
 import {Article} from '../../models/article-interface';
 import {ArticleService} from '../../services/article.service';
-import {Observable} from 'rxjs';
-import {LoadingController, NavController, ToastController} from '@ionic/angular';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {AlertController, LoadingController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {ShowOptionsPage} from '../show-options/show-options.page';
 
 @Component({
     selector: 'app-profile',
@@ -35,20 +37,26 @@ export class ProfilePage implements OnInit {
     private message: string;
     uploadForm: FormGroup;
     articles: Article[];
+    // @ts-ignore
+    currOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    icon;
+    currency;
 
     constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
-                private loadingCtrl: LoadingController, private navCtrl: NavController) {
+                private loadingCtrl: LoadingController, private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
+                private popoverController: PopoverController) {
         this.userForm = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
-            telephone: ['', Validators.required],
             passwordConfirm: new FormControl('', [
                 Validators.required,
                 Validators.minLength(6),
                 Validators.maxLength(30),
             ])
-        }, {validator: this.password});
+        }, { validator: this.password });
     }
 
     async ngOnInit() {
@@ -56,13 +64,15 @@ export class ProfilePage implements OnInit {
             image: ['']
         });
         this.options = Object.keys(CategorieTelephone);
-        this.utilisateur = await this.nativeStorage.getItem('Utilisateur');
+        this.utilisateur = await this.userStorageUtils.getUser();
         console.log(this.utilisateur);
         this.authSrv.userInfo = this.utilisateur.userInfo;
         this.authSrv.address = this.utilisateur.userInfo.address;
+        this.icon= this.utilisateur.currency.icon;
+        this.currency= this.utilisateur.currency.currency;
         this.ischanged = false;
         this.passwordShown = false;
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.uc.r.appspot.com/image/' + this.utilisateur.avatar;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar;
         this.loadData();
     }
 
@@ -91,7 +101,9 @@ export class ProfilePage implements OnInit {
     }
 
     password(formGroup: FormGroup): { [err: string]: any } {
-        return formGroup.get('password').value === formGroup.get('passwordConfirm').value ? null : {passwordMismatch: true};
+        console.log('password', formGroup.get('password').value);
+        console.log('confirm password', formGroup.get('passwordConfirm').value);
+        return formGroup.get('password').value === formGroup.get('passwordConfirm').value ? null : { passwordMismatch: true };
     }
 
     async updateProfile() {
@@ -100,6 +112,7 @@ export class ProfilePage implements OnInit {
         this.utilisateur.userInfo.address = this.authSrv.userInfo.address;
         this.utilisateur.userInfo = this.authSrv.userInfo;
         this.utilisateur.userInfo.address = this.authSrv.userInfo.address;
+        this.utilisateur.password = this.userForm.value.password;
 
         if (this.newImg) {
             this.uploadForm.get('image').setValue(this.newImg);
@@ -114,6 +127,11 @@ export class ProfilePage implements OnInit {
                         this.authSrv.address = this.utilisateur.userInfo.address;
                         await this.authSrv.storage.setItem('IsLogginIn', true);
                     });
+                    await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
+                        this.authSrv.userInfo = this.utilisateur.userInfo;
+                        this.authSrv.address = this.utilisateur.userInfo.address;
+                        await this.authSrv.localStorage.set('IsLogginIn', true);
+                    });
                 });
             });
         } else {
@@ -125,6 +143,11 @@ export class ProfilePage implements OnInit {
                     this.authSrv.userInfo = this.utilisateur.userInfo;
                     this.authSrv.address = this.utilisateur.userInfo.address;
                     await this.authSrv.storage.setItem('IsLogginIn', true);
+                });
+                await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
+                    this.authSrv.userInfo = this.utilisateur.userInfo;
+                    this.authSrv.address = this.utilisateur.userInfo.address;
+                    await this.authSrv.localStorage.set('IsLogginIn', true);
                 });
             });
         }
@@ -174,7 +197,7 @@ export class ProfilePage implements OnInit {
 
     async updateArticle(article: Article, index) {
         // await this.storage.setItem('page', 'profile');
-        await this.navCtrl.navigateForward('/edit-product/' + article._id);
+        await this.navCtrl.navigateForward('tabs/edit-product/' + article._id);
     }
 
     async deleteArticle(article: Article, index: number) {
@@ -218,5 +241,31 @@ export class ProfilePage implements OnInit {
         //     console.log('Articles a partir du panier', articles);
         //     $event.target.complete();
         // });
+    }
+    public async setCurrency(ev) {
+        // @ts-ignore
+        const popover = await this.popoverController.create({
+            component: ShowOptionsPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+            componentProps: {
+                currOptionSubject: this.currOptionSubject,
+                currIconOptionSubject: this.currIconOptionSubject,
+                currency: this.utilisateur.currency.currency,
+                currencyIcon: this.utilisateur.currency.icon,
+                option: 'userCurrency'
+            }
+        });
+
+        popover.onDidDismiss()
+            .then((data) => {
+                console.log(data.data);
+                this.currency = data.data.currency;
+                this.icon = data.data.icon;
+                this.utilisateur.currency.icon = this.icon;
+                this.utilisateur.currency.currency = this.currency;
+            });
+        return await popover.present();
     }
 }

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <access origin="*" />
+  
+  <feature name="CardIO">
+    <param name="android-package" value="io.card.cordova.sdk.CardIOCordovaPlugin"/>
+  </feature>
+
+  <feature name="PhotoViewer">
+    <param name="android-package" value="com.sarriaroman.PhotoViewer.PhotoViewer"/>
+  </feature>
+
+  <feature name="PayPalMobile">
+    <param name="android-package" value="com.paypal.cordova.sdk.PayPalMobileCordovaPlugin"/>
+  </feature>
+
+  <feature name="AccountKitPlugin">
+    <param name="android-package" value="org.apache.cordova.facebook.AccountKitPlugin"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="CordovaHttpPlugin">
+    <param name="android-package" value="com.silkimen.cordovahttp.CordovaHttpPlugin"/>
+  </feature>
+
+  <feature name="Camera">
+    <param name="android-package" value="org.apache.cordova.camera.CameraLauncher"/>
+  </feature>
+
+  <feature name="Notification">
+    <param name="android-package" value="org.apache.cordova.dialogs.Notification"/>
+  </feature>
+
+  <feature name="FacebookConnectPlugin">
+    <param name="android-package" value="org.apache.cordova.facebook.ConnectPlugin"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="File">
+    <param name="android-package" value="org.apache.cordova.file.FileUtils"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="FileTransfer">
+    <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer"/>
+  </feature>
+
+  <feature name="FileChooser">
+    <param name="android-package" value="com.megster.cordova.FileChooser"/>
+  </feature>
+
+  <feature name="FilePath">
+    <param name="android-package" value="com.hiddentao.cordova.filepath.FilePath"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="FirebaseAuthentication">
+    <param name="android-package" value="by.chemerisuk.cordova.firebase.FirebaseAuthenticationPlugin"/>
+    <param name="onload" value="false"/>
+  </feature>
+
+  <feature name="FirebasePlugin">
+    <param name="android-package" value="org.apache.cordova.firebase.FirebasePlugin"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="Globalization">
+    <param name="android-package" value="org.apache.cordova.globalization.Globalization"/>
+  </feature>
+
+  <feature name="NativeStorage">
+    <param name="android-package" value="NativeStorage"/>
+  </feature>
+
+  <feature name="NetworkStatus">
+    <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager"/>
+  </feature>
+
+  <feature name="networkinterface">
+    <param name="android-package" value="com.albahra.plugin.networkinterface.networkinterface"/>
+  </feature>
+
+  <feature name="CordovaStripe">
+    <param name="android-package" value="com.zyramedia.cordova.stripe.CordovaStripe"/>
+  </feature>
+
+  <feature name="ImagePicker">
+    <param name="android-package" value="com.synconset.ImagePicker"/>
+  </feature>
+
+  <feature name="SocialSharing">
+    <param name="android-package" value="nl.xservices.plugins.SocialSharing"/>
+  </feature>
+
+  <feature name="Sms">
+    <param name="android-package" value="com.cordova.plugins.sms.Sms"/>
+  </feature>
+
+  <feature name="IonicDeeplinkPlugin">
+    <param name="android-package" value="io.ionic.links.IonicDeeplink"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="Device">
+    <param name="android-package" value="org.apache.cordova.device.Device"/>
+  </feature>
+
+  <feature name="StatusBar">
+    <param name="android-package" value="org.apache.cordova.statusbar.StatusBar"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  <feature name="Whitelist">
+    <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin"/>
+    <param name="onload" value="true"/>
+  </feature>
+
+  
+</widget>

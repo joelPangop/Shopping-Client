@@ -6,7 +6,6 @@ import {ModalController, NavController, Platform, ToastController} from '@ionic/
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {itemCart} from '../../models/itemCart-interface';
-import {FormGroup} from '@angular/forms';
 import {ArticleService} from '../../services/article.service';
 import {ImageService} from '../../services/image.service';
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
@@ -16,6 +15,13 @@ import {Notification} from '../../models/notification-interface';
 import {NotificationType} from '../../models/notificationType';
 import {MessageService} from '../../services/message.service';
 import {Socket} from 'ngx-socket-io';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {CurrencyService} from '../../services/currency.service';
+import {environment} from '../../models/environements';
+import {CommandeService} from '../../services/commande.service';
+import {Commande} from '../../models/commande-interface';
+import {Storage} from '@ionic/storage';
+import {CartService} from '../../services/cart.service';
 
 @Component({
     selector: 'app-product-detail',
@@ -29,33 +35,56 @@ export class ProductDetailPage implements OnInit {
     rate: any;
     categories;
     cities;
-    slidesOpt = {
+    // Slider Options
+    slideOpts = {
         speed: 1000,
+        cubeEffect: {
+            shadow: true,
+            slideShadows: true,
+            shadowOffset: 20,
+            shadowScale: 0.94,
+        },
         autoplay: {
             delay: 500
         }
     };
+
     cartItems: itemCart[];
     images: any;
-    public cartItemCount = new BehaviorSubject(0);
+    public cartItemCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     utilisateur = {} as Utilisateur;
     like: boolean = false;
+    currency: any;
 
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
+    private resultRate: string = "0.1";
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
-                private storage: NativeStorage, private imageService: ImageService, private sharing: SocialSharing,
+                private storage: Storage, private imageService: ImageService, private sharing: SocialSharing,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService,
-                public modalController: ModalController, private msgService: MessageService, private socket: Socket) {
+                public modalController: ModalController, private msgService: MessageService, private socket: Socket,
+                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,
+                private cmdService: CommandeService) {
+
     }
 
     async ngOnInit() {
         this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        this.utilisateur = await this.storage.getItem('Utilisateur');
+        this.utilisateur = await this.userStorageUtils.getUser();
         // this.cartItems = await this.storage.getItem('cart');
         // this.cartItemCount.next(this.cartItems.length);
         console.log(this.id);
-        await this.loadArticle();
+        let data: Commande;
+
+        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {{
+            data = res;
+            this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
+        }});
+        await this.userStorageUtils.getCurrency().then(async res => {
+            this.currency = res ? res.currency : this.utilisateur.currency.currency;
+            await this.loadArticle();
+        });
+
         if (!this.rate) {
             this.rate = 0;
         }
@@ -63,10 +92,13 @@ export class ProductDetailPage implements OnInit {
 
     // @ts-ignore
     loadArticle(): Observable<Article> {
-        this.articleService.loadArticle(this.id).subscribe(res => {
-            this.articleService.article = res as Article;
-            this.images = this.articleService.article.pictures;
-            if (this.articleService.article.likes.includes(this.utilisateur._id)) {
+        this.articleService.loadArticle(this.id).subscribe(async res => {
+            this.article = res as Article;
+            this.images = this.article.pictures;
+            const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
+            let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
+            this.article.price = this.article.price * parseFloat(rate);
+            if (this.article.likes.includes(this.utilisateur._id)) {
                 this.like = true;
             }
             // this.rate = this.articleService.article.averageStar;
@@ -84,7 +116,6 @@ export class ProductDetailPage implements OnInit {
             }
             node.removeEventListener('animationend', handleAnimationEnd);
         }
-
         node.addEventListener('animationend', handleAnimationEnd);
     }
 
@@ -93,10 +124,10 @@ export class ProductDetailPage implements OnInit {
         try {
             if (this.platform.is('ios') || this.platform.is('android')) {
                 await this.sharing.share(
-                    this.articleService.article.title,
+                    this.article.title,
                     null,
                     null,
-                    `https://example.com/product-detail/${this.articleService.article._id}`
+                    `https://egoal-shopping.com/product-detail/${this.article._id}`
                 );
             } else {
                 await this.sharing.shareViaEmail('Body', 'Subject', ['recipient@example.org']).then(() => {
@@ -116,7 +147,7 @@ export class ProductDetailPage implements OnInit {
     // methode pour visionner une image avec option de partage
     async showImage(imgId: string, imgTitle: string) {
         if (this.platform.is('android') || this.platform.is('ios')) {
-            this.photoViewer.show(`https://egoalservice.uc.r.appspot.com/image/${imgId}`,
+            this.photoViewer.show(`${environment.api_url}/image/${imgId}`,
                 imgTitle, {share: true});
         } else if (this.platform.is('desktop') || this.platform.is('hybrid')) {
             console.log('platform', this.platform.platforms());
@@ -137,40 +168,40 @@ export class ProductDetailPage implements OnInit {
     async leaveNote() {
         console.log('rate', this.rate);
         // on stocke la moyenne dans 'average'
-        const average: number = (this.articleService.article.averageStar + this.rate) / 2;
+        const average: number = (this.article.averageStar + this.rate) / 2;
         // on arrondi 'average' et on stocke le résultat dans 'aroundi'
         const aroundi: number = Math.ceil(average);
-        const utilisateurId: string = this.articleService.article.utilisateurId;
+        const utilisateurId: string = this.article.utilisateurId;
         const articleId: string = this.id;
 
         await this.articleService.leaveNote(utilisateurId, articleId, {averageStar: aroundi})
             .subscribe(res => {
-                this.articleService.article = res as Article;
+                this.article = res as Article;
                 this.presentToast('Votre note a réussi !', 2000);
             });
     }
 
     async checkLike() {
-        const utilisateurId: string = this.articleService.article.utilisateurId;
+        const utilisateurId: string = this.article.utilisateurId;
         if (utilisateurId === this.utilisateur._id) {
             this.presentToast('Impossible de liker son propre article', 1500);
         } else {
             this.like = !this.like;
             if (this.like === false) {
-                const index = this.articleService.article.likes.indexOf(this.utilisateur._id, 0);
-                this.articleService.article.likes.splice(index, 1);
+                const index = this.article.likes.indexOf(this.utilisateur._id, 0);
+                this.article.likes.splice(index, 1);
             } else {
-                this.articleService.article.likes.push(this.utilisateur._id);
+                this.article.likes.push(this.utilisateur._id);
             }
 
-            await this.articleService.checkLike(utilisateurId, this.id, this.articleService.article).subscribe(res => {
+            await this.articleService.checkLike(utilisateurId, this.id, this.article).subscribe(res => {
                 console.log(res);
                 const notification: Notification = {
                     title: 'Nouveaux Like',
                     message: this.utilisateur.username + ' a like votre article',
                     utilisateurId: utilisateurId,
-                    article_id: this.articleService.article._id,
-                    avatar: this.articleService.article.pictures[0],
+                    article: this.article,
+                    avatar: this.article.pictures[0],
                     read: false,
                     type: NotificationType.LIKE,
                     sender: this.utilisateur._id
@@ -189,65 +220,95 @@ export class ProductDetailPage implements OnInit {
         }
     }
 
-//  grace à cette methode, on se déplace sur la page 'cart'
-    async openCart() {
-        await this.storage.setItem('page', 'product-detail/' + this.id);
-        if (this.platform.is('ios') || this.platform.is('android')) {
-            await this.navCtrl.navigateForward('/cart');
-        } else {
-            const modal = await this.modalController.create({
-                component: CartPage,
-                cssClass: '.my-custom-show-image'
-            });
-            modal.onWillDismiss().then(() => {
-                this.fab.nativeElement.classList.remove('animated', 'bounceOutLeft');
-                this.animateCSS('bounceInLeft');
-            });
-            await modal.present();
-        }
+    async gotoCartPage() {
+        this.animateCSS('bounceOutLeft', true);
+        const modal = await this.modalController.create({
+            component: CartPage,
+            cssClass: 'cart-modal'
+        });
+        modal.onWillDismiss().then(() => {
+            this.fab.nativeElement.classList.remove('animated', 'bounceOutLeft');
+            this.animateCSS('bounceInLeft');
+        });
+        return await modal.present();
     }
 
     // methode pour ajouter un article au panier
-    async addToCart(item: Article) {
-        if (this.utilisateur._id == item.utilisateurId) {
+    async addToCart() {
+        if (this.utilisateur._id == this.article.utilisateurId) {
             this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
         } else {
             try {
                 let data: itemCart[];
                 let added = false;
-                data = await this.storage.getItem('cart');
+                let commande = await this.storage.get('cart') as Commande;
+                data = commande ? commande.itemsCart : [];
                 console.log('data', data);
                 // on vérifie si le panier est vide
                 if (data === null || data.length === 0) {
+                    data = [];
                     data.push({
-                        item,
+                        item: this.article,
                         qty: 1,
-                        amount: item.price
+                        amount: this.article.price
                     });
+                    this.cartItemCount.next(this.cartItemCount.value + 1);
+                    const timestamp = new Date().getUTCMilliseconds();
+                    let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
+                    this.cmdService.commande.num_commande = ran_number;
+                    this.cmdService.commande.itemsCart = data;
+                    this.cmdService.commande.completed = false;
+                    this.cmdService.commande.userId = this.utilisateur._id;
+                    this.cmdService.commande.amount = this.article.price;
+                    this.cmdService.commande.quantity = data.length;
+                    this.cmdService.createCommande().subscribe(async res => {
+                        console.log('resultat', res);
+                        this.cmdService.commande = res;
+                        await this.storage.set('cart', this.cmdService.commande);
+                    });
+                    // this.event.publish('cartItemCount', this.cartItemCount.value);
+                    this.cartService.setCartItemCount(this.cartItemCount.value);
                 } else {
                     // tslint:disable-next-line:prefer-const
                     let names: string[] = [];
                     data.forEach(d => {
                         names.push(d.item.title);
                     });
-                    if (!names.includes(item.title)) {
+                    if (!names.includes(this.article.title)) {
                         data.push({
-                            item,
+                            item: this.article,
                             qty: 1,
-                            amount: item.price
+                            amount: this.article.price
                         });
+                        this.cartItemCount.next(this.cartItemCount.value + 1);
+                        // this.event.publish('cartItemCount', this.cartItemCount.value);
+                        this.cartService.setCartItemCount(this.cartItemCount.value);
+
                     } else {
                         // tslint:disable-next-line:prefer-for-of
                         for (let i = 0; i < data.length; i++) {
                             const element: itemCart = data[i];
-                            if (item._id === element.item._id) {
+                            if (this.article._id === element.item._id) {
                                 // le panier contient déjà cette article
                                 element.qty += 1;
-                                element.amount += item.price;
+                                element.amount += this.article.price;
                                 added = true;
                             }
                         }
                     }
+                    this.cmdService.commande.itemsCart = data;
+                    this.cmdService.commande.userId = this.utilisateur._id;
+                    let amount = 0;
+                    for (let i of data) {
+                        amount += i.amount;
+                    }
+                    this.cmdService.commande.amount = amount;
+                    this.cmdService.commande.quantity = data.length;
+                    this.cmdService.updateCommande().subscribe(async res => {
+                        console.log('resultat', res);
+                        this.cmdService.commande = res;
+                        await this.storage.set('cart', this.cmdService.commande);
+                    });
                 }
                 // if (!added) {
                 //     // le panier n'est pas vide et ne contient pas l'article
@@ -257,8 +318,7 @@ export class ProductDetailPage implements OnInit {
                 //         amount: item.price
                 //     });
                 // }
-                this.cartItemCount.next(this.cartItemCount.value + 1);
-                await this.storage.setItem('cart', data);
+                // await this.storage.set('commande', data);
                 this.animateCSS('tada');
                 this.presentToast('Votre panier a été mis à jour', 1500);
             } catch (e) {
@@ -266,15 +326,19 @@ export class ProductDetailPage implements OnInit {
                 console.log('error', e);
                 if (e.code === 2) {
                     myData.push({
-                        item,
+                        item: this.article,
                         qty: 1,
-                        amount: item.price
+                        amount: this.article.price
                     });
-                    await this.storage.setItem('cart', myData);
+                    await this.storage.set('cart', myData);
                     this.presentToast('Votre panier a été mis à jour', 1500);
                 }
             }
         }
+    }
+
+    getRandomInt() {
+        return Math.floor(Math.random() * Math.floor(300000000));
     }
 
 //  on affiche un message toast grace à cette methode
@@ -289,7 +353,7 @@ export class ProductDetailPage implements OnInit {
     async loadImages() {
         (await this.imageService.loadImages()).subscribe(data => {
             console.log('All data pictures', data);
-            console.log('All product pictures', this.articleService.article.pictures);
+            console.log('All product pictures', this.article.pictures);
             const tab = [];
             // @ts-ignore
             for (const img of data) {

@@ -4,10 +4,9 @@ import {MessageService} from '../../services/message.service';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {Message} from '../../models/message-interface';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {Notification} from '../../models/notification-interface';
-import {environment} from '../../models/environements';
-import {NetworkInterface} from '@ionic-native/network-interface/ngx';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
 
 @Component({
     selector: 'app-messagerie',
@@ -15,7 +14,7 @@ import {NetworkInterface} from '@ionic-native/network-interface/ngx';
     styleUrls: ['./messagerie.page.scss'],
 })
 export class MessageriePage implements OnInit {
-    messageType = 'messages';
+    messageType = 'received';
     utilisateur = {} as Utilisateur;
     messages = [] as Message[];
     messages_received = [] as Message[];
@@ -25,12 +24,11 @@ export class MessageriePage implements OnInit {
     unread_number: number = 0;
 
     constructor(public platform: Platform, public msgservice: MessageService, private storage: NativeStorage,
-                private navCtrl: NavController) {
-
+                private navCtrl: NavController, private userStorageUtils: UserStorageUtils) {
     }
 
     async ngOnInit() {
-        this.utilisateur = await this.storage.getItem('Utilisateur');
+        this.utilisateur = await this.userStorageUtils.getUser();
         this.loadAll().subscribe(res => {
             console.log('result', res);
             this.messages = res [0];
@@ -64,7 +62,10 @@ export class MessageriePage implements OnInit {
         if (event) {
             forkJoin(this.loadReceivedMessages(), this.loadSent(), this.loadReceivedNotifications()).subscribe(res => {
                 console.log('result', res);
-                this.messages_received = res [0];
+                const msg_rec = res [0];
+                this.messages_received = msg_rec.reverse().filter((thing, i, arr) => {
+                    return arr.indexOf(arr.find(t => t.article._id === thing.article._id && t.article.pictures[0] === thing.article.pictures[0])) === i;
+                });
                 this.messages_sent = res [1];
                 this.notifications = res [2];
                 event.target.complete();
@@ -87,12 +88,13 @@ export class MessageriePage implements OnInit {
     }
 
     messageWrite(msg: Message, i: number) {
-        this.navCtrl.navigateForward(`/action-message/${msg._id}/write/${1000}`);
+        this.navCtrl.navigateRoot(`/action-message/${msg._id}/write/${1000}/${msg.article._id}`);
     }
 
     messageView(msg: Message, i: number) {
         this.unread_number = 0;
-        this.navCtrl.navigateForward(`/action-message/${msg._id}/read/${1000}`);
+        this.navCtrl.navigateRoot(`/action-message/${msg._id}/read/${msg.utilisateurId}/${msg.article._id}`);
+        // this.navCtrl.navigateForward(`/action-message/${msg._id}/read/${1000}/${msg.article._id}`);
     }
 
     compare = (a, b) => {

@@ -1,0 +1,96 @@
+
+<ion-content id="cart" fullscreen>
+  <div class="ion-text-end">
+    <ion-button (click)="dismiss()" fill="clear" color="dark">
+      <ion-icon name="close" slot="start"></ion-icon>
+    </ion-button>
+  </div>
+    <div *ngIf="cartItems.length != 0" class="ion-padding">
+        <!-- Cart Product List -->
+        <ion-card *ngFor="let item of cartItems; let i = index">
+            <ion-list lines="none">
+                <ion-item class="ion-no-padding">
+
+                    <!-- Product Image -->
+                    <ion-thumbnail slot="start">
+                        <img style="vertical-align: middle;"
+                             [src]="'https://egoalservice.azurewebsites.net/image/'+item.item.pictures[0]">
+                    </ion-thumbnail>
+                    <ion-label class="ion-text-wrap">
+
+                        <!-- Product Name -->
+                        <ion-text color="dark">
+                            <h2> {{ item.item.title }}</h2>
+                        </ion-text>
+
+                        <!-- Product Price -->
+                        <ion-text color="color1">
+                            <p>${{item.item.price}}</p>
+                        </ion-text>
+                        <!-- Quantity -->
+                        <ion-row>
+                            <!-- Total Quantity -->
+                            <ion-col class="ion-text-center" size="1">{{item.qty}}</ion-col>
+                            <ion-col class="ion-text-center">
+                                <div class="my-container-label">
+                                    <div class="span-container">
+            <span *ngIf="item.item?.averageStar >= 1">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                        <span *ngIf="item.item?.averageStar >= 2">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                        <span *ngIf="item.item?.averageStar >= 3">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                        <span *ngIf="item.item?.averageStar >= 4">
+                             <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                        <span *ngIf="item.item?.averageStar >= 5">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                    </div>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        </ion-card>
+        <!-- summary Of Products Price -->
+        <ion-list lines="none">
+            <ion-item>
+                <ion-label>Sub Total</ion-label>
+                <ion-note slot="end" color="dark">{{commande.amount | currency}}</ion-note>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Shipping</ion-label>
+                <ion-note slot="end" color="dark">{{commande.shipmentFee | currency}}</ion-note>
+                <!--                <ion-note slot="end" color="dark">$25</ion-note>-->
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Tax(10%)</ion-label>
+                <ion-note slot="end" color="dark">$0</ion-note>
+            </ion-item>
+
+            <ion-item-divider></ion-item-divider>
+
+            <ion-item>
+                <ion-label>Total</ion-label>
+                <ion-note slot="end" color="dark">{{commande.amount | currency}}</ion-note>
+                <!--                <ion-note slot="end" color="dark">${{total + 25 + 100}}</ion-note>-->
+            </ion-item>
+        </ion-list>
+
+    </div>
+</ion-content>
+<ion-footer no-border *ngIf="commande.completed === false">
+  <ion-toolbar class="ion-padding" transparent>
+    <!-- Checkout Button Option -->
+    <ion-button color="color1" expand="block" (click)="goToCheckout()" *ngIf="cartItems.length != 0">PROCEED TO
+      CHECKOUT
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject} from 'rxjs';
-import {Events} from '@ionic/angular';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -13,10 +12,11 @@ export class CurrencyService {
     toCurrOptionSubject;
     // @ts-ignore
     currRateOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
-    showLoadingSpining: boolean = false;
-    cad_rate;
+    private showLoadingSpinningSubject = new Subject<boolean>();
 
-    constructor(public http: HttpClient, private event: Events) {
+    private rateSubject = new Subject<any>();
+
+    constructor(public http: HttpClient) {
     }
 
     getCountries() {
@@ -31,16 +31,29 @@ export class CurrencyService {
         let res = false;
         try {
             const exchangeRate = await this.getExchangeRate(this.fromCurrOptionSubject, this.toCurrOptionSubject);
-            let rate = exchangeRate[this.fromCurrOptionSubject + '_' + this.toCurrOptionSubject].val;
-            this.event.publish('rate', rate);
-            this.showLoadingSpining = false;
-            this.event.publish('showLoadingSpining', false);
+            let rate = '';
+            rate = exchangeRate[this.fromCurrOptionSubject + '_' + this.toCurrOptionSubject].val;
+            this.rateSubject.next(rate);
+            this.showLoadingSpinningSubject.next(false);
+            // this.event.publish('showLoadingSpining', false);
             res = true;
             this.currRateOptionSubject.next(rate);
         } catch (err) {
             console.error(err);
         }
         return res;
+    }
+
+    getRateObservable(): Subject<any> {
+        return this.rateSubject;
+    }
+
+    getShowLoadingSpinningSubjectObservale(): Subject<boolean> {
+        return this.showLoadingSpinningSubject;
+    }
+
+    setShowLoadingSpinningSubjectObservale(value){
+        this.showLoadingSpinningSubject.next(value);
     }
 
 }

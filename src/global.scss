@@ -38,8 +38,9 @@
 }
 
 .cart-modal {
-  --height: 50%;
+  --height: 80%;
   --border-radius: 10px;
+  --background: transparent !important;
   padding: 25px;
 }
 
@@ -47,3 +48,28 @@
   width: 5%;
 
 }
+
+.logo-section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-shade);
+  padding: 2em 0;
+  min-height: 200px;
+  .logo-section__wrapper{
+    text-align: center;
+    .logo-section__logo{
+      display: block;
+      width: 250px;
+      height: 150px;
+      border-radius: 100%;
+    }
+    .logo-section__title{
+      font-size: 1.5em;
+      font-weight: normal;
+      color: var(--dark-color);
+    }
+  }
+
+}
+

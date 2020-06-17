@@ -1,27 +1,30 @@
 <ion-header>
     <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-        <ion-back-button defaultHref="menu">
-        </ion-back-button>
-    </ion-buttons>
-    <ion-title>Messagerie</ion-title>
-</ion-toolbar>
-    <ion-toolbar color="primary">
-        <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged($event)">
-            <ion-segment-button value="received" layout="icon-start">
-                <ion-icon name="chatbubbles"></ion-icon>
-                <ion-label>Réçus</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="sent" layout="icon-start">
-                <ion-icon name="send"></ion-icon>
-                <ion-label>Envoyés</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="notif" layout="icon-start">
-                <ion-icon name="notifications"></ion-icon>
-                <ion-label>{{platform.is('desktop') || platform.is('hybrid') ? 'Notifications' : 'Notif.'}} </ion-label>
-            </ion-segment-button>
-        </ion-segment>
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="menu">
+            </ion-back-button>
+        </ion-buttons>
+        <ion-buttons>
+            <ion-icon name="chatbubbles"></ion-icon>
+            <ion-title>Messagerie</ion-title>
+        </ion-buttons>
     </ion-toolbar>
+    <!--    <ion-toolbar color="primary">-->
+    <!--        <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged($event)">-->
+    <!--            <ion-segment-button value="received" layout="icon-start">-->
+    <!--                <ion-icon name="chatbubbles"></ion-icon>-->
+    <!--                <ion-label>Réçus</ion-label>-->
+    <!--            </ion-segment-button>-->
+    <!--&lt;!&ndash;            <ion-segment-button value="sent" layout="icon-start">&ndash;&gt;-->
+    <!--&lt;!&ndash;                <ion-icon name="send"></ion-icon>&ndash;&gt;-->
+    <!--&lt;!&ndash;                <ion-label>Envoyés</ion-label>&ndash;&gt;-->
+    <!--&lt;!&ndash;            </ion-segment-button>&ndash;&gt;-->
+    <!--&lt;!&ndash;            <ion-segment-button value="notif" layout="icon-start">&ndash;&gt;-->
+    <!--&lt;!&ndash;                <ion-icon name="notifications"></ion-icon>&ndash;&gt;-->
+    <!--&lt;!&ndash;                <ion-label>{{platform.is('desktop') || platform.is('hybrid') ? 'Notifications' : 'Notif.'}} </ion-label>&ndash;&gt;-->
+    <!--&lt;!&ndash;            </ion-segment-button>&ndash;&gt;-->
+    <!--        </ion-segment>-->
+    <!--    </ion-toolbar>-->
 </ion-header>
 
 <ion-content>
@@ -58,41 +61,41 @@
                 </ion-item-sliding>
             </list>
         </div>
-        <div *ngSwitchCase="'sent'">
-            <ion-card *ngFor="let msg of messages_sent; let i = index">
-                <ion-item button>
-                    <ion-avatar slot="start">
-                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
-                    </ion-avatar>
-                    <ion-label>{{msg.title}}</ion-label>
-                </ion-item>
-                <ion-card-content class="ion-activated">
-                    <ion-item>
-                        <ion-label slot="start">{{msg.content}}</ion-label>
-                        <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">
-                            {{msg.createdAt | date }}
-                        </ion-note>
-                    </ion-item>
-                </ion-card-content>
-            </ion-card>
-        </div>
-        <div *ngSwitchCase="'notif'">
-            <ion-card *ngFor="let not of notifications; let i = index">
-                <ion-item button>
-                    <ion-avatar slot="start">
-                        <ion-img src="{{not.avatar}}"></ion-img>
-                    </ion-avatar>
-                    <ion-label>{{not.title}}</ion-label>
-                </ion-item>
-                <ion-card-content class="ion-activated">
-                    <ion-item>
-                        <ion-label slot="start">{{not.message}}</ion-label>
-                        <ion-note [color]="not.read === false ? 'secondary' : 'dark'" slot="end">
-                            {{not.createdAt | date }}
-                        </ion-note>
-                    </ion-item>
-                </ion-card-content>
-            </ion-card>
-        </div>
+        <!--        <div *ngSwitchCase="'sent'">-->
+        <!--            <ion-card *ngFor="let msg of messages_sent; let i = index">-->
+        <!--                <ion-item button>-->
+        <!--                    <ion-avatar slot="start">-->
+        <!--                        <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>-->
+        <!--                    </ion-avatar>-->
+        <!--                    <ion-label>{{msg.title}}</ion-label>-->
+        <!--                </ion-item>-->
+        <!--                <ion-card-content class="ion-activated">-->
+        <!--                    <ion-item>-->
+        <!--                        <ion-label slot="start">{{msg.content}}</ion-label>-->
+        <!--                        <ion-note [color]="msg.read === false ? 'secondary' : 'dark'" slot="end">-->
+        <!--                            {{msg.createdAt | date }}-->
+        <!--                        </ion-note>-->
+        <!--                    </ion-item>-->
+        <!--                </ion-card-content>-->
+        <!--            </ion-card>-->
+        <!--        </div>-->
+        <!--        <div *ngSwitchCase="'notif'">-->
+        <!--            <ion-card *ngFor="let not of notifications; let i = index">-->
+        <!--                <ion-item button>-->
+        <!--                    <ion-avatar slot="start">-->
+        <!--                        <ion-img src="{{not.avatar}}"></ion-img>-->
+        <!--                    </ion-avatar>-->
+        <!--                    <ion-label>{{not.title}}</ion-label>-->
+        <!--                </ion-item>-->
+        <!--                <ion-card-content class="ion-activated">-->
+        <!--                    <ion-item>-->
+        <!--                        <ion-label slot="start">{{not.message}}</ion-label>-->
+        <!--                        <ion-note [color]="not.read === false ? 'secondary' : 'dark'" slot="end">-->
+        <!--                            {{not.createdAt | date }}-->
+        <!--                        </ion-note>-->
+        <!--                    </ion-item>-->
+        <!--                </ion-card-content>-->
+        <!--            </ion-card>-->
+        <!--        </div>-->
     </div>
 </ion-content>

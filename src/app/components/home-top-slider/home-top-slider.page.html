@@ -1,0 +1,30 @@
+<!-- Top Banner Slider -->
+<div id="top-slider">
+<!--    <ion-grid>-->
+<!--        <ion-row style="height: 200px">-->
+            <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top">
+                <ion-slide>
+                    <img src="assets/images/banner-1.jpg"/>
+                </ion-slide>
+                <ion-slide>
+                    <img src="assets/images/banner-2.jpg"/>
+                </ion-slide>
+                <ion-slide>
+                    <img src="assets/images/banner-3.jpg"/>
+                </ion-slide>
+                <ion-slide>
+                    <img src="assets/images/banner-4.jpg"/>
+                </ion-slide>
+                <ion-slide>
+                    <h1>{{'HOME.annonces1' | translate}}</h1>
+                </ion-slide>
+                <ion-slide>
+                    <h1>{{'HOME.annonces2' | translate}}</h1>
+                </ion-slide>
+                <ion-slide (click)="goToTDS()">
+                    <img src="assets/TDS_IMG.jpg"/>
+                </ion-slide>
+            </ion-slides>
+<!--        </ion-row>-->
+<!--    </ion-grid>-->
+</div>

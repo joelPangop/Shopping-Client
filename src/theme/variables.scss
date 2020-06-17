@@ -74,4 +74,53 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+
+
+  --ion-color-color1: #FF8080;
+  --ion-color-color2: #9e9c9c;
+  --ion-color-white: #ffffff;
+
+  .ion-color-color1 {
+    --ion-color-base: #FF8080;
+    --ion-color-base-rgb: rgb(0, 255, 221);
+    --ion-color-contrast: #ffffff;
+    --ion-color-contrast-rgb: 255, 255, 255;
+    --ion-color-shade: #FF8080;
+    --ion-color-tint: #FF8080;
+  }
+
+  .ion-color-color2 {
+    --ion-color-base: #9e9c9c;
+    --ion-color-base-rgb: rgb(158, 156, 156);
+    --ion-color-contrast: #ffffff;
+    --ion-color-contrast-rgb: 255, 255, 255;
+    --ion-color-shade: #8b8a8a;
+    --ion-color-tint: #c7c6c6;
+  }
+
+  .ion-color-white {
+    --ion-color-base: #ffffff;
+    --ion-color-base-rgb: rgb(255, 255, 255);
+    --ion-color-contrast: #ffffff;
+    --ion-color-contrast-rgb: 255, 255, 255;
+    --ion-color-shade: #ffffff;
+    --ion-color-tint: #ffffff;
+  }
+
+  --dark-color: #263238;
+  --text-color: #b5b5b5;
+  --color-shade: #FF8080;
+  --ion-font-family: 'Roboto';
 }
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: normal;
+  src: url('../assets/fonts/Roboto-Bold.ttf');
+}
+
+ion-content {
+  --ion-background-color: #f5f6f9;
+}
+

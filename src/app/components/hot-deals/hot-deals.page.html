@@ -1,0 +1,33 @@
+<div id="hot-deals">
+  <ion-item-divider color="white" class="ion-padding-top">
+    <ion-label color="dark" class="text-bold">Hot Deals</ion-label>
+    <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear" routerLink="/tabs/tab2"
+                routerDirection="root">Sell All</ion-button>
+  </ion-item-divider>
+
+  <ion-slides [options]="slideOpts" class="ion-padding-top">
+    <ion-slide *ngFor="let item of deals">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-card class="ion-no-margin" routerLink="/tabs/tab2" routerDirection="root">
+              <div class="card-img" [style.background-image]="'url(' + item.image + ')'"></div>
+
+              <ion-fab vertical="top" horizontal="end">
+                <ion-fab-button>
+                  <ion-icon color="color1" name="heart"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
+
+              <ion-card-header>
+                <ion-card-title class="ion-padding-bottom">{{item.title}}</ion-card-title>
+                <ion-card-subtitle class="ion-text-wrap">{{item.subTitle}}</ion-card-subtitle>
+                <ion-button color="color1" size="small">Shop Now</ion-button>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+  </ion-slides>
+</div>

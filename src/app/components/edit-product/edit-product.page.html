@@ -22,7 +22,7 @@
   </ion-item>
   <ion-item>
     <ion-label position="floating">Catégorie du produit</ion-label>
-    <ion-select [(ngModel)]="articleService.article.category">
+    <ion-select [(ngModel)]="articleService.article.categories" multiple>
       <ion-select-option [value]="cat.title"
                          *ngFor="let cat of categories">{{ cat.title }}</ion-select-option>
     </ion-select>
@@ -66,3 +66,7 @@
     Mise a jour
   </ion-button>
 </ion-content>
+<ion-footer text-center>
+  <p text-center>&copy; 2020 egoal-shopping.com
+  <p>
+</ion-footer>

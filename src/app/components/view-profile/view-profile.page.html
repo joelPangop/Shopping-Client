@@ -1,0 +1,22 @@
+<ion-list class="ion-align-items-center">
+    <ion-list-header>
+        <ion-avatar>
+            <ion-img [src]="imgURL"></ion-img>
+        </ion-avatar>
+    </ion-list-header>
+
+    <ion-item>
+        <div class="my-container-label">
+            <ion-label class="my-label-title">{{utilisateur?.username}}</ion-label>
+            <ion-label color="medium">{{utilisateur.contact}}</ion-label>
+        </div>
+    </ion-item>
+  <ion-item>
+    <ion-label>
+      <ion-label class="my-label-title">{{utilisateur.email}}</ion-label>
+    </ion-label>
+  </ion-item>
+    <ion-button fill="clear" expand="full" color="dark-tint" (click)="openProfil()">
+        Voir profile
+    </ion-button>
+</ion-list>

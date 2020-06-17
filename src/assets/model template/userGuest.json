@@ -1,0 +1,26 @@
+{
+  "username" : "guest",
+  "email" : "guest@egoal.com",
+  "userInfo" : {
+    "telephones" : [
+      {
+        "numeroTelephone" : "",
+        "categorieTelephone" : ""
+      }
+    ],
+    "address" : {
+      "roadName" : "",
+      "appartNumber" : 0,
+      "town" : "",
+      "postalCode" : "",
+      "region" : "",
+      "country" : ""
+    }
+  },
+  "currency" : {
+    "currency" : "CAD",
+    "icon" : "flag-for-flag-canada"
+  },
+  "password" : "",
+  "avatar" : ""
+}

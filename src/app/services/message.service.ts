@@ -29,8 +29,8 @@ export class MessageService {
         return this.http.get<Message[]>(url);
     }
 
-    loadMessages(username, interlocutorId) {
-        const url = `${environment.api_url}/Messages/all/${username}/interlocutor/${interlocutorId}`;
+    loadMessages(username, interlocutorId, articleId) {
+        const url = `${environment.api_url}/Messages/all/${username}/interlocutor/${interlocutorId}/article/${articleId}`;
         return this.http.get<Message[]>(url);
     }
 

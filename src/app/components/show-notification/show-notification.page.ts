@@ -3,9 +3,11 @@ import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {MessageService} from '../../services/message.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {Notification} from '../../models/notification-interface';
-import {Events, NavController, NavParams} from '@ionic/angular';
+import { NavController, NavParams} from '@ionic/angular';
 import * as moment from 'moment';
 import {forkJoin} from 'rxjs';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {CurrencyService} from '../../services/currency.service';
 
 @Component({
     selector: 'app-show-notification',
@@ -18,12 +20,12 @@ export class ShowNotificationPage implements OnInit {
     utilisateur = {} as Utilisateur;
 
     constructor(private storage: NativeStorage, public messageService: MessageService, private navCtrl: NavController,
-                public navParams: NavParams, private event: Events) {
+                public navParams: NavParams, private userStorageUtils: UserStorageUtils, private currencyService: CurrencyService) {
         this.messageNotifications = [] as Notification[];
     }
 
     async ngOnInit() {
-        this.utilisateur = await this.storage.getItem('Utilisateur');
+        this.utilisateur = await this.userStorageUtils.getUser();
         this.loadAll();
     }
 

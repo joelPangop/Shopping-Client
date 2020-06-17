@@ -1,1 +1,1 @@
-"# Shopping-Client" 
+"# Egoal-Shopping" 

@@ -1,8 +1,11 @@
+import {Store} from './store-interface';
+import {ArticleStatus} from './ArticleStatus';
+
 export interface Article {
     title: string;
     price: number;
     description: string;
-    category: string;
+    categories: string[];
     pictures: string[];
     likes?: string[];
     averageStar?: number;
@@ -12,7 +15,14 @@ export interface Article {
     _id?: string;
     utilisateurId?: string;
     owner?: string;
+    views?:number,
+    store?: Store,
+    colors?: string[],
+    sizes?: string[],
+    discountPrice?: number,
     availability: Availability;
+    comments?: string[];
+    status?: ArticleStatus;
 }
 
 export interface Availability {

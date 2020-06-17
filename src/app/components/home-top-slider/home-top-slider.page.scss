@@ -1,0 +1,12 @@
+#top-slider {
+  ion-slides {
+    --bullet-background: var(--ion-color-light);
+    --bullet-background-active: var(--ion-color-white);
+
+    img {
+      border-radius: 10px;
+      width: 750px;
+      height: 300px
+    }
+  }
+}

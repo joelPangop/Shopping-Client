@@ -1,0 +1,22 @@
+#hot-deals {
+  ion-fab-button {
+    --background: transparent;
+    --background-focused: transparent;
+    --background-activated: transparent;
+  }
+
+  ion-card-title {
+    font-size: 1.2rem;
+  }
+
+  .card-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 150px;
+  }
+
+  .text-bold {
+    font-weight: bold;
+  }
+}

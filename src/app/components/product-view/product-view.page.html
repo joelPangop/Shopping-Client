@@ -1,0 +1,111 @@
+<!-- Header -->
+<!--<ion-header no-border>-->
+<!--    <ion-toolbar color="color1">-->
+
+<!--        &lt;!&ndash; Back to previous page &ndash;&gt;-->
+<!--        <ion-buttons slot="start">-->
+<!--            <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="arrow-round-back">-->
+<!--            </ion-back-button>-->
+<!--        </ion-buttons>-->
+
+<!--        &lt;!&ndash; Title &ndash;&gt;-->
+<!--        <ion-title></ion-title>-->
+
+<!--        &lt;!&ndash; Cart Page Button &ndash;&gt;-->
+
+<!--    </ion-toolbar>-->
+<!--</ion-header>-->
+
+<ion-content id="product-details" fullscreen>
+    <div class="ion-text-start">
+        <ion-button (click)="dismiss()" fill="clear" color="dark">
+            <ion-icon name="close" slot="start"></ion-icon>
+        </ion-button>
+    </div>
+    <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="gotoCartPage()" #cart>
+            <div class="cart-length">{{ cartItemCount | async }}</div>
+            <ion-icon name="cart" class="cart-icon"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+    <!-- Slider of Product Images -->
+    <ion-slides pager="true" [options]="slideOpts">
+        <ion-slide *ngFor="let item of product.pictures">
+            <img src="https://egoalservice.azurewebsites.net/image/{{item}}"/>
+
+            <!-- Wish Button or Product Like/Dislike Button Option -->
+            <ion-fab vertical="bottom" horizontal="end">
+                <ion-fab-button (click)="checkLike()">
+                    <ion-icon clear color="color1" name="heart-outline" *ngIf="!like"></ion-icon>
+                    <ion-icon clear color="color1" name="heart" *ngIf="like"></ion-icon>
+                </ion-fab-button>
+            </ion-fab>
+        </ion-slide>
+    </ion-slides>
+
+    <!-- Product Price -->
+    <ion-row class="ion-padding">
+        <!--        <ion-text color="color1" class="price">${{discountPrice}} USD &nbsp;</ion-text>-->
+        <!--        <span class="previous-price"> ${{price}}</span>-->
+        <span color="color1" class="price"> {{product.price | currency:currency:'symbol-narrow':'.2'}}</span>
+    </ion-row>
+    <!-- Product Name -->
+    <ion-row class="ion-padding-start product-name">
+        <ion-text>{{product.title}}</ion-text>
+    </ion-row>
+
+    <div class="my-container-label">
+        <div class="span-container">
+            <span *ngIf="product?.averageStar >= 1">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+            <span *ngIf="product?.averageStar >= 2">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+            <span *ngIf="product?.averageStar >= 3">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+            <span *ngIf="product?.averageStar >= 4">
+                             <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+            <span *ngIf="product?.averageStar >= 5">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+        </div>
+    </div>
+
+    <!-- Product Description -->
+    <ion-row class="ion-padding">
+        <ion-text color="medium" [innerHTML]="product.description"></ion-text>
+    </ion-row>
+
+    <h3 class="title">Laissez une note</h3>
+    <div class="rating-container">
+        <rating
+                [(ngModel)]="rate"
+                readonly="false"
+                size="default"
+                (ngModelChange)="onModelChange($event)">
+        </rating>
+        <ion-button (click)="leaveNote()" size="small">Noter</ion-button>
+    </div>
+
+    <ion-radio-group>
+        <ion-row class="ion-padding-start">
+            <ion-col size="3" *ngFor="let item of product.sizes">
+                <ion-item lines="none">
+                    <ion-label class="size-label">{{item}}</ion-label>
+                    <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+    </ion-radio-group>
+</ion-content>
+<!-- Footer -->
+<ion-footer no-border>
+    <ion-toolbar class="ion-padding" transparent>
+        <!-- Add To Cart Button -->
+        <ion-button class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

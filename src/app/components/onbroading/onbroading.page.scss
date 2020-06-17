@@ -1,0 +1,46 @@
+.swiper-slide {
+  display: block;
+}
+
+.swiper-container {
+  height: 100%;
+}
+
+ion-slides {
+  --bullet-background: #6d6b6b;
+  --bullet-background-active: var(--ion-color-color1);
+}
+
+.section_one {
+  height: 15%;
+
+  h2 {
+    font-weight: 900;
+    padding-top: 10%;
+  }
+
+  p {
+    color: var(--ion-color-color1);
+    font-weight: bold;
+  }
+}
+
+.section_two {
+  height: 50%;
+
+
+  img {
+    margin-top: 5%;
+    height: 70%;
+  }
+}
+
+.section_three {
+  height: 30%;
+  padding: 10px;
+
+  p {
+    font-size: 1rem;
+    color: #6d6b6b;
+  }
+}

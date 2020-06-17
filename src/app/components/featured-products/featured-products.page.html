@@ -1,0 +1,39 @@
+<div id="featured-products">
+  <ion-item-divider color="white" class="ion-padding-top">
+    <ion-label color="dark" class="text-bold">Featured Products</ion-label>
+    <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear" routerLink="/tabs/products"
+                routerDirection="root">Sell All</ion-button>
+  </ion-item-divider>
+
+  <ion-slides [options]="slideOpts" class="ion-padding-top">
+    <ion-slide *ngFor="let item of products">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-card class="ion-no-margin" (click)="goToProductDetailsView(item)">
+              <div class="card-img" [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
+
+              <ion-fab vertical="top" horizontal="end" #like>
+                <ion-fab-button>
+                  <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                  <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
+
+              <ion-card-content>
+                <ion-row>
+                  <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
+<!--                  <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+<!--                  <span class="previous-price"> ${{item.price}}</span>-->
+                </ion-row>
+                <ion-row class="product-name">
+                  <h4>{{item.title | slice:0:30}}</h4>
+                </ion-row>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+  </ion-slides>
+</div>

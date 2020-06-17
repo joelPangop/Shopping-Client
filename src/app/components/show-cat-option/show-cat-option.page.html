@@ -1,0 +1,8 @@
+<ion-list>
+  <ion-radio-group>
+    <ion-item button *ngFor="let l of categoriesOptions" [class.active-item] (click)="setCategory(l)">
+      <ion-label>{{l.title}}</ion-label>
+      <ion-radio slot="end" value="{{l.key}}"></ion-radio>
+    </ion-item>
+  </ion-radio-group>
+</ion-list>

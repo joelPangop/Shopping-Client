@@ -1,92 +1,35 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {AuthGuardService} from './services/auth-guard.service';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'intro', pathMatch: 'full' },
+  { path: '', redirectTo: 'onbroading', pathMatch: 'full' },
   {
-    path: 'menu',
-    loadChildren: () => import('./components/menu/menu.module').then( m => m.MenuPageModule),
+    path: 'menu', loadChildren: './components/menu/menu.module#MenuPageModule',
     canActivate: [AuthGuardService]
   },
-  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)},
+  { path: 'onbroading', loadChildren: () => import('./components/onbroading/onbroading.module').then(m => m.OnbroadingPageModule) },
+  { path: 'landing-page', loadChildren: () => import('./components/auth/landing-page/landing-page.module').then(m => m.LandingPagePageModule) },
+  { path: 'signup', loadChildren: () => import('./components/auth/signup/signup.module').then(m => m.SignupPageModule) },
+  { path: 'signin', loadChildren: () => import('./components/auth/signin/signin.module').then(m => m.SigninPageModule) },
+  { path: 'forget-password', loadChildren: () => import('./components/auth/forget-password/forget-password.module').then(m => m.ForgetPasswordPageModule) },
+  { path: 'verification', loadChildren: () => import('./components/auth/verification/verification.module').then(m => m.VerificationPageModule) },
   {
-    path: 'intro',
-    loadChildren: () => import('./components/intro/intro.module').then(m => m.IntroPageModule)
+    path: 'product-view',
+    loadChildren: () => import('./components/product-view/product-view.module').then( m => m.ProductViewPageModule)
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./components/profile/profile.module').then(m => m.ProfilePageModule)
+    path: 'checkout',
+    loadChildren: () => import('./components/checkout/checkout.module').then( m => m.CheckoutPageModule)
   },
   {
-    path: 'cart',
-    loadChildren: () => import('./components/cart/cart.module').then(m => m.CartPageModule)
+    path: 'commande',
+    loadChildren: () => import('./components/commande/commande.module').then( m => m.CommandePageModule)
   },
   {
-    path: 'product-detail/:id',
-    loadChildren: () => import('./components/product-detail/product-detail.module').then(m => m.ProductDetailPageModule)
-  },
-  {
-    path: 'create-product',
-    loadChildren: () => import('./components/create-product/create-product.module').then(m => m.CreateProductPageModule)
-  },
-  {
-    path: 'show-options',
-    loadChildren: () => import('./components/show-options/show-options.module').then( m => m.ShowOptionsPageModule)
-  },
-  {
-    path: 'top-header',
-    loadChildren: () => import('./components/top-header/top-header.module').then( m => m.TopHeaderPageModule)
-  },
-  {
-    path: 'edit-product/:id',
-    loadChildren: () => import('./components/edit-product/edit-product.module').then( m => m.EditProductPageModule)
-  },
-  {
-    path: 'action-message/:id/:action/:uid',
-    loadChildren: () => import('./components/action-message/action-message.module').then( m => m.ActionMessagePageModule)
-  },
-  {
-    path: 'stripe',
-    loadChildren: () => import('./components/stripe/stripe.module').then(m => m.StrikePageModule)
-  },
-  {
-    path: 'stripe-web/:params',
-    loadChildren: () => import('./components/stripe-web/stripe.module').then(m => m.StripeWebPageModule)
-  },
-  {
-    path: 'paypal/:params',
-    loadChildren: () => import('./components/paypal/paypal.module').then( m => m.PaypalPageModule)
-  },
-  {
-    path: 'about/:param',
-    loadChildren: () => import('./components/about/about.module').then( m => m.AboutPageModule)
-  },
-  {
-    path: 'paypal-web/:params',
-    loadChildren: () => import('./components/paypal-web/paypal-web.module').then( m => m.PaypalWebPageModule)
-  },
-  {
-    path: 'register',
-    loadChildren: () => import('./components/register/register.module').then( m => m.RegisterPageModule)
-  },
-  {
-    path: 'live-chat',
-    loadChildren: () => import('./components/live-chat/live-chat.module').then( m => m.LiveChatPageModule)
-  },
-  {
-    path: 'product-list',
-    loadChildren: () => import('./components/product-list/product-list.module').then( m => m.ProductListPageModule)
-  },
-  {
-    path: 'notification/:params',
-    loadChildren: () => import('./components/notification/notification.module').then( m => m.NotificationPageModule)
-  },
-  {
-    path: 'show-notification',
-    loadChildren: () => import('./components/show-notification/show-notification.module').then( m => m.ShowNotificationPageModule)
+    path: 'order-view',
+    loadChildren: () => import('./components/order-view/order-view.module').then( m => m.OrderViewPageModule)
   }
-
 ];
 
 @NgModule({

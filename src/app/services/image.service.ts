@@ -28,6 +28,7 @@ export class ImageService {
             'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, X-CSRF-Token'
         };
         const formData = new FormData();
+        // const url = 'http://192.168.2.58:8080/upload';
         const url = `${environment.api_url}/upload`;
 
         for (const file of uploadForm.value.image) {

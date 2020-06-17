@@ -1,6 +1,6 @@
-let app = require('express')();
-let server = require('http').createServer(app);
-let io = require('socket.io')(server);
+const app = import('express')();
+const server = import('http').createServer(app);
+const io = import('socket.io')(server);
 
 io.on('connection', (socket) => {
 

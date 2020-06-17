@@ -1,15 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {Utilisateur} from '../../models/utilisateur-interface';
+import {Currency, Utilisateur} from '../../models/utilisateur-interface';
 import {UserInfo} from '../../models/userInfo-interface';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {ArticleService} from '../../services/article.service';
 import {AuthService} from '../../services/auth.service';
 import {ImageService} from '../../services/image.service';
-import {LoadingController, NavController, ToastController} from '@ionic/angular';
+import {LoadingController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
 import {CategorieTelephone} from '../../models/CategorieTelephone';
 import {Telephone} from '../../models/telephone-interface';
 import {Address} from '../../models/address-interface';
+import {Storage} from '@ionic/storage';
+import {Currencies} from '../../models/Currencies';
+import {ShowOptionsPage} from '../show-options/show-options.page';
+import {BehaviorSubject} from 'rxjs';
+import {NavigationExtras, Router} from '@angular/router';
 
 @Component({
     selector: 'app-register',
@@ -29,14 +34,20 @@ export class RegisterPage implements OnInit {
     private message: string;
     newImg: any;
     passwordConfirm: any;
+    newPassword: any;
+    currencies: Map<string, string>;
+    // @ts-ignore
+    currOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
 
     constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
-                private loadingCtrl: LoadingController, private navCtrl: NavController) {
+                private loadingCtrl: LoadingController, private navCtrl: NavController, public localStorage: Storage,
+                private platform: Platform, private popoverController: PopoverController, private router: Router) {
         this.userForm = this.formBuilder.group({
-            passwordToValidate: ['', [Validators.required, Validators.minLength(6),
+            password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
-            telephone: ['', Validators.required],
             passwordConfirm: new FormControl('', [
                 Validators.required,
                 Validators.minLength(6),
@@ -49,19 +60,29 @@ export class RegisterPage implements OnInit {
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
+        this.utilisateur.currency = {
+            currency: 'CAD',
+            icon: 'flag-for-flag-canada'
+        } as Currency;
+        this.currencies = new Map<string, string>();
         this.options = Object.keys(CategorieTelephone);
         this.authSrv.userInfo = {} as UserInfo;
         this.authSrv.userInfo.telephones = [] as Telephone[];
         this.authSrv.address = {} as Address;
         this.ischanged = false;
         this.passwordShown = false;
+        for (const item in Currencies) {
+            console.log('item:', item);
+            console.log('item value:', Currencies[item]);
+            this.currencies.set(item, Currencies[item]);
+        }
     }
 
     async createProfile() {
         this.utilisateur.userInfo = this.authSrv.userInfo;
         this.utilisateur.userInfo.address = this.authSrv.address;
         this.utilisateur.userInfo.telephones = this.authSrv.userInfo.telephones;
-        this.utilisateur.password = this.userForm.get('passwordToValidate').value;
+        this.utilisateur.password = this.userForm.value.password;
         this.uploadForm.get('image').setValue(this.newImg);
         await this.imgSrv.uploadImage(this.uploadForm).subscribe(async res => {
             this.utilisateur.avatar = res.filename;
@@ -69,17 +90,32 @@ export class RegisterPage implements OnInit {
                 const rep = res1 as object;
                 // @ts-ignore
                 this.user = rep.user as Utilisateur;
-                await this.authSrv.storage.setItem('Utilisateur', this.utilisateur).then(async data => {
-                    this.authSrv.userInfo = this.utilisateur.userInfo;
-                    this.authSrv.address = this.utilisateur.userInfo.address;
-                    await this.authSrv.storage.setItem('IsLogginIn', true);
-                });
+                if (this.platform.is('ios') || this.platform.is('android')) {
+                    await this.authSrv.storage.setItem('Utilisateur', this.utilisateur).then(async data => {
+                        this.authSrv.userInfo = this.utilisateur.userInfo;
+                        this.authSrv.address = this.utilisateur.userInfo.address;
+                        await this.authSrv.storage.setItem('IsLogginIn', true);
+                    });
+                } else {
+                    await this.localStorage.set('Utilisateur', this.utilisateur);
+                    await this.localStorage.set('IsLogginIn', true);
+                }
+
+                // this.navCtrl.navigateRoot('intro')
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        special: JSON.stringify(res1)
+                    }
+                };
+                await this.router.navigate(['intro'], navigationExtras);
             });
         });
     }
 
     password(formGroup: FormGroup): { [err: string]: any } {
-        return formGroup.get('passwordToValidate').value === formGroup.get('passwordConfirm').value ? null : {passwordMismatch: true};
+        console.log('password', formGroup.get('password').value);
+        console.log('confirm password', formGroup.get('passwordConfirm').value);
+        return formGroup.get('password').value === formGroup.get('passwordConfirm').value ? null : {passwordMismatch: true};
     }
 
     onFileSelect(event) {
@@ -131,5 +167,30 @@ export class RegisterPage implements OnInit {
             this.passwordShown = true;
             this.passwordType = 'text';
         }
+    }
+
+    public async setCurrency(ev) {
+        // @ts-ignore
+        const popover = await this.popoverController.create({
+            component: ShowOptionsPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+            componentProps: {
+                currOptionSubject: this.currOptionSubject,
+                currIconOptionSubject: this.currIconOptionSubject,
+                currency: this.utilisateur.currency.currency,
+                currencyIcon: this.utilisateur.currency.icon,
+                option: 'userCurrency'
+            }
+        });
+
+        popover.onDidDismiss()
+            .then((data) => {
+                console.log(data.data);
+                this.utilisateur.currency.currency = data.data.currency;
+                this.utilisateur.currency.icon = data.data.icon;
+            });
+        return await popover.present();
     }
 }

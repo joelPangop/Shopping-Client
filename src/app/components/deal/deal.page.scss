@@ -1,0 +1,26 @@
+.cart-icon {
+  font-size: 25px;
+}
+
+.cart-length {
+  color: var(--ion-color-dark-contrast);
+  position: absolute;
+  top: 0px;
+  left: 15px;
+  font-weight: 600;
+  font-size: 1em;
+  min-width: 25px;
+  z-index: 10;
+  font-style: inherit;
+}
+#deal {
+  ion-fab-button {
+    --background: transparent;
+    --background-focused: transparent;
+    --background-activated: transparent;
+  }
+
+  ion-card-title {
+    font-size: 1.2rem;
+  }
+}

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertController, Events, NavController, Platform, PopoverController} from '@ionic/angular';
+import {AlertController, NavController, Platform, PopoverController} from '@ionic/angular';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {ArticleService} from '../../services/article.service';
 import {Article} from '../../models/article-interface';
@@ -11,7 +11,10 @@ import {MessageService} from '../../services/message.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Socket} from 'ngx-socket-io';
-import {Message} from '../../models/message-interface';
+import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {ViewProfilePage} from '../view-profile/view-profile.page';
+import {TranslateService} from '@ngx-translate/core';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-top-header',
@@ -32,39 +35,60 @@ export class TopHeaderPage implements OnInit {
     currency;
     currencyIcon;
     showLoadingSpining = false;
-    private utilisateur: Utilisateur;
+    utilisateur: Utilisateur;
     notif_number: number;
 
     constructor(public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
                 private navCtrl: NavController, private languageService: LanguageService, private cuService: CurrencyService,
-                private event: Events, private msgservice: MessageService, private storage: NativeStorage, private socket: Socket,
-                private alertController: AlertController) {
+                private msgservice: MessageService, private storage: NativeStorage, private socket: Socket,
+                private alertController: AlertController, private userStorageUtils: UserStorageUtils, private translate: TranslateService,
+                private router: Router) {
         this.isSearch = false;
-        this.event.subscribe('showLoadingSpining', (res) => {
+
+        this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((res) => {
             this.showLoadingSpining = res;
-        });
-        this.event.subscribe('nbNotif', (res) => {
-            this.notif_number -= res;
-            console.log('notifs number', this.notif_number);
-        });
-        this.event.subscribe('addNotif', (res) => {
-            this.notif_number = this.notif_number + res;
-            // this.presentAlert(this.notif_number);
-            console.log('notifs number', this.notif_number);
-        });
+        })
+        // this.event.subscribe('showLoadingSpining', (res) => {
+        //     this.showLoadingSpining = res;
+        // });
+        // this.event.subscribe('nbNotif', (res) => {
+        //     this.notif_number -= res;
+        //     console.log('notifs number', this.notif_number);
+        // });
+        // this.event.subscribe('addNotif', (res) => {
+        //     this.notif_number = this.notif_number + res;
+        //     // this.presentAlert(this.notif_number);
+        //     console.log('notifs number', this.notif_number);
+        // });
     }
 
-    ionViewWillEnter(){
+    ionViewWillEnter() {
 
     }
 
     async ngOnInit() {
         this.socket.connect();
         this.showLoadingSpining = false;
-        this.utilisateur = await this.storage.getItem('Utilisateur');
-        this.language = 'FR';
-        this.currency = 'CAD';
-        this.currencyIcon = 'flag-for-flag-canada';
+
+        this.utilisateur = await this.userStorageUtils.getUser();
+
+        console.log('def language', this.translate.getBrowserLang());
+        if (!this.userStorageUtils.getLanguage()) {
+            this.language = this.translate.getBrowserLang();
+        } else {
+            this.language = await this.userStorageUtils.getLanguage();
+        }
+
+        await this.userStorageUtils.getCurrency().then(res => {
+            if (!res) {
+                this.currency = 'CAD';
+                this.currencyIcon = 'flag-for-flag-canada';
+            } else {
+                this.currency = res.currency;
+                this.currencyIcon = res.icon;
+            }
+        });
+
         this.isSearch = false;
         this.loadAll();
         console.log(this.platform.platforms());
@@ -113,6 +137,17 @@ export class TopHeaderPage implements OnInit {
                     this.currencyIcon = this.currIconOptionSubject.value;
                 }
             });
+        return await popover.present();
+    }
+
+    public async showProfile(ev) {
+        // @ts-ignore
+        const popover = await this.popoverController.create({
+            component: ViewProfilePage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+        });
         return await popover.present();
     }
 
@@ -166,5 +201,9 @@ export class TopHeaderPage implements OnInit {
 
     loadNotifLikes() {
         return this.msgservice.loadReceivedLikesNotifications(this.utilisateur._id);
+    }
+
+    goToLogin() {
+        this.router.navigate(['intro']);
     }
 }
