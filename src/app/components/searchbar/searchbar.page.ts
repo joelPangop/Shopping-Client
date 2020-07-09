@@ -15,6 +15,7 @@ export class SearchbarPage implements OnInit {
 
   async gotoSearchPage() {
     const modal = await this.modalController.create({
+      cssClass: 'cart-modal',
       component: SearchPage
     });
     return await modal.present();

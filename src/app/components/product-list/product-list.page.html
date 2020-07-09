@@ -12,10 +12,19 @@
         </ion-buttons>
 
         <!-- Title of the app -->
-        <ion-title>Egoal Store</ion-title>
+
+        <ion-buttons>
+            <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
+            <div *ngIf="!platform.is('ios') && !platform.is('android')">
+                <ion-searchbar placeholder="Search your product" (ionFocus)="gotoSearchPage()"></ion-searchbar>
+            </div>
+        </ion-buttons>
 
         <!-- Cart Button Option -->
         <ion-buttons slot="end">
+            <ion-nav-link style="font-style: italic; color: gray"
+                          [routerLink]="utilisateur._id ? '/menu/tabs/profile' : '/onbroading'"
+                          [routerDirection]="'root'">{{utilisateur._id ? ' ' : 'Sign in'}}</ion-nav-link>
             <ion-button (click)="gotoCartPage()" #cart color="clear">
                 <div class="cart-length">{{ cartItemCount | async }}</div>
                 <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
@@ -35,7 +44,7 @@
         </ion-refresher-content>
     </ion-refresher>
     <ion-grid>
-<!--        <app-searchbar></app-searchbar>-->
+        <!--        <app-searchbar></app-searchbar>-->
         <app-home-top-slider></app-home-top-slider>
     </ion-grid>
 
@@ -78,10 +87,10 @@
                         </ion-fab-button>
                     </ion-fab>
 
-                    <ion-fab vertical="bottom" horizontal="end">
-                        <ion-fab-button (click)="showDetails(item._id)">
+                    <ion-fab vertical="bottom" horizontal="end" (click)="showDetails(item._id)">
+                        <button>
                             <ion-icon color="color1" name="eye"></ion-icon>
-                        </ion-fab-button>
+                        </button>
                     </ion-fab>
 
                     <!-- Product Contents -->
@@ -91,7 +100,7 @@
                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                             <div class="span-container">
                                 <span class="price">{{item.price | currency:'CAD':'.2'}}</span>
-<!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
@@ -149,7 +158,7 @@
                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                             <div class="span-container">
                                 <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
-<!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
@@ -213,7 +222,7 @@
                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                             <div class="span-container">
                                 <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
-<!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>
@@ -236,18 +245,20 @@
             </ion-list>
         </ion-card>
     </div>
-    <!--        <ion-fab vertical="bottom" horizontal="end" slot="fixed">-->
-    <!--            <ion-button (click)="goToCreate()">{{'HOME.action' | translate}}-->
-    <!--            </ion-button>-->
-    <!--        </ion-fab>-->
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-badge color="color1">Create</ion-badge>
-        <ion-fab-button (click)="goToCreate()">
-            <ion-icon color="color1" name="add"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
+    <!--    <ion-fab *ngIf="utilisateur._id" vertical="bottom" horizontal="end" slot="fixed">-->
+    <!--        &lt;!&ndash;        <ion-badge color="color1">Create</ion-badge>&ndash;&gt;-->
+    <!--        <ion-fab-button (click)="goToCreate()">-->
+    <!--            <ion-icon color="color1" name="add"></ion-icon>-->
+    <!--        </ion-fab-button>-->
+    <!--    </ion-fab>-->
 
 </ion-content>
+<ion-footer no-border>
+    <ion-toolbar class="ion-padding" no-border fill="clear" color="shade">
+        <ion-button color="color1" expand="block" *ngIf="utilisateur._id"
+                    (click)="goToCreate()">{{'HOME.action' | translate}}</ion-button>
+    </ion-toolbar>
+</ion-footer>
 <!--<ion-footer>-->
 <!--    <ion-toolbar>-->
 <!--        <ion-button (click)="goToCreate()">{{'HOME.action' | translate}}</ion-button>-->

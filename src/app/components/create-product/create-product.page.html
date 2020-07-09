@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="tabs/products" color="white" icon="arrow-round-back"></ion-back-button>
+            <ion-back-button defaultHref="menu/tabs/products" color="white" icon="arrow-round-back"></ion-back-button>
         </ion-buttons>
         <ion-navbar color="color1">
             <ion-title>{{'CREATE.create' | translate}}</ion-title>
@@ -58,7 +58,7 @@
                         <ion-buttons>
                             <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
                                    class="inputfile" multiple/>
-                            <label button style="color: #3171e0; border-style: solid; border-color: grey"
+                            <label button style="color: #FF8080; border-style: solid; border-color: grey"
                                    for='fileId'>
                                 <!--                                   *ngIf="(platform.is('hybrid') || platform.is('desktop')) && (!platform.is('android') && !platform.is('ios'))">-->
                                 <ion-icon name="camera" slot="icon-only"></ion-icon>
@@ -68,22 +68,22 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-        <ion-item-divider color="color1">
-            <ion-icon src="assets/bxs-store.svg"></ion-icon>
-            {{'CREATE.store' | translate}}
-        </ion-item-divider>
-        <ion-item>
-            <ion-button (click)="openStoresList($event)">
-                Store
-            </ion-button>
-            <ion-thumbnail>
-                <ion-img *ngIf="store.name" src="{{ip}}/image/{{store.image}}"></ion-img>
-            </ion-thumbnail>
-            <ion-label *ngIf="store.name">{{store.name}}</ion-label>
-            <ion-button *ngIf="store.name" (click)="deleteStore()">
-                Delete
-            </ion-button>
-        </ion-item>
+<!--        <ion-item-divider color="color1">-->
+<!--            <ion-icon src="assets/bxs-store.svg"></ion-icon>-->
+<!--            {{'CREATE.store' | translate}}-->
+<!--        </ion-item-divider>-->
+<!--        <ion-item>-->
+<!--            <ion-button (click)="openStoresList($event)">-->
+<!--                Store-->
+<!--            </ion-button>-->
+<!--            <ion-thumbnail>-->
+<!--                <ion-img *ngIf="store.name" src="{{ip}}/image/{{store.image}}"></ion-img>-->
+<!--            </ion-thumbnail>-->
+<!--            <ion-label *ngIf="store.name">{{store.name}}</ion-label>-->
+<!--            <ion-button *ngIf="store.name" (click)="deleteStore()">-->
+<!--                Delete-->
+<!--            </ion-button>-->
+<!--        </ion-item>-->
         <ion-item-divider color="color1">
             <ion-icon name="paper"></ion-icon>
             {{'CREATE.detail' | translate}}
@@ -211,8 +211,8 @@
         </ion-button>
     </ion-list>
 </ion-content>
-<ion-footer text-center>
-    <p text-center>&copy; 2020 egoal-shopping.com
-    <p>
-</ion-footer>
+<!--<ion-footer text-center>-->
+<!--    <p text-center>&copy; 2020 egoal-shopping.com-->
+<!--    <p>-->
+<!--</ion-footer>-->
 

@@ -1,5 +1,6 @@
 import {itemCart} from './itemCart-interface';
 import {OrderStatus} from './OrderStatus';
+import {UserInfo} from './userInfo-interface';
 
 export interface Commande {
     _id: string;
@@ -14,4 +15,5 @@ export interface Commande {
     shipmentFee: number;
     createdAt: Date;
     updatedAt: Date;
+    userInfo: UserInfo;
 }

@@ -14,8 +14,9 @@ const routes: Routes = [
     path: '',
     component: MenuPage,
     children: [
-      { path: 'tabs', loadChildren: () => import('../tabs/tabs.module').then(m => m.TabsPageModule),
-        canActivate: [AuthGuardService] },
+      { path: 'tabs', loadChildren: () => import('../tabs/tabs.module').then(m => m.TabsPageModule)
+        // canActivate: [AuthGuardService]
+      },
       {
         path: 'products',
         loadChildren: () => import('../product-list/product-list.module').then( m => m.ProductListPageModule)

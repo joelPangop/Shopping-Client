@@ -60,14 +60,18 @@ export class CartPage implements OnInit {
             });
         } else {
             this.cartItems = await this.storage.get('cart');
-            this.cartItems.forEach(element => {
-                if (element.item.availability.type === 'En Magasin') {
-                    element.item.availability.feed = 0;
-                }
-                this.imgURL = element.item.pictures[0];
-                // @ts-ignore
-                this.total += element.item.availability.feed + element.amount;
-            });
+            if (this.cartItems) {
+                this.cartItems.forEach(element => {
+                    if (element.item.availability.type === 'En Magasin') {
+                        element.item.availability.feed = 0;
+                    }
+                    this.imgURL = element.item.pictures[0];
+                    // @ts-ignore
+                    this.total += element.item.availability.feed + element.amount;
+                });
+            }else{
+                this.cartItems = [];
+            }
         }
     }
 
@@ -96,7 +100,7 @@ export class CartPage implements OnInit {
 
         this.cmdService.commande.itemsCart = this.cartItems;
         let totalAmount = 0;
-        for(let c of this.cartItems){
+        for (let c of this.cartItems) {
             totalAmount += c.amount;
         }
         this.cmdService.commande.amount = totalAmount;
@@ -109,7 +113,7 @@ export class CartPage implements OnInit {
             this.cmdService.commande = res.article;
             await this.storage.set('cart', this.cmdService.commande);
             console.log('result', res.result);
-            if(res.result === "successfull"){
+            if (res.result === 'successfull') {
                 await loading.dismiss();
             }
         });
@@ -145,7 +149,7 @@ export class CartPage implements OnInit {
             product.amount = product.amount - product.item.price;
             this.cmdService.commande.itemsCart = this.cartItems;
             let totalAmount = 0;
-            for(let c of this.cartItems){
+            for (let c of this.cartItems) {
                 totalAmount += c.amount;
             }
             this.cmdService.commande.amount = totalAmount;
@@ -158,7 +162,7 @@ export class CartPage implements OnInit {
                 this.cmdService.commande = res.article;
                 await this.storage.set('cart', this.cmdService.commande);
                 console.log('result', res.result);
-                if(res.result === "successfull"){
+                if (res.result === 'successfull') {
                     await loading.dismiss();
                 }
             });
@@ -201,7 +205,7 @@ export class CartPage implements OnInit {
         } else {
             this.cmdService.commande.itemsCart = this.cartItems;
             let totalAmount = 0;
-            for(let c of this.cartItems){
+            for (let c of this.cartItems) {
                 totalAmount += c.amount;
             }
             this.cmdService.commande.amount = totalAmount;
@@ -210,7 +214,7 @@ export class CartPage implements OnInit {
                 this.cmdService.commande = res.article;
                 await this.storage.set('cart', this.cmdService.commande);
                 console.log('result', res.result);
-                if(res.result === "successfull"){
+                if (res.result === 'successfull') {
                     await loading.dismiss();
                 }
                 this.presentToast('Votre panier a ete mis a jour', 2000);

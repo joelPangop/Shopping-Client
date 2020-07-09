@@ -1,11 +1,11 @@
 <div id="hot-deals">
   <ion-item-divider color="white" class="ion-padding-top">
     <ion-label color="dark" class="text-bold">Hot Deals</ion-label>
-    <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear" routerLink="/tabs/tab2"
+    <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear" routerLink="/menu/tabs/tab2"
                 routerDirection="root">Sell All</ion-button>
   </ion-item-divider>
 
-  <ion-slides [options]="slideOpts" class="ion-padding-top">
+  <ion-slides [options]="slideOpts" class="ion-no-padding">
     <ion-slide *ngFor="let item of deals">
       <ion-grid>
         <ion-row>

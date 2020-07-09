@@ -4,7 +4,6 @@ import {FormGroup} from '@angular/forms';
 import {environment} from '../models/environements';
 import {FileTransfer, FileTransferObject, FileUploadOptions} from '@ionic-native/file-transfer/ngx';
 import {Platform} from '@ionic/angular';
-import {Observable} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'

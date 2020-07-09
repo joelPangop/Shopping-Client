@@ -105,7 +105,10 @@
 <ion-footer no-border>
     <ion-toolbar class="ion-padding" transparent>
         <!-- Add To Cart Button -->
-        <ion-button class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        <ion-button *ngIf="!contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        </ion-button>
+        <ion-button *ngIf="contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="contact()">
+            CONTACT SALER
         </ion-button>
     </ion-toolbar>
 </ion-footer>

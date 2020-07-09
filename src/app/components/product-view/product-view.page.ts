@@ -1,20 +1,20 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Article} from '../../models/article-interface';
 import {StorageService} from '../../services/storage.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ArticleService} from '../../services/article.service';
-import {ModalController, NavParams, ToastController} from '@ionic/angular';
+import {ModalController, NavController, NavParams, ToastController} from '@ionic/angular';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {CartPage} from '../cart/cart.page';
 import {itemCart} from '../../models/itemCart-interface';
 import {BehaviorSubject} from 'rxjs';
 import {Storage} from '@ionic/storage';
-import {HttpClient} from '@angular/common/http';
 import {CommandeService} from '../../services/commande.service';
 import {Commande} from '../../models/commande-interface';
 import {CartService} from '../../services/cart.service';
 import {Notification} from '../../models/notification-interface';
 import {NotificationType} from '../../models/notificationType';
+import {LandingPagePage} from '../auth/landing-page/landing-page.page';
 
 @Component({
     selector: 'app-product-view',
@@ -30,7 +30,7 @@ export class ProductViewPage implements OnInit {
     currency: any;
 
     rate: any;
-    public cartItemCount;
+    public cartItemCount = new BehaviorSubject(0);
     commande = {} as Commande;
     like: boolean = false;
 
@@ -51,7 +51,7 @@ export class ProductViewPage implements OnInit {
     constructor(public modalController: ModalController, private storageService: StorageService,
                 private userStorageUtils: UserStorageUtils, public articleService: ArticleService,
                 public navParams: NavParams, private toastCtrl: ToastController, private storage: Storage,
-                private cartService: CartService, private cmdService: CommandeService) {
+                private cartService: CartService, private cmdService: CommandeService, private navCtrl: NavController) {
         this.product = this.navParams.data as Article;
     }
 
@@ -71,9 +71,9 @@ export class ProductViewPage implements OnInit {
 
         if (this.utilisateur._id) {
             this.cmdService.loadCommande(this.utilisateur).subscribe((data) => {
-                if(data){
+                if (data) {
                     this.commande = data;
-                }else {
+                } else {
                     this.commande = {} as Commande;
                 }
             });
@@ -91,105 +91,114 @@ export class ProductViewPage implements OnInit {
         //     amount: this.product.price
         // };
         // await this.storageService.setStorageValue(itemCart, 'cart');
-        if (this.utilisateur._id == this.product.utilisateurId) {
-            this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
-        } else {
-            try {
-                let data: itemCart[];
-                let added = false;
+        if (this.utilisateur._id) {
+            if (this.utilisateur._id == this.product.utilisateurId) {
+                this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
+            } else {
+                try {
+                    let data: itemCart[];
+                    let added = false;
 
-                data = this.commande.itemsCart ? this.commande.itemsCart : [];
-                console.log('data', data);
-                // on vérifie si le panier est vide
-                if (data === null || data.length === 0) {
-                    data = [];
-                    data.push({
-                        item: this.product,
-                        qty: 1,
-                        amount: this.product.price
-                    });
-                    this.cartItemCount.next(this.cartItemCount.value + 1);
-                    const timestamp = new Date().getUTCMilliseconds();
-                    let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
-                    this.cmdService.commande.num_commande = ran_number;
-                    this.cmdService.commande.itemsCart = data;
-                    this.cmdService.commande.completed = false;
-                    this.cmdService.commande.userId = this.utilisateur._id;
-                    this.cmdService.commande.amount = this.product.price;
-                    this.cmdService.commande.shipmentFee = 0;
-                    this.cmdService.commande.quantity = data.length;
-                    this.cmdService.createCommande().subscribe(async res => {
-                        console.log('resultat', res);
-                        this.cmdService.commande = res;
-                        await this.storage.set('cart', this.cmdService.commande);
-                    });
-                    // this.event.publish('cartItemCount', this.cartItemCount.value);
-                    this.cartService.setCartItemCount(this.cartItemCount.value);
-                } else {
-                    // tslint:disable-next-line:prefer-const
-                    let names: string[] = [];
-                    data.forEach(d => {
-                        names.push(d.item.title);
-                    });
-                    if (!names.includes(this.product.title)) {
+                    data = this.commande.itemsCart ? this.commande.itemsCart : [];
+                    console.log('data', data);
+                    // on vérifie si le panier est vide
+                    if (data === null || data.length === 0) {
+                        data = [];
                         data.push({
                             item: this.product,
                             qty: 1,
                             amount: this.product.price
                         });
                         this.cartItemCount.next(this.cartItemCount.value + 1);
+                        const timestamp = new Date().getUTCMilliseconds();
+                        let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
+                        this.cmdService.commande.num_commande = ran_number;
+                        this.cmdService.commande.itemsCart = data;
+                        this.cmdService.commande.completed = false;
+                        this.cmdService.commande.userId = this.utilisateur._id;
+                        this.cmdService.commande.amount = this.product.price;
+                        this.cmdService.commande.shipmentFee = 0;
+                        this.cmdService.commande.quantity = data.length;
+                        this.cmdService.createCommande().subscribe(async res => {
+                            console.log('resultat', res);
+                            this.cmdService.commande = res;
+                            await this.storage.set('cart', this.cmdService.commande);
+                        });
                         // this.event.publish('cartItemCount', this.cartItemCount.value);
                         this.cartService.setCartItemCount(this.cartItemCount.value);
                     } else {
-                        // tslint:disable-next-line:prefer-for-of
-                        for (let i = 0; i < data.length; i++) {
-                            const element: itemCart = data[i];
-                            if (this.product._id === element.item._id) {
-                                // le panier contient déjà cette article
-                                element.qty += 1;
-                                element.amount += this.product.price;
-                                added = true;
+                        // tslint:disable-next-line:prefer-const
+                        let names: string[] = [];
+                        data.forEach(d => {
+                            names.push(d.item.title);
+                        });
+                        if (!names.includes(this.product.title)) {
+                            data.push({
+                                item: this.product,
+                                qty: 1,
+                                amount: this.product.price
+                            });
+                            this.cartItemCount.next(this.cartItemCount.value + 1);
+                            // this.event.publish('cartItemCount', this.cartItemCount.value);
+                            this.cartService.setCartItemCount(this.cartItemCount.value);
+                        } else {
+                            // tslint:disable-next-line:prefer-for-of
+                            for (let i = 0; i < data.length; i++) {
+                                const element: itemCart = data[i];
+                                if (this.product._id === element.item._id) {
+                                    // le panier contient déjà cette article
+                                    element.qty += 1;
+                                    element.amount += this.product.price;
+                                    added = true;
+                                }
                             }
                         }
+                        this.cmdService.commande.itemsCart = data;
+                        this.cmdService.commande.userId = this.utilisateur._id;
+                        let amount = 0;
+                        for (let i of data) {
+                            amount += i.amount;
+                        }
+                        this.cmdService.commande.amount = amount;
+                        this.cmdService.commande.quantity = data.length;
+                        this.cmdService.updateCommande().subscribe(async res => {
+                            console.log('resultat', res);
+                            this.cmdService.commande = res;
+                            await this.storage.set('cart', this.cmdService.commande);
+                        });
                     }
-                    this.cmdService.commande.itemsCart = data;
-                    this.cmdService.commande.userId = this.utilisateur._id;
-                    let amount = 0;
-                    for (let i of data) {
-                        amount += i.amount;
-                    }
-                    this.cmdService.commande.amount = amount;
-                    this.cmdService.commande.quantity = data.length;
-                    this.cmdService.updateCommande().subscribe(async res => {
-                        console.log('resultat', res);
-                        this.cmdService.commande = res;
-                        await this.storage.set('cart', this.cmdService.commande);
-                    });
-                }
-                // if (!added) {
-                //     // le panier n'est pas vide et ne contient pas l'article
-                //     data.push({
-                //         item,
-                //         qty: 1,
-                //         amount: item.price
-                //     });
-                // }
-                // await this.storage.set('commande', data);
-                this.animateCSS('tada');
-                this.presentToast('Votre panier a été mis à jour', 1500);
-            } catch (e) {
-                const myData: itemCart[] = [];
-                console.log('error', e);
-                if (e.code === 2) {
-                    myData.push({
-                        item: this.product,
-                        qty: 1,
-                        amount: this.product.price
-                    });
-                    await this.storage.set('cart', myData);
+                    // if (!added) {
+                    //     // le panier n'est pas vide et ne contient pas l'article
+                    //     data.push({
+                    //         item,
+                    //         qty: 1,
+                    //         amount: item.price
+                    //     });
+                    // }
+                    // await this.storage.set('commande', data);
+                    this.animateCSS('tada');
                     this.presentToast('Votre panier a été mis à jour', 1500);
+                } catch (e) {
+                    const myData: itemCart[] = [];
+                    console.log('error', e);
+                    if (e.code === 2) {
+                        myData.push({
+                            item: this.product,
+                            qty: 1,
+                            amount: this.product.price
+                        });
+                        await this.storage.set('cart', myData);
+                        this.presentToast('Votre panier a été mis à jour', 1500);
+                    }
                 }
             }
+        } else {
+            this.dismiss();
+            const modal = await this.modalController.create({
+                component: LandingPagePage,
+                cssClass: 'cart-modal'
+            });
+            return await modal.present();
         }
     }
 
@@ -306,5 +315,31 @@ export class ProductViewPage implements OnInit {
                 // }, 10000);
             });
         }
+    }
+
+    async contact() {
+        this.dismiss();
+        if (this.utilisateur._id) {
+            if (this.utilisateur._id === this.product.utilisateurId) {
+                this.presentToast('Vous etes le proprietaire du produit', 2000);
+            } else {
+                await this.navCtrl.navigateForward(`menu/tabs/action-message/${1000}/write/${this.product.utilisateurId}/${this.product._id}`);
+            }
+        } else {
+            const modal = await this.modalController.create({
+                component: LandingPagePage,
+                cssClass: 'cart-modal'
+            });
+            return await modal.present();
+        }
+    }
+
+     contains(target: string[], pattern: string[]){
+         let value = false;
+         pattern.forEach(function(word){
+            // @ts-ignore
+             value = value + target.includes(word);
+        });
+        return value
     }
 }

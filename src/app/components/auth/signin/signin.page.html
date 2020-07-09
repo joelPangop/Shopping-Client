@@ -8,16 +8,21 @@
 <!-- Header -->
 <ion-header no-border>
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" *ngIf="utilisateur._id">
       <ion-back-button color="color1" default-href="" routerLink="/landing-page"
                        routerDirection="root">
       </ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="start" *ngIf="!utilisateur._id">
+      <ion-button slot="icon-only" color="color1" routerLink="/menu/tabs/tab1" routerDirection="root">
+        <ion-icon name="home"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <!-- Contents -->
-<ion-content id="signin" fullscreen>
+<ion-content id="signin">
 
   <div class="section_one">
     <h2>LOGIN</h2>

@@ -6,75 +6,69 @@
 -->
 
 <!-- Header -->
-<ion-header no-border>
-  <ion-toolbar color="color1">
-
-    <!-- Back to previous page option button -->
-    <ion-buttons slot="start">
-      <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="arrow-round-back">
-      </ion-back-button>
-    </ion-buttons>
-
-    <!-- Page Title -->
-    <ion-title>Search</ion-title>
-
-    <!-- Cart Button Option -->
-    <ion-buttons slot="end">
-      <ion-button color="white" (click)="gotoCartPage()">
-        <ion-icon name="cart"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 
 <!-- Contents -->
 <ion-content id="search" [fullscreen]="true" padding>
+    <ion-toolbar fill="clear" no-border>
+        <ion-buttons slot="start">
+            <ion-button (click)="dismiss()" fill="clear" color="dark">
+                <ion-icon name="close" slot="start"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="gotoCartPage()" color="color1">
+                <div class="cart-length">{{ cartItemCount | async }}</div>
+                <ion-icon name="cart" class="cart-icon" color="color1"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 
-  <!-- Search bar -->
-  <ion-searchbar placeholder="Search your product" debounce="500" (ionInput)="getProducts($event)"></ion-searchbar>
+    <!-- Search bar -->
+    <ion-searchbar placeholder="Search your product" showCancelButton animated (ionInput)="getProducts($event)"></ion-searchbar>
 
-  <!-- When search result is empty -->
-  <!-- No products Found -->
-  <ion-grid class="ion-padding" id="empty" *ngIf="products.length == 0" style="height: 100%">
-    <ion-row class="ion-align-items-center ion-justify-content-center" style="height: 100%; flex-direction: column">
-      <div class="ion-text-center ion-padding">
-        <ion-icon name="search" style="zoom:5.0;" color="medium"></ion-icon>
-        <h4>No Search Found</h4>
-        <p>Looks like there are no products available at this moment</p>
-      </div>
-    </ion-row>
-  </ion-grid>
+    <!-- When search result is empty -->
+    <!-- No products Found -->
+    <ion-grid class="ion-padding" id="empty" *ngIf="products.length == 0" style="height: 100%">
+        <ion-row class="ion-align-items-center ion-justify-content-center" style="height: 100%; flex-direction: column">
+            <div class="ion-text-center ion-padding">
+                <ion-icon name="search" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No Search Found</h4>
+                <p>Looks like there are no products available at this moment</p>
+            </div>
+        </ion-row>
+    </ion-grid>
 
-  <!-- Search Result Content -->
-  <ion-grid>
-    <ion-row>
-      <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of products">
-        <ion-card class="ion-no-margin" (click)="goToProductDetails(item)">
+    <!-- Search Result Content -->
+    <ion-grid>
+        <ion-row>
+            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of products">
+                <ion-card class="ion-no-margin" (click)="goToProductDetails(item)">
 
-          <!-- Product Image -->
-          <div class="card-img" [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
+                    <!-- Product Image -->
+                    <div class="card-img"
+                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
 
-          <!-- Wish Button or Product Like/Dislike Button Option -->
-          <ion-fab vertical="top" horizontal="end">
-            <ion-fab-button>
-              <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
-              <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
+                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                    <ion-fab vertical="top" horizontal="end">
+                        <ion-fab-button>
+                            <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                            <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                        </ion-fab-button>
+                    </ion-fab>
 
-          <!-- Product Contents -->
-          <ion-card-content>
-            <ion-row>
-              <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
-<!--              <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
-<!--              <span class="previous-price"> ${{item.price}}</span>-->
-            </ion-row>
-            <ion-row>
-              <h4 class="product-name">{{item.title | slice:0:30}}</h4>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+                    <!-- Product Contents -->
+                    <ion-card-content>
+                        <ion-row>
+                            <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
+                            <!--              <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                            <!--              <span class="previous-price"> ${{item.price}}</span>-->
+                        </ion-row>
+                        <ion-row>
+                            <h4 class="product-name">{{item.title | slice:0:30}}</h4>
+                        </ion-row>
+                    </ion-card-content>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
 </ion-content>

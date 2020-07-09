@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Telephone} from '../../models/telephone-interface';
-import {KeyValue} from '@angular/common';
 import {UserInfo} from '../../models/userInfo-interface';
 import {CategorieTelephone} from '../../models/CategorieTelephone';
 import {AuthService} from '../../services/auth.service';
@@ -11,9 +10,10 @@ import {ImageService} from '../../services/image.service';
 import {Article} from '../../models/article-interface';
 import {ArticleService} from '../../services/article.service';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {AlertController, LoadingController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
+import {LoadingController, NavController, PopoverController, ToastController} from '@ionic/angular';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../show-options/show-options.page';
+import {Currencies} from '../../models/Currencies';
 
 @Component({
     selector: 'app-profile',
@@ -68,8 +68,14 @@ export class ProfilePage implements OnInit {
         console.log(this.utilisateur);
         this.authSrv.userInfo = this.utilisateur.userInfo;
         this.authSrv.address = this.utilisateur.userInfo.address;
-        this.icon= this.utilisateur.currency.icon;
-        this.currency= this.utilisateur.currency.currency;
+        if(this.utilisateur.currency){
+            this.icon = this.utilisateur.currency.icon;
+            this.currency = this.utilisateur.currency.currency;
+        } else {
+            this.icon = 'assets/'+ Currencies['CAD']+'.svg';
+            this.currency = Currencies.CAD;
+        }
+
         this.ischanged = false;
         this.passwordShown = false;
         this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar;
@@ -252,8 +258,8 @@ export class ProfilePage implements OnInit {
             componentProps: {
                 currOptionSubject: this.currOptionSubject,
                 currIconOptionSubject: this.currIconOptionSubject,
-                currency: this.utilisateur.currency.currency,
-                currencyIcon: this.utilisateur.currency.icon,
+                currency: this.utilisateur.currency ? this.utilisateur.currency.currency: 'CAD',
+                currencyIcon: this.utilisateur.currency ? this.utilisateur.currency.icon: 'assets/'+ Currencies.CAD+'.svg',
                 option: 'userCurrency'
             }
         });

@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar color="color1">
         <ion-buttons slot="start">
             <ion-back-button defaultHref="/menu/messagerie">
             </ion-back-button>
@@ -23,7 +23,7 @@
     <ion-toolbar color="dark-tint">
         <ion-buttons (click)="showDetails(article._id)">
             <ion-thumbnail slot="start">
-                <ion-img src="http://192.168.2.58:4000/image/{{image}}"></ion-img>
+                <ion-img src="https://egoalservice.azurewebsites.net/image/{{image}}"></ion-img>
             </ion-thumbnail>
             <div class="title">
                 <p text-center>
@@ -73,7 +73,7 @@
     <!--    </ion-card>-->
 </ion-content>
 <ion-footer *ngIf="action === 'write'">
-    <ion-toolbar color="primary">
+    <ion-toolbar color="color1">
         <ion-input class="message-editor" type="text" [(ngModel)]="msgContent"
                    placeholder="Tapez votre message"></ion-input>
         <ion-buttons slot="end">

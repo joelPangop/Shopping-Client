@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {catchError, tap} from 'rxjs/operators';
 import {environment} from '../models/environements';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AlertController, Platform} from '@ionic/angular';
 import {Utilisateur} from '../models/utilisateur-interface';
@@ -39,23 +39,43 @@ export class AuthService {
     }
 
     checkToken() {
-        this.storage.getItem(TOKEN_KEY).then(token => {
-            if (token) {
-                const decoded = this.helper.decodeToken(token);
-                const isExpired = this.helper.isTokenExpired(token);
+        if (this.plt.is('android') || this.plt.is('ios')) {
+            this.storage.getItem(TOKEN_KEY).then(token => {
+                if (token) {
+                    const decoded = this.helper.decodeToken(token);
+                    const isExpired = this.helper.isTokenExpired(token);
 
-                if (!isExpired) {
-                    this.user = decoded;
-                    this.authenticationState.next(true);
-                } else {
-                    this.storage.remove(TOKEN_KEY);
+                    if (!isExpired) {
+                        this.user = decoded;
+                        this.authenticationState.next(true);
+                    } else {
+                        this.storage.remove(TOKEN_KEY);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            this.localStorage.get(TOKEN_KEY).then(token => {
+                if (token) {
+                    const decoded = this.helper.decodeToken(token);
+                    const isExpired = this.helper.isTokenExpired(token);
+
+                    if (!isExpired) {
+                        this.user = decoded;
+                        this.authenticationState.next(true);
+                    } else {
+                        this.storage.remove(TOKEN_KEY);
+                    }
+                }
+            });
+        }
     }
 
-    register(credentials) {
+    register(credentials) : Observable<AuthResponse>{
         return this.http.post(`${environment.api_url}/api/register`, credentials).pipe(
+            tap(async (res: AuthResponse) => {
+                this.user = this.helper.decodeToken(res['access_token']);
+                this.currentUser = res.user[0];
+            }),
             catchError(e => {
                 this.showAlert(e.error.msg);
                 throw new Error(e);
@@ -97,6 +117,7 @@ export class AuthService {
                 tap(async res => {
                     if (this.plt.is('android') || this.plt.is('ios')) {
                         await this.storage.setItem(TOKEN_KEY, res['access_token']);
+                        // await this.localStorage.set(TOKEN_KEY, res['access_token']);
                         this.user = this.helper.decodeToken(res['access_token']);
                         this.currentUser = res.user[0];
                         await this.storage.setItem('Utilisateur', res.user[0]);
@@ -216,9 +237,11 @@ export class AuthService {
         );
     }
 
-    isAuthenticated() {
-        return this.authenticationState;
-    }
+    // isAuthenticated(): Observable<boolean>{
+    //     return this.authenticationState.asObservable();
+    // }
+
+    public isAuthenticated: Observable<boolean> = this.authenticationState.asObservable();
 
     showAlert(msg) {
         const alert = this.alertController.create({

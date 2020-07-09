@@ -33,7 +33,7 @@ export class CategoriesPage implements OnInit {
       }
     };
     // this.router.navigate(['tabs/category-preview'], navigationExtras)
-    this.navCtrl.navigateForward(['tabs/category-preview'], navigationExtras)
+    this.navCtrl.navigateForward(['menu/tabs/category-preview'], navigationExtras)
   }
 
 }

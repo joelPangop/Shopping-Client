@@ -34,7 +34,6 @@ import {CartPage} from './components/cart/cart.page';
 import {CartPageModule} from './components/cart/cart.module';
 import {WebcamModule} from 'ngx-webcam';
 import {PayPal} from '@ionic-native/paypal/ngx';
-import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {IonicGestureConfig} from './services/ionic-gesture-config';
 import {AppVersion} from '@ionic-native/app-version/ngx';
 import {NetworkInterface} from '@ionic-native/network-interface/ngx';
@@ -75,9 +74,18 @@ import {CheckoutPageModule} from './components/checkout/checkout.module';
 import {OrderViewPage} from './components/order-view/order-view.page';
 import {OrderViewPageModule} from './components/order-view/order-view.module';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
+import {SigninPage} from './components/auth/signin/signin.page';
+import {SigninPageModule} from './components/auth/signin/signin.module';
+import {LandingPagePage} from './components/auth/landing-page/landing-page.page';
+import {LandingPagePageModule} from './components/auth/landing-page/landing-page.module';
+import {SearchCategoriesPage} from './components/search-categories/search-categories.page';
+import {SearchCategoriesPageModule} from './components/search-categories/search-categories.module';
+import {PreviewSearchPage} from './components/preview-search/preview-search.page';
+import {PreviewSearchPageModule} from './components/preview-search/preview-search.module';
+import {IonicSelectableComponent, IonicSelectableModule} from 'ionic-selectable';
 // @ts-ignore
 
-const config: SocketIoConfig = {url: 'https://egoalservice.azurewebsites.net', options: {transports: ['websocket']}};
+// const config: SocketIoConfig = {url: 'https://egoalservice.azurewebsites.net', options: {transports: ['websocket']}};
 
 
 // const config:SocketIoConfig = {url: 'http://192.168.2.58:4000', options: {transports: ['websocket']}};
@@ -102,7 +110,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     declarations: [AppComponent],
     entryComponents: [ShowOptionsPage, CartPage, ShowNotificationPage, ViewProfilePage, StoreListPage, ProductDetailPage, SearchPage,
         FilterPage, HomeTopSliderPage, FeaturedProductsPage, CategoriesPage, HotDealsPage, ShowCatOptionPage, ProductViewPage, CheckoutPage,
-        OrderViewPage],
+        OrderViewPage, LandingPagePage, SearchCategoriesPage, PreviewSearchPage],
     imports: [BrowserModule,
         IonicModule.forRoot(),
         AppRoutingModule,
@@ -122,6 +130,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         ProductViewPageModule,
         CheckoutPageModule,
         OrderViewPageModule,
+        LandingPagePageModule,
+        SearchCategoriesPageModule,
+        PreviewSearchPageModule,
         // BrowserAnimationsModule,
         // TooltipsModule.forRoot(),
         IonicStorageModule.forRoot({
@@ -131,7 +142,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         // IonicStorageModule.forRoot(),
         CartPageModule,
         WebcamModule,
-        SocketIoModule.forRoot(config),
+        // SocketIoModule.forRoot(config),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -173,6 +184,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         Network,
         Dialogs,
         TranslateModule,
+        IonicSelectableModule,
         {
             provide: HAMMER_GESTURE_CONFIG,
             useClass: IonicGestureConfig

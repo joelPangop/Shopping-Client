@@ -124,3 +124,15 @@ ion-content {
   --ion-background-color: #f5f6f9;
 }
 
+ion-header {
+  --ion-background-color: #f5f6f9;
+}
+
+ion-footer {
+  --ion-background-color: #f5f6f9;
+}
+
+ion-searchbar ion-icon {
+  right: 16px !important;
+  left: auto !important;
+}

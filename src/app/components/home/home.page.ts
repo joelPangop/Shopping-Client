@@ -4,7 +4,6 @@ import {Article} from '../../models/article-interface';
 import {BehaviorSubject} from 'rxjs';
 import {AlertController, MenuController, ModalController, NavController, Platform, PopoverController} from '@ionic/angular';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
-import {Socket} from 'ngx-socket-io';
 import {MessageService} from '../../services/message.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {ArticleService} from '../../services/article.service';
@@ -20,6 +19,8 @@ import {Commande} from '../../models/commande-interface';
 import {CommandeService} from '../../services/commande.service';
 import {CartService} from '../../services/cart.service';
 import {SearchPage} from '../search/search.page';
+import {SearchCategoriesPage} from '../search-categories/search-categories.page';
+import {PreviewSearchPage} from '../preview-search/preview-search.page';
 
 declare function test1(t): any;
 
@@ -47,6 +48,11 @@ export class HomePage {
     currOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
     // @ts-ignore
     currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    catOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    elementSearchSubject: BehaviorSubject<string> = new BehaviorSubject();
+
     language;
     currency;
     currencyIcon;
@@ -60,13 +66,15 @@ export class HomePage {
         slidesPerView: 2,
     };
 
+    category: string;
+
     constructor(private modalController: ModalController, public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
                 private navCtrl: NavController, private languageService: LanguageService, private cuService: CurrencyService,
-                private msgservice: MessageService, private storage: NativeStorage, private socket: Socket,
+                private msgservice: MessageService, private storage: NativeStorage, private cmdService: CommandeService,
                 private alertController: AlertController, private userStorageUtils: UserStorageUtils, private translate: TranslateService,
-                private router: Router, private categoryService: CategoriesService, public cartService: CartService, private localStorage: Storage,
-                private cmdService: CommandeService) {
+                private router: Router, private categoryService: CategoriesService, public cartService: CartService, private localStorage: Storage) {
 
+        this.category = 'All Categories';
         this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((data) => {
             this.showLoadingSpining = data;
         });
@@ -99,7 +107,7 @@ export class HomePage {
         console.log('test1');
         this.getCategories();
 
-        this.socket.connect();
+        // this.socket.connect();
         this.showLoadingSpining = false;
         this.cartService.getCartItemCount().subscribe((data) => {
             this.cartItemCount.next(data);
@@ -208,8 +216,51 @@ export class HomePage {
     async gotoSearchPage() {
         const modal = await this.modalController.create({
             component: SearchPage,
-            cssClass: "cart-modal"
+            cssClass: 'cart-modal'
         });
         return await modal.present();
+    }
+    element: string = '';
+    search(){
+        this.elementSearchSubject.next(this.element);
+    }
+
+    async openSearch(ev){
+        const popover = await this.popoverController.create({
+            component: PreviewSearchPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-search-dialog',
+            componentProps: {
+                categories: this.catOptionSubject.value,
+                elementSearchSubject: this.elementSearchSubject
+            }
+        });
+        return await popover.present();
+    }
+
+    async chooseCategory(ev) {
+        const popover = await this.popoverController.create({
+            component: SearchCategoriesPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+            componentProps: {
+                catOptionSubject: this.catOptionSubject
+            }
+        });
+
+        popover.onDidDismiss()
+            .then((data) => {
+                console.log(data.data);
+                console.log(this.catOptionSubject.value);
+                if(this.catOptionSubject.value){
+                    this.category = '';
+                    for(let c of this.catOptionSubject.value as string[]){
+                        this.category +=c+ ' '
+                    }
+                }
+            });
+        return await popover.present();
     }
 }

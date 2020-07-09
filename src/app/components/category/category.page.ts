@@ -76,7 +76,7 @@ export class CategoryPage implements OnInit {
     }
 
     showDetails(id: string) {
-        this.navCtrl.navigateRoot('tabs/product-detail/' + id);
+        this.navCtrl.navigateRoot('menu/tabs/product-detail/' + id);
     }
 
     async presentToast(msg: string, duration: number) {

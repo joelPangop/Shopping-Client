@@ -1,10 +1,13 @@
 <ion-header>
     <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button color="white" defaultHref="tabs"></ion-back-button>
+            <ion-back-button color="white" defaultHref="menu/tabs/products"></ion-back-button>
         </ion-buttons>
         <ion-title>{{ article?.title }}</ion-title>
         <ion-buttons slot="end">
+            <ion-nav-link style="font-style: italic; color: gray"
+                          [routerLink]="utilisateur._id ? '/menu/tabs/profile' : '/onbroading'"
+                          [routerDirection]="'root'">{{utilisateur._id ? ' ' : 'Sign in'}}</ion-nav-link>
             <ion-button (click)="share()">
                 <ion-icon slot="icon-only" name="share"></ion-icon>
             </ion-button>
@@ -24,7 +27,7 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
     <!--    <ion-grid>-->
     <!--        <ion-grid fixed>-->
     <!--            <ion-row>-->
@@ -44,12 +47,12 @@
                                 <ion-icon name="heart" color="{{like === true ? 'danger':'dark-tint'}}"></ion-icon>
                             </ion-fab-button>
                         </ion-fab>
-                        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-                            <ion-badge color="color1">ADD TO CART</ion-badge>
-                            <ion-fab-button (click)="addToCart()" color="clear">
-                                <ion-icon color="color1" name="add"></ion-icon>
-                            </ion-fab-button>
-                        </ion-fab>
+<!--                        <ion-fab vertical="bottom" horizontal="end" slot="fixed">-->
+<!--                            <ion-badge color="color1">ADD TO CART</ion-badge>-->
+<!--                            <ion-fab-button (click)="addToCart()" color="clear">-->
+<!--                                <ion-icon color="color1" name="add"></ion-icon>-->
+<!--                            </ion-fab-button>-->
+<!--                        </ion-fab>-->
                         <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top">
                             <ion-slide (click)="showImage(image, article.title)" *ngFor="let image of images">
                                 <img src="https://egoalservice.azurewebsites.net/image/{{image}}"/>
@@ -109,7 +112,6 @@
                         </div>
 <!--                        <ion-button class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART-->
 <!--                        </ion-button>-->
-
                     </div>
                 </ion-card>
             </ion-col>
@@ -117,14 +119,13 @@
     </ion-grid>
 
 </ion-content>
-<!--<ion-footer no-border>-->
-<!--    <ion-toolbar class="ion-padding" transparent>-->
-<!--        &lt;!&ndash; Add To Cart Button &ndash;&gt;-->
-<!--        <ion-button class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART-->
-<!--        </ion-button>-->
-<!--    </ion-toolbar>-->
-<!--</ion-footer>-->
-<!--<ion-footer text-center>-->
-<!--    <p text-center>&copy; 2020 egoal-shopping.com-->
-<!--    <p>-->
-<!--</ion-footer>-->
+<ion-footer no-border>
+    <ion-toolbar class="ion-padding" transparent no-border>
+        <!-- Add To Cart Button -->
+        <ion-button *ngIf="!contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        </ion-button>
+        <ion-button *ngIf="contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="contact()">
+            CONTACT SALER
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

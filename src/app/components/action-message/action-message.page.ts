@@ -7,7 +7,6 @@ import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {environment} from '../../models/environements';
 import {AlertController, IonNav, NavController, Platform, ToastController} from '@ionic/angular';
 import {AuthService} from '../../services/auth.service';
-import {Socket} from 'ngx-socket-io';
 import {Notification} from '../../models/notification-interface';
 import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
 import {NotificationType} from '../../models/notificationType';
@@ -40,14 +39,14 @@ export class ActionMessagePage implements OnInit {
     article_title: string;
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private alertController: AlertController,
-                private socket: Socket, private storage: NativeStorage, private msgService: MessageService, private authSrv: AuthService,
+                private storage: NativeStorage, private msgService: MessageService, private authSrv: AuthService,
                 private platform: Platform, private localNotification: LocalNotifications,
                 public articleService: ArticleService, private navCtrl: NavController, public cuService: CurrencyService,
                 private userStorageUtils: UserStorageUtils) {
     }
 
     async ngOnInit() {
-        this.socket.connect();
+        // this.socket.connect();
         this.utilisateur = await this.userStorageUtils.getUser();
         this.id = this.activatedRoute.snapshot.paramMap.get('id');
         this.action = this.activatedRoute.snapshot.paramMap.get('action');
@@ -68,19 +67,19 @@ export class ActionMessagePage implements OnInit {
         } else {
             await this.loadMessageById();
         }
-        this.socket.fromEvent('notify').subscribe(notification => {
-            console.log('New:', notification);
-            const usr = notification['user'] as Utilisateur;
-            const msg = notification['message'];
-            if (usr.username !== this.utilisateur.username) {
-                // this.presentToast('Message recu de ' + usr.username, 1000, 'top');
-                msg.message.read = true;
-                this.message = msg.message;
-                this.messages.push(msg.message);
-            }
-
-            // this.messages.push(message);
-        });
+        // this.socket.fromEvent('notify').subscribe(notification => {
+        //     console.log('New:', notification);
+        //     const usr = notification['user'] as Utilisateur;
+        //     const msg = notification['message'];
+        //     if (usr.username !== this.utilisateur.username) {
+        //         // this.presentToast('Message recu de ' + usr.username, 1000, 'top');
+        //         msg.message.read = true;
+        //         this.message = msg.message;
+        //         this.messages.push(msg.message);
+        //     }
+        //
+        //     // this.messages.push(message);
+        // });
 
     }
 
@@ -178,10 +177,10 @@ export class ActionMessagePage implements OnInit {
                 sender: this.utilisateur._id
             };
             this.msgService.addNotification(notification).subscribe(res => {
-                this.socket.emit('notifying', {
-                    user: this.utilisateur,
-                    message: message
-                });
+                // this.socket.emit('notifying', {
+                //     user: this.utilisateur,
+                //     message: message
+                // });
                 // this.localNotification.schedule({
                 //     id: 1,
                 //     title: notification.message,
@@ -237,10 +236,10 @@ export class ActionMessagePage implements OnInit {
                     sender: this.utilisateur._id
                 };
                 this.msgService.addNotification(notification).subscribe(res => {
-                    this.socket.emit('notifying', {
-                        user: this.utilisateur,
-                        message: message
-                    });
+                    // this.socket.emit('notifying', {
+                    //     user: this.utilisateur,
+                    //     message: message
+                    // });
                     // this.event.publish('addNotif', 1);
                 });
                 this.presentToast('Message envoye', 1000, 'bottom');

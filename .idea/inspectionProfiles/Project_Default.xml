@@ -16,7 +16,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="19">
+          <list size="23">
             <item index="0" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="1" class="java.lang.String" itemvalue="main" />
             <item index="2" class="java.lang.String" itemvalue="button" />
@@ -36,6 +36,10 @@
             <item index="16" class="java.lang.String" itemvalue="value" />
             <item index="17" class="java.lang.String" itemvalue="tooltip" />
             <item index="18" class="java.lang.String" itemvalue="transparent" />
+            <item index="19" class="java.lang.String" itemvalue="radio-group" />
+            <item index="20" class="java.lang.String" itemvalue="icon-only" />
+            <item index="21" class="java.lang.String" itemvalue="padding" />
+            <item index="22" class="java.lang.String" itemvalue="fill" />
           </list>
         </value>
       </option>

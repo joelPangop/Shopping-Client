@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Socket} from 'ngx-socket-io';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {ToastController} from '@ionic/angular';
@@ -20,12 +19,11 @@ export class LiveChatPage implements OnInit {
     typing: boolean = false;
     userTyping = '';
 
-    constructor(private socket: Socket, private storage: NativeStorage, private toastCtrl: ToastController) {
+    constructor(private storage: NativeStorage, private toastCtrl: ToastController) {
     }
 
     async ngOnInit() {
-        this.socket.ioSocket('ws://192.168.2.58:4000', {transports: ['websocket']});
-        this.socket.connect();
+        // this.socket.connect();
         let name = `User-${new Date().getTime()}`;
         // this.currentUser = name;
 
@@ -35,34 +33,34 @@ export class LiveChatPage implements OnInit {
             console.log(res);
         });
 
-        this.socket.emit('set-name', this.utilisateur.username);
         // this.socket.emit('set-name', this.utilisateur.username);
-
-        this.socket.fromEvent('users-changed').subscribe(data => {
-            console.log('got data', data);
-            if (data['event'] === 'left' && this.currentUser !== data['user']) {
-                // @ts-ignore
-                this.showToast(`${data.user} has left`);
-            } else if (data['event'] === 'joined' && this.currentUser !== data['user']) {
-                // @ts-ignore
-                this.showToast(`${data.user} has joined`);
-            }
-        });
-
-        this.socket.fromEvent('message').subscribe(message => {
-            console.log('New:', message);
-            this.messages.push(message);
-        });
-
-        this.socket.fromEvent('notify-typing').subscribe(message => {
-            this.onTyping = message;
-            this.userTyping = message['user'];
-            console.log('type:', this.onTyping);
-        });
+        // this.socket.emit('set-name', this.utilisateur.username);
+        //
+        // this.socket.fromEvent('users-changed').subscribe(data => {
+        //     console.log('got data', data);
+        //     if (data['event'] === 'left' && this.currentUser !== data['user']) {
+        //         // @ts-ignore
+        //         this.showToast(`${data.user} has left`);
+        //     } else if (data['event'] === 'joined' && this.currentUser !== data['user']) {
+        //         // @ts-ignore
+        //         this.showToast(`${data.user} has joined`);
+        //     }
+        // });
+        //
+        // this.socket.fromEvent('message').subscribe(message => {
+        //     console.log('New:', message);
+        //     this.messages.push(message);
+        // });
+        //
+        // this.socket.fromEvent('notify-typing').subscribe(message => {
+        //     this.onTyping = message;
+        //     this.userTyping = message['user'];
+        //     console.log('type:', this.onTyping);
+        // });
     }
 
     sendMessage() {
-        this.socket.emit('send-message', {text: this.message});
+        // this.socket.emit('send-message', {text: this.message});
         this.message = '';
     }
 
@@ -73,9 +71,9 @@ export class LiveChatPage implements OnInit {
 
         this.typing = true;
 
-        this.socket.emit('typing', {
-            text: this.utilisateur.username + " is typing ..."
-        });
+        // this.socket.emit('typing', {
+        //     text: this.utilisateur.username + " is typing ..."
+        // });
         clearTimeout(this.timeout);
         // @ts-ignore
         this.timeout = setTimeout(this.timeoutFunction, 1000);
@@ -85,13 +83,13 @@ export class LiveChatPage implements OnInit {
         // this.typing = false;
         //console.log("stopped typing");
         // socket.emit("typing", false);
-        this.socket.emit('typing', {
-            text: "" //name + " stopped typing"
-        });
+        // this.socket.emit('typing', {
+        //     text: "" //name + " stopped typing"
+        // });
     };
 
     ionViewWillLeave() {
-        this.socket.disconnect();
+        // this.socket.disconnect();
     }
 
     async showToast(msg) {

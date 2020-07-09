@@ -1,3 +1,22 @@
+
+.toolbar-background {
+  #oneColumn .card-img {
+    width: 50px;
+  }
+
+  //background-image: url('src/assets/egoal_title.png')!important;
+  //background-size: cover;
+  //background-position: center center;
+  //background-repeat: no-repeat;
+}
+
+.card-img {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 50px;
+}
+
 #home {
 
   #searchbar {
@@ -47,3 +66,14 @@
   z-index: 10;
   font-style: inherit;
 }
+
+.text-bold {
+  font-weight: bold;
+  font-size: 1em;
+  text-align: center;
+}
+
+.announceId {
+  background-color: #ECEFF1;
+}
+

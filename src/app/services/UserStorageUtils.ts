@@ -13,11 +13,37 @@ export class UserStorageUtils {
     }
 
     public async getUser() {
-        let utilisateur: Utilisateur;
+        let utilisateur = {} as Utilisateur;
         if (this.platform.is('ios') || this.platform.is('android')) {
-            utilisateur = await this.storage.getItem('Utilisateur');
+            await this.storage.getItem('Utilisateur').then(res => {
+                utilisateur = res as Utilisateur;
+            }).catch((err) => {
+                utilisateur = {
+                    username: 'guest',
+                    type: 'guest'
+                };
+                this.storage.setItem('Utilisateur', utilisateur);
+                console.log(err);
+            });
         } else if (!this.platform.is('ios') && !this.platform.is('android')) {
-            utilisateur = await this.localStorage.get('Utilisateur');
+            await this.localStorage.get('Utilisateur').then(res => {
+                if (res) {
+                    utilisateur = res as Utilisateur;
+                } else {
+                    utilisateur = {
+                        username: 'guest',
+                        type: 'guest'
+                    };
+                    this.localStorage.set('Utilisateur', utilisateur);
+                }
+            }).catch((err) => {
+                utilisateur = {
+                    username: 'guest',
+                    type: 'guest'
+                };
+                this.localStorage.set('Utilisateur', utilisateur);
+                console.log(err);
+            });
         }
         return utilisateur;
     }

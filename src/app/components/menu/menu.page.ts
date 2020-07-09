@@ -15,6 +15,7 @@ import {UserStorageUtils} from '../../services/UserStorageUtils';
 export class MenuPage implements OnInit {
     categories: any[];
     utilisateur: Utilisateur;
+    signOption: string;
 
     public appPages = [];
     isMain: boolean = true;
@@ -44,11 +45,22 @@ export class MenuPage implements OnInit {
                 private pagesService: PagesService,
                 private userStorageUtils: UserStorageUtils) {
         // this.menuController.enable(true); // Enable side menu
+        this.userStorageUtils.getUser().then(res => {
+            this.utilisateur = res as Utilisateur;
+            if (this.utilisateur._id) {
+                this.signOption = 'Signout';
+            } else {
+                this.signOption = 'Sign In';
+            }
+        });
     }
 
     ngOnInit() {
+        this.userStorageUtils.getUser().then(res => {
+            this.utilisateur = res as Utilisateur;
+        });
         this.appPages = this.pagesService.getPages();
-        this.authService.isAuthenticated().subscribe((state) => {
+        this.authService.isAuthenticated.subscribe((state) => {
             if (state) {
                 this.status = true;
             } else {
@@ -61,9 +73,13 @@ export class MenuPage implements OnInit {
         this.router.navigate(['intro']).then(r => this.authService.logout());
     }
 
-    async signout() {
+    async sign() {
         await this.menuController.enable(false); // Make Sidemenu disable
-        await this.router.navigate(['onbroading']).then(r => this.authService.logout());
+        if (this.utilisateur._id) {
+            await this.router.navigate(['onbroading']).then(r => this.authService.logout());
+        } else {
+            await this.router.navigate(['landing-page']);
+        }
     }
 
     backToMain() {

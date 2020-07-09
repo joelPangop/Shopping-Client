@@ -29,8 +29,6 @@ import {environment} from '../../models/environements';
 import {StoreListPage} from '../store-list/store-list.page';
 import {ShowCatOptionPage} from '../show-cat-option/show-cat-option.page';
 
-declare function test(): void;
-
 // @ts-ignore
 @Component({
     selector: 'app-create-product',
@@ -51,7 +49,6 @@ export class CreateProductPage implements OnInit {
     card: any;
     stores = [] as Store[];
     store = {} as Store;
-    public ip: string;
     category = {} as any;
     firstCatChildren = {} as any;
     secondCatChildren = {} as any;
@@ -81,9 +78,7 @@ export class CreateProductPage implements OnInit {
     }
 
     async ngOnInit() {
-        test();
         this.imgURL = [];
-        this.ip = environment.api_url;
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
@@ -96,7 +91,6 @@ export class CreateProductPage implements OnInit {
             console.log(this.platform.platforms());
         });
         await this.getStores();
-        console.log('form', document.getElementById('testId'));
     }
 
     getStores() {
@@ -223,7 +217,7 @@ export class CreateProductPage implements OnInit {
                         loading.dismiss();
                         console.log(res1);
                         this.presentToast('Création réussie !', 2000);
-                        this.navCtrl.navigateRoot('/tabs/products');
+                        this.navCtrl.navigateRoot('/menu/tabs/products');
                     }, error => {
                         loading.dismiss();
                         this.presentToast('Echec de création !', 2000);

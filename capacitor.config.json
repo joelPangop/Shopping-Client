@@ -1,6 +1,6 @@
 {
-  "appId": "com.egoal.ionicangular",
-  "appName": "egoal-app",
+  "appId": "com.egoal.app",
+  "appName": "egoal",
   "bundledWebRuntime": false,
   "webdir": "www"
 }

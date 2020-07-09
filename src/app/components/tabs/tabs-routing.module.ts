@@ -5,20 +5,16 @@ import {TabsPage} from './tabs.page';
 import {AuthGuardService} from '../../services/auth-guard.service';
 
 const routes: Routes = [
-    {
-        path: '',
-        redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-    },
+
     {
         path: '',
         component: TabsPage,
         children: [
             {
                 path: 'tab1',
-                loadChildren: () =>
-                    import('../home/home.module').then(m => m.HomePageModule),
-                canActivate: [AuthGuardService]
+                loadChildren: () => import('../home/home.module').then(m => m.HomePageModule),
+                // loadChildren: '../home/home.module#HomePageModule',
+                // canActivate: [AuthGuardService]
             },
             {
                 path: 'tab2',
@@ -48,9 +44,8 @@ const routes: Routes = [
             },
             {
                 path: 'products',
-                loadChildren: () => import('../product-list/product-list.module').then( m => m.ProductListPageModule)
-            }
-            ,
+                loadChildren: () => import('../product-list/product-list.module').then(m => m.ProductListPageModule)
+            },
             {
                 path: 'orders',
                 loadChildren: () =>

@@ -66,7 +66,7 @@ export class CategoryPreviewPage implements OnInit {
 
     goToCat(cats) {
         // this.router.navigate(['tabs/category/{"cats":' + JSON.stringify(cats) + '}']);
-        this.navCtrl.navigateForward('tabs/category/{"cats":' + JSON.stringify(cats) + '}');
+        this.navCtrl.navigateForward('menu/tabs/category/{"cats":' + JSON.stringify(cats) + '}');
     }
 
     filterBySousCategory(cats) {

@@ -14,7 +14,6 @@ import {Utilisateur} from '../../models/utilisateur-interface';
 import {Notification} from '../../models/notification-interface';
 import {NotificationType} from '../../models/notificationType';
 import {MessageService} from '../../services/message.service';
-import {Socket} from 'ngx-socket-io';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {CurrencyService} from '../../services/currency.service';
 import {environment} from '../../models/environements';
@@ -22,6 +21,8 @@ import {CommandeService} from '../../services/commande.service';
 import {Commande} from '../../models/commande-interface';
 import {Storage} from '@ionic/storage';
 import {CartService} from '../../services/cart.service';
+import {SigninPage} from '../auth/signin/signin.page';
+import {LandingPagePage} from '../auth/landing-page/landing-page.page';
 
 @Component({
     selector: 'app-product-detail',
@@ -31,7 +32,7 @@ import {CartService} from '../../services/cart.service';
 export class ProductDetailPage implements OnInit {
 
     id;
-    article: Article;
+    article = {} as Article;
     rate: any;
     categories;
     cities;
@@ -49,22 +50,24 @@ export class ProductDetailPage implements OnInit {
         }
     };
 
-    cartItems: itemCart[];
+    cartItems = [] as itemCart[];
     images: any;
     public cartItemCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     utilisateur = {} as Utilisateur;
     like: boolean = false;
     currency: any;
+    product = {} as Article;
 
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
-    private resultRate: string = "0.1";
+    private resultRate: string = '0.1';
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private storage: Storage, private imageService: ImageService, private sharing: SocialSharing,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService,
-                public modalController: ModalController, private msgService: MessageService, private socket: Socket,
-                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,
-                private cmdService: CommandeService) {
+                public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService,
+                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,) {
+        this.product = {} as Article;
+        this.loadArticle();
 
     }
 
@@ -76,13 +79,16 @@ export class ProductDetailPage implements OnInit {
         console.log(this.id);
         let data: Commande;
 
-        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {{
-            data = res;
-            this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-        }});
+        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
+            {
+                data = res;
+                this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
+            }
+        });
+        await this.loadArticle();
+
         await this.userStorageUtils.getCurrency().then(async res => {
-            this.currency = res ? res.currency : this.utilisateur.currency.currency;
-            await this.loadArticle();
+            // this.currency = res ? res.currency : this.utilisateur.currency.currency;
         });
 
         if (!this.rate) {
@@ -91,16 +97,17 @@ export class ProductDetailPage implements OnInit {
     }
 
     // @ts-ignore
-    loadArticle(): Observable<Article> {
-        this.articleService.loadArticle(this.id).subscribe(async res => {
+    async loadArticle(): Observable<Article> {
+        await this.articleService.loadArticle(this.id).subscribe(async res => {
             this.article = res as Article;
             this.images = this.article.pictures;
-            const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
-            let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
-            this.article.price = this.article.price * parseFloat(rate);
+            // const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
+            // let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
+            // this.article.price = this.article.price * parseFloat(rate);
             if (this.article.likes.includes(this.utilisateur._id)) {
                 this.like = true;
             }
+            this.product = this.article;
             // this.rate = this.articleService.article.averageStar;
         });
     }
@@ -116,6 +123,7 @@ export class ProductDetailPage implements OnInit {
             }
             node.removeEventListener('animationend', handleAnimationEnd);
         }
+
         node.addEventListener('animationend', handleAnimationEnd);
     }
 
@@ -183,40 +191,42 @@ export class ProductDetailPage implements OnInit {
 
     async checkLike() {
         const utilisateurId: string = this.article.utilisateurId;
-        if (utilisateurId === this.utilisateur._id) {
-            this.presentToast('Impossible de liker son propre article', 1500);
-        } else {
-            this.like = !this.like;
-            if (this.like === false) {
-                const index = this.article.likes.indexOf(this.utilisateur._id, 0);
-                this.article.likes.splice(index, 1);
+        if (this.utilisateur._id) {
+            if (utilisateurId === this.utilisateur._id) {
+                this.presentToast('Impossible de liker son propre article', 1500);
             } else {
-                this.article.likes.push(this.utilisateur._id);
-            }
+                this.like = !this.like;
+                if (this.like === false) {
+                    const index = this.article.likes.indexOf(this.utilisateur._id, 0);
+                    this.article.likes.splice(index, 1);
+                } else {
+                    this.article.likes.push(this.utilisateur._id);
+                }
 
-            await this.articleService.checkLike(utilisateurId, this.id, this.article).subscribe(res => {
-                console.log(res);
-                const notification: Notification = {
-                    title: 'Nouveaux Like',
-                    message: this.utilisateur.username + ' a like votre article',
-                    utilisateurId: utilisateurId,
-                    article: this.article,
-                    avatar: this.article.pictures[0],
-                    read: false,
-                    type: NotificationType.LIKE,
-                    sender: this.utilisateur._id
-                };
-                setTimeout(async () => {
-                    if (this.like === true) {
-                        this.msgService.addNotification(notification).subscribe(res => {
-                            this.socket.emit('notifying', {
-                                user: this.utilisateur,
-                                message: this.utilisateur.username + ' a like votre article'
+                await this.articleService.checkLike(utilisateurId, this.id, this.article).subscribe(res => {
+                    console.log(res);
+                    const notification: Notification = {
+                        title: 'Nouveaux Like',
+                        message: this.utilisateur.username + ' a like votre article',
+                        utilisateurId: utilisateurId,
+                        article: this.article,
+                        avatar: this.article.pictures[0],
+                        read: false,
+                        type: NotificationType.LIKE,
+                        sender: this.utilisateur._id
+                    };
+                    setTimeout(async () => {
+                        if (this.like === true) {
+                            this.msgService.addNotification(notification).subscribe(res => {
+                                // this.socket.emit('notifying', {
+                                //     user: this.utilisateur,
+                                //     message: this.utilisateur.username + ' a like votre article'
+                                // });
                             });
-                        });
-                    }
-                }, 10000);
-            });
+                        }
+                    }, 10000);
+                });
+            }
         }
     }
 
@@ -235,106 +245,122 @@ export class ProductDetailPage implements OnInit {
 
     // methode pour ajouter un article au panier
     async addToCart() {
-        if (this.utilisateur._id == this.article.utilisateurId) {
-            this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
-        } else {
-            try {
-                let data: itemCart[];
-                let added = false;
-                let commande = await this.storage.get('cart') as Commande;
-                data = commande ? commande.itemsCart : [];
-                console.log('data', data);
-                // on vérifie si le panier est vide
-                if (data === null || data.length === 0) {
-                    data = [];
-                    data.push({
-                        item: this.article,
-                        qty: 1,
-                        amount: this.article.price
-                    });
-                    this.cartItemCount.next(this.cartItemCount.value + 1);
-                    const timestamp = new Date().getUTCMilliseconds();
-                    let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
-                    this.cmdService.commande.num_commande = ran_number;
-                    this.cmdService.commande.itemsCart = data;
-                    this.cmdService.commande.completed = false;
-                    this.cmdService.commande.userId = this.utilisateur._id;
-                    this.cmdService.commande.amount = this.article.price;
-                    this.cmdService.commande.quantity = data.length;
-                    this.cmdService.createCommande().subscribe(async res => {
-                        console.log('resultat', res);
-                        this.cmdService.commande = res;
-                        await this.storage.set('cart', this.cmdService.commande);
-                    });
-                    // this.event.publish('cartItemCount', this.cartItemCount.value);
-                    this.cartService.setCartItemCount(this.cartItemCount.value);
-                } else {
-                    // tslint:disable-next-line:prefer-const
-                    let names: string[] = [];
-                    data.forEach(d => {
-                        names.push(d.item.title);
-                    });
-                    if (!names.includes(this.article.title)) {
+        if (this.utilisateur._id) {
+            if (this.utilisateur._id == this.article.utilisateurId) {
+                this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
+            } else {
+                try {
+                    let data: itemCart[];
+                    let added = false;
+                    let commande = await this.storage.get('cart') as Commande;
+                    data = commande ? commande.itemsCart : [];
+                    console.log('data', data);
+                    // on vérifie si le panier est vide
+                    if (data === null || data.length === 0) {
+                        data = [];
                         data.push({
                             item: this.article,
                             qty: 1,
                             amount: this.article.price
                         });
                         this.cartItemCount.next(this.cartItemCount.value + 1);
+                        const timestamp = new Date().getUTCMilliseconds();
+                        let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
+                        this.cmdService.commande.num_commande = ran_number;
+                        this.cmdService.commande.itemsCart = data;
+                        this.cmdService.commande.completed = false;
+                        this.cmdService.commande.userId = this.utilisateur._id;
+                        this.cmdService.commande.amount = this.article.price;
+                        this.cmdService.commande.quantity = data.length;
+                        this.cmdService.createCommande().subscribe(async res => {
+                            console.log('resultat', res);
+                            this.cmdService.commande = res;
+                            await this.storage.set('cart', this.cmdService.commande);
+                        });
                         // this.event.publish('cartItemCount', this.cartItemCount.value);
                         this.cartService.setCartItemCount(this.cartItemCount.value);
-
                     } else {
-                        // tslint:disable-next-line:prefer-for-of
-                        for (let i = 0; i < data.length; i++) {
-                            const element: itemCart = data[i];
-                            if (this.article._id === element.item._id) {
-                                // le panier contient déjà cette article
-                                element.qty += 1;
-                                element.amount += this.article.price;
-                                added = true;
+                        // tslint:disable-next-line:prefer-const
+                        let names: string[] = [];
+                        data.forEach(d => {
+                            names.push(d.item.title);
+                        });
+                        if (!names.includes(this.article.title)) {
+                            data.push({
+                                item: this.article,
+                                qty: 1,
+                                amount: this.article.price
+                            });
+                            this.cartItemCount.next(this.cartItemCount.value + 1);
+                            // this.event.publish('cartItemCount', this.cartItemCount.value);
+                            this.cartService.setCartItemCount(this.cartItemCount.value);
+
+                        } else {
+                            // tslint:disable-next-line:prefer-for-of
+                            for (let i = 0; i < data.length; i++) {
+                                const element: itemCart = data[i];
+                                if (this.article._id === element.item._id) {
+                                    // le panier contient déjà cette article
+                                    element.qty += 1;
+                                    element.amount += this.article.price;
+                                    added = true;
+                                }
                             }
                         }
+                        this.cmdService.commande.itemsCart = data;
+                        this.cmdService.commande.userId = this.utilisateur._id;
+                        let amount = 0;
+                        for (let i of data) {
+                            amount += i.amount;
+                        }
+                        this.cmdService.commande.amount = amount;
+                        this.cmdService.commande.quantity = data.length;
+                        this.cmdService.updateCommande().subscribe(async res => {
+                            console.log('resultat', res);
+                            this.cmdService.commande = res;
+                            await this.storage.set('cart', this.cmdService.commande);
+                        });
                     }
-                    this.cmdService.commande.itemsCart = data;
-                    this.cmdService.commande.userId = this.utilisateur._id;
-                    let amount = 0;
-                    for (let i of data) {
-                        amount += i.amount;
-                    }
-                    this.cmdService.commande.amount = amount;
-                    this.cmdService.commande.quantity = data.length;
-                    this.cmdService.updateCommande().subscribe(async res => {
-                        console.log('resultat', res);
-                        this.cmdService.commande = res;
-                        await this.storage.set('cart', this.cmdService.commande);
-                    });
-                }
-                // if (!added) {
-                //     // le panier n'est pas vide et ne contient pas l'article
-                //     data.push({
-                //         item,
-                //         qty: 1,
-                //         amount: item.price
-                //     });
-                // }
-                // await this.storage.set('commande', data);
-                this.animateCSS('tada');
-                this.presentToast('Votre panier a été mis à jour', 1500);
-            } catch (e) {
-                const myData: itemCart[] = [];
-                console.log('error', e);
-                if (e.code === 2) {
-                    myData.push({
-                        item: this.article,
-                        qty: 1,
-                        amount: this.article.price
-                    });
-                    await this.storage.set('cart', myData);
+                    // if (!added) {
+                    //     // le panier n'est pas vide et ne contient pas l'article
+                    //     data.push({
+                    //         item,
+                    //         qty: 1,
+                    //         amount: item.price
+                    //     });
+                    // }
+                    // await this.storage.set('commande', data);
+                    this.animateCSS('tada');
                     this.presentToast('Votre panier a été mis à jour', 1500);
+                } catch (e) {
+                    const myData: itemCart[] = [];
+                    console.log('error', e);
+                    if (e.code === 2) {
+                        myData.push({
+                            item: this.article,
+                            qty: 1,
+                            amount: this.article.price
+                        });
+                        await this.storage.set('cart', myData);
+                        this.presentToast('Votre panier a été mis à jour', 1500);
+                    }
                 }
             }
+        } else {
+            this.dismiss();
+            const modal = await this.modalController.create({
+                component: LandingPagePage,
+                cssClass: 'cart-modal'
+            });
+            return await modal.present();
         }
+    }
+
+    // Back to previous page options
+    dismiss() {
+        this.modalController.dismiss({
+            'dismissed': true
+        });
     }
 
     getRandomInt() {
@@ -366,4 +392,31 @@ export class ProductDetailPage implements OnInit {
         });
     }
 
+    async contact() {
+        this.dismiss();
+        if (this.utilisateur._id) {
+            if (this.utilisateur._id === this.article.utilisateurId) {
+                this.presentToast('Vous etes le proprietaire du produit', 2000);
+            } else {
+                await this.navCtrl.navigateForward(`menu/tabs/action-message/${1000}/write/${this.article.utilisateurId}/${this.article._id}`);
+            }
+        } else {
+            const modal = await this.modalController.create({
+                component: LandingPagePage,
+                cssClass: 'cart-modal'
+            });
+            return await modal.present();
+        }
+    }
+
+    contains(target: string[], pattern: string[]) {
+        let value = false;
+        if (target) {
+            pattern.forEach(function(word) {
+                // @ts-ignore
+                value = value + target.includes(word);
+            });
+        }
+        return value;
+    }
 }

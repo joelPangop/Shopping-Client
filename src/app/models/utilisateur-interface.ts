@@ -10,7 +10,7 @@ export interface Utilisateur {
     avatar ?: string;
     type ?: string;
     password ?: string;
-    userInfo: UserInfo;
+    userInfo?: UserInfo;
     currency?: Currency;
     _id ?: string;
 }

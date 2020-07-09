@@ -15,7 +15,7 @@ export class PagesService {
         return [
             {
                 title: 'Home',
-                url: '/tabs/tab1',
+                url: '/menu/tabs/tab1',
                 icon: 'home'
             },
             {

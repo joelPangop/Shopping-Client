@@ -25,8 +25,6 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-@import '~animate.css/animate.min.css';
-
 .my-container-label {
   padding-top: 10px !important;
   padding-bottom: 10px !important;
@@ -46,6 +44,11 @@
 
 .my-custom-dialog .modal-wrapper{
   width: 5%;
+
+}
+
+.my-custom-search-dialog .modal-wrapper{
+  width: 20%;
 
 }
 
@@ -70,6 +73,15 @@
       color: var(--dark-color);
     }
   }
-
 }
 
+.split-pane-visible >.split-pane-side {
+  min-width: 300px!important;
+  max-width: 300px!important;
+}
+
+.background-image {
+  //--background: url('src/assets/egoal_background.png') no-repeat center center fixed;
+  --background: url('src/assets/images/onbroading-2.jpg') no-repeat center center fixed;
+  height: 50%;
+}

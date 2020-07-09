@@ -28,3 +28,18 @@
     --background-activated: transparent;
   }
 }
+
+.cart-length {
+  color: var(--ion-color-color1);
+  position: absolute;
+  top: 0px;
+  left: 15px;
+  font-weight: 600;
+  font-size: 1em;
+  min-width: 25px;
+  z-index: 10;
+  font-style: inherit;
+}
+.cart-icon {
+  font-size: 25px;
+}

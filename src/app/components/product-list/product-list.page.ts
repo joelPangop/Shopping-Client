@@ -5,7 +5,6 @@ import {Utilisateur} from '../../models/utilisateur-interface';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {NativeStorage} from '@ionic-native/native-storage/ngx';
-import {Socket} from 'ngx-socket-io';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {ModalController, NavController, Platform} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
@@ -22,6 +21,7 @@ import {Storage} from '@ionic/storage';
 import {Commande} from '../../models/commande-interface';
 import {CommandeService} from '../../services/commande.service';
 import {CartService} from '../../services/cart.service';
+import {SearchPage} from '../search/search.page';
 
 @Component({
     selector: 'app-product-list',
@@ -56,7 +56,7 @@ export class ProductListPage implements OnInit {
     list: Boolean = false;
 
     constructor(private http: HttpClient, private router: Router, private storage: NativeStorage, private localStorage: Storage,
-                private socket: Socket, private photoViewer: PhotoViewer, private navCtrl: NavController,
+                private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs, private cmdService: CommandeService,
                 public articleService: ArticleService, public cuService: CurrencyService, private modalController: ModalController,
                 private userStorageUtils: UserStorageUtils, public platform: Platform, private cartService: CartService) {
@@ -96,7 +96,7 @@ export class ProductListPage implements OnInit {
     }
 
     async ngOnInit() {
-        this.socket.connect();
+        // this.socket.connect();
         this.utilisateur = await this.userStorageUtils.getUser();
         await this.loadArticles();
         this.ip = environment.api_url;
@@ -173,15 +173,15 @@ export class ProductListPage implements OnInit {
 
     showDetails(id: string) {
         // this.navCtrl.navigateForward('tabs/product-detail/' + id);
-        this.navCtrl.navigateRoot('tabs/product-detail/' + id);
+        this.navCtrl.navigateRoot('menu/tabs/product-detail/' + id);
     }
 
     // async goToProductDetails(product) {
     //    this.navCtrl.navigateRoot('tabs/product-detail/' + id))
     // }
 
-    goToCreate() {
-        this.navCtrl.navigateRoot('tabs/create-product');
+    async goToCreate() {
+        await this.router.navigate(['menu/tabs/create-product']);
     }
 
     onSearch(event): void {
@@ -289,4 +289,11 @@ export class ProductListPage implements OnInit {
     //         });
     //     }
     // }
+    async gotoSearchPage() {
+        const modal = await this.modalController.create({
+            component: SearchPage,
+            cssClass: "cart-modal"
+        });
+        return await modal.present();
+    }
 }

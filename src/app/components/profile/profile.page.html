@@ -1,10 +1,13 @@
 <ion-header>
-    <ion-toolbar>
+    <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="tabs">
-            </ion-back-button>
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
         </ion-buttons>
-        <ion-title>profile</ion-title>
+        <ion-title>Profile</ion-title>
     </ion-toolbar>
     <ion-toolbar color="color1">
         <ion-segment [(ngModel)]="profileType" (ionChange)="segmentChanged($event)">
@@ -142,13 +145,13 @@
                                 </ion-label>
                             </ion-col>
                             <ion-col size=2>
-                                <ion-button (click)="togglePassword()" *ngIf="ischanged">
-                                    <ion-icon name="eye" color="gray" item-end></ion-icon>
+                                <ion-button (click)="togglePassword()" *ngIf="ischanged" fill="clear">
+                                    <ion-icon name="eye" color="color1" slot="icon-only"></ion-icon>
                                 </ion-button>
                             </ion-col>
-                            <ion-col size=1></ion-col>
+<!--                            <ion-col size=1></ion-col>-->
                             <ion-col size=2>
-                                <ion-toggle [(ngModel)]="ischanged" color="primary"
+                                <ion-toggle [(ngModel)]="ischanged" color="color1"
                                             [ngModelOptions]="{standalone: true}" checked>
                                 </ion-toggle>
                             </ion-col>
@@ -170,7 +173,7 @@
                         </div>
                     </ion-item>
                 </ion-item>
-                <ion-button expand="block" [disabled]="!userForm.valid" type="submit">
+                <ion-button expand="block" [disabled]="!userForm.valid" type="submit" color="color1">
                     Mettre a jour
                 </ion-button>
             </form>
@@ -180,7 +183,8 @@
                 <ion-item-sliding *ngFor="let article of articles; let i = index">
                     <ion-item>
                         <ion-thumbnail slot="start">
-                            <ion-img src="https://egoalservice.azurewebsites.net/image/{{article.pictures[0]}}"></ion-img>
+                            <ion-img
+                                    src="https://egoalservice.azurewebsites.net/image/{{article.pictures[0]}}"></ion-img>
                         </ion-thumbnail>
                         <ion-label>
                             <h2>{{article.title}}</h2>
