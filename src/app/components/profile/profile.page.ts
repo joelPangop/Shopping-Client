@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Telephone} from '../../models/telephone-interface';
@@ -14,6 +13,7 @@ import {LoadingController, NavController, PopoverController, ToastController} fr
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
     selector: 'app-profile',
@@ -43,11 +43,12 @@ export class ProfilePage implements OnInit {
     currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
     icon;
     currency;
+    option: string;
 
-    constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
-                public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
+    constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
+                public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController, private router: Router,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
-                private popoverController: PopoverController) {
+                private popoverController: PopoverController, private activatedRoute: ActivatedRoute) {
         this.userForm = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
@@ -56,10 +57,14 @@ export class ProfilePage implements OnInit {
                 Validators.minLength(6),
                 Validators.maxLength(30),
             ])
-        }, { validator: this.password });
+        }, {validator: this.password});
     }
 
     async ngOnInit() {
+        this.option = this.activatedRoute.snapshot.paramMap.get('option');
+        if (this.option) {
+            this.profileType = this.option;
+        }
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
@@ -68,11 +73,11 @@ export class ProfilePage implements OnInit {
         console.log(this.utilisateur);
         this.authSrv.userInfo = this.utilisateur.userInfo;
         this.authSrv.address = this.utilisateur.userInfo.address;
-        if(this.utilisateur.currency){
+        if (this.utilisateur.currency) {
             this.icon = this.utilisateur.currency.icon;
             this.currency = this.utilisateur.currency.currency;
         } else {
-            this.icon = 'assets/'+ Currencies['CAD']+'.svg';
+            this.icon = 'assets/' + Currencies['CAD'] + '.svg';
             this.currency = Currencies.CAD;
         }
 
@@ -88,6 +93,7 @@ export class ProfilePage implements OnInit {
     }
 
     passwordConfirm: any;
+
     // @ts-ignore
     loadData(): Observable<Article[]> {
         this.articleService.loadArticleByUser(this.utilisateur._id).subscribe(res => {
@@ -109,7 +115,7 @@ export class ProfilePage implements OnInit {
     password(formGroup: FormGroup): { [err: string]: any } {
         console.log('password', formGroup.get('password').value);
         console.log('confirm password', formGroup.get('passwordConfirm').value);
-        return formGroup.get('password').value === formGroup.get('passwordConfirm').value ? null : { passwordMismatch: true };
+        return formGroup.get('password').value === formGroup.get('passwordConfirm').value ? null : {passwordMismatch: true};
     }
 
     async updateProfile() {
@@ -128,10 +134,10 @@ export class ProfilePage implements OnInit {
                     const rep = res1 as object;
                     // @ts-ignore
                     this.user = rep.user as Utilisateur;
-                    await this.authSrv.storage.setItem('Utilisateur', this.utilisateur).then(async data => {
+                    await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
                         this.authSrv.userInfo = this.utilisateur.userInfo;
                         this.authSrv.address = this.utilisateur.userInfo.address;
-                        await this.authSrv.storage.setItem('IsLogginIn', true);
+                        await this.authSrv.localStorage.set('IsLogginIn', true);
                     });
                     await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
                         this.authSrv.userInfo = this.utilisateur.userInfo;
@@ -145,10 +151,10 @@ export class ProfilePage implements OnInit {
                 const rep = res as object;
                 // @ts-ignore
                 this.user = rep.user as Utilisateur;
-                await this.authSrv.storage.setItem('Utilisateur', this.utilisateur).then(async data => {
+                await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
                     this.authSrv.userInfo = this.utilisateur.userInfo;
                     this.authSrv.address = this.utilisateur.userInfo.address;
-                    await this.authSrv.storage.setItem('IsLogginIn', true);
+                    await this.authSrv.localStorage.set('IsLogginIn', true);
                 });
                 await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
                     this.authSrv.userInfo = this.utilisateur.userInfo;
@@ -203,7 +209,7 @@ export class ProfilePage implements OnInit {
 
     async updateArticle(article: Article, index) {
         // await this.storage.setItem('page', 'profile');
-        await this.navCtrl.navigateForward('tabs/edit-product/' + article._id);
+        await this.router.navigate(['menu/tabs/edit-product/' + article._id]);
     }
 
     async deleteArticle(article: Article, index: number) {
@@ -248,6 +254,7 @@ export class ProfilePage implements OnInit {
         //     $event.target.complete();
         // });
     }
+
     public async setCurrency(ev) {
         // @ts-ignore
         const popover = await this.popoverController.create({
@@ -258,8 +265,8 @@ export class ProfilePage implements OnInit {
             componentProps: {
                 currOptionSubject: this.currOptionSubject,
                 currIconOptionSubject: this.currIconOptionSubject,
-                currency: this.utilisateur.currency ? this.utilisateur.currency.currency: 'CAD',
-                currencyIcon: this.utilisateur.currency ? this.utilisateur.currency.icon: 'assets/'+ Currencies.CAD+'.svg',
+                currency: this.utilisateur.currency ? this.utilisateur.currency.currency : 'CAD',
+                currencyIcon: this.utilisateur.currency ? this.utilisateur.currency.icon : 'assets/' + Currencies.CAD + '.svg',
                 option: 'userCurrency'
             }
         });

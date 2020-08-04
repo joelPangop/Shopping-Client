@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {ToastController} from '@ionic/angular';
 import {text} from 'express';
@@ -19,19 +18,13 @@ export class LiveChatPage implements OnInit {
     typing: boolean = false;
     userTyping = '';
 
-    constructor(private storage: NativeStorage, private toastCtrl: ToastController) {
+    constructor(private toastCtrl: ToastController) {
     }
 
     async ngOnInit() {
         // this.socket.connect();
         let name = `User-${new Date().getTime()}`;
         // this.currentUser = name;
-
-        await this.storage.getItem('Utilisateur').then(res => {
-            this.utilisateur = res;
-            this.currentUser = this.utilisateur.username;
-            console.log(res);
-        });
 
         // this.socket.emit('set-name', this.utilisateur.username);
         // this.socket.emit('set-name', this.utilisateur.username);

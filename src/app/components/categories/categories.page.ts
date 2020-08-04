@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {CategoriesService} from '../../services/categories.service';
 import {NavigationExtras, Router} from '@angular/router';
-import {NavController} from '@ionic/angular';
+import {NavController, Platform} from '@ionic/angular';
 
 @Component({
   selector: 'app-categories',
@@ -12,7 +12,7 @@ import {NavController} from '@ionic/angular';
 export class CategoriesPage implements OnInit {
   categories = [];
 
-  constructor(private router: Router,private categoryService: CategoriesService, private navCtrl: NavController) { }
+  constructor(private router: Router,private categoryService: CategoriesService, private navCtrl: NavController, public platform: Platform) { }
 
   ngOnInit() {
     this.getCategories();

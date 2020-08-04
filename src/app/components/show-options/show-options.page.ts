@@ -1,17 +1,18 @@
 import {Component, OnInit} from '@angular/core';
-import {NavController, NavParams} from '@ionic/angular';
+import {NavController, NavParams, PopoverController} from '@ionic/angular';
 import {CategorieTelephone} from '../../models/CategorieTelephone';
 import {Languages} from '../../models/Languages';
 import {Currencies} from '../../models/Currencies';
 import {forEach} from '@angular-devkit/schematics';
 import {BehaviorSubject} from 'rxjs';
-import {LanguageService} from '../../services/language.service';
 import {ArticleService} from '../../services/article.service';
 import {CurrencyService} from '../../services/currency.service';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
-import {TranslateService} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
+import {TranslateService} from '@ngx-translate/core';
+import {LanguageService} from '../../services/language.service';
+import {StorageService} from '../../services/storage.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-show-options',
@@ -24,33 +25,25 @@ export class ShowOptionsPage implements OnInit {
     public language;
     public currency;
     public currencyIcon;
-    languages: Map<string, string>;
+    languages: any[];
     currencies: Map<string, string>;
     langOptionSubject: BehaviorSubject<any>;
     currOptionSubject: BehaviorSubject<any>;
     currIconOptionSubject: BehaviorSubject<any>;
 
-    constructor(public navParams: NavParams, private languageService: LanguageService, private cuService: CurrencyService,
-                private userStorageUtils: UserStorageUtils, private localStorage: Storage,
-                private storage: NativeStorage) {
+    constructor(public navParams: NavParams, private cuService: CurrencyService, private popoverController: PopoverController,
+                private userStorageUtils: UserStorageUtils, private localStorage: Storage, private storageService: StorageService,
+                private translateService: TranslateService, private languageService: LanguageService, public authService: AuthService) {
         this.option = this.navParams.get('option');
         this.language = this.navParams.get('language');
         this.currency = this.navParams.get('currency');
         this.currencyIcon = this.navParams.get('currencyIcon');
+        this.currencies = new Map<string, string>();
     }
 
     ngOnInit() {
-        this.langOptionSubject = this.navParams.get('langOptionSubject');
-        this.currOptionSubject = this.navParams.get('currOptionSubject');
-        this.currIconOptionSubject = this.navParams.get('currIconOptionSubject');
-        this.languages = new Map<string, string>();
-        this.currencies = new Map<string, string>();
-        this.cuService.fromCurrOptionSubject = this.currency;
-        for (const item in Languages) {
-            console.log('item:', item);
-            console.log('item value:', Languages[item]);
-            this.languages.set(item, Languages[item]);
-        }
+        this.languages = this.languageService.getLanguages();
+        this.language = this.languageService.selected;
         for (const item in Currencies) {
             console.log('item:', item);
             console.log('item value:', Currencies[item]);
@@ -59,12 +52,9 @@ export class ShowOptionsPage implements OnInit {
     }
 
     setLanguage(l: string) {
-        this.language = l;
         console.log(this.language);
-        const popover = this.navParams.get('popover');
-        popover.dismiss(this.language);
-        this.langOptionSubject.next(this.language);
-        this.languageService.setInitialAppLanguage(this.language);
+        this.languageService.setLanguage(l);
+        this.popoverController.dismiss();
     }
 
     async setCurrency(c: string) {
@@ -81,14 +71,17 @@ export class ShowOptionsPage implements OnInit {
             this.currOptionSubject.next(this.currency);
             this.currIconOptionSubject.next(Currencies[this.currency]);
             this.cuService.toCurrOptionSubject = this.currency;
-            await this.localStorage.set('currency', {
+            this.storageService.setObject('currency', {
                 currency: this.currency,
                 icon: Currencies[this.currency]
             });
-            await this.storage.setItem('currency', {
-                currency: this.currency,
-                icon: Currencies[this.currency]
-            });
+            this.authService.currency = this.currency
+            this.authService.currencyIcon = Currencies[this.currency];
+            // this.localStorage.set('currency', {
+            //     currency: this.currency,
+            //     icon: Currencies[this.currency]
+            // });
+
             this.cuService.getCurrencyRate().then((res) => {
                 if (res) {
                     const popover = this.navParams.get('popover');

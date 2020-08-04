@@ -1,50 +1,55 @@
+<!--<ion-content id="search" [fullscreen]="true" padding>-->
+<ion-searchbar placeholder="Search your product" showCancelButton animated
+               (ionInput)="getProducts($event)"></ion-searchbar>
 
-<ion-content id="search" [fullscreen]="true" padding>
-  <ion-searchbar placeholder="Search your product" showCancelButton animated (ionInput)="getProducts($event)"></ion-searchbar>
-
-  <!-- When search result is empty -->
-  <!-- No products Found -->
-  <ion-grid class="ion-padding" id="empty" *ngIf="products.length == 0" style="height: 100%">
+<!-- When search result is empty -->
+<!-- No products Found -->
+<ion-grid class="ion-padding" id="empty" *ngIf="products.length == 0" style="height: 100%">
     <ion-row class="ion-align-items-center ion-justify-content-center" style="height: 100%; flex-direction: column">
-      <div class="ion-text-center ion-padding">
-        <ion-icon name="search" style="zoom:5.0;" color="medium"></ion-icon>
-        <h4>No Search Found</h4>
-        <p>Looks like there are no products available at this moment</p>
-      </div>
+        <div class="ion-text-center ion-padding">
+            <ion-icon name="search" style="zoom:5.0;" color="medium"></ion-icon>
+            <h4>No Search Found</h4>
+            <p>Looks like there are no products available at this moment</p>
+        </div>
     </ion-row>
-  </ion-grid>
+</ion-grid>
 
-  <!-- Search Result Content -->
-  <ion-grid>
+<!-- Search Result Content -->
+<ion-grid>
     <ion-row>
-      <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of products">
-        <ion-card class="ion-no-margin" (click)="goToProductDetails(item)">
-
-          <!-- Product Image -->
-          <div class="card-img"
-               [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
-
-          <!-- Wish Button or Product Like/Dislike Button Option -->
-          <ion-fab vertical="top" horizontal="end">
-            <ion-fab-button>
-              <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
-              <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
-            </ion-fab-button>
-          </ion-fab>
-
-          <!-- Product Contents -->
-          <ion-card-content>
-            <ion-row>
-              <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
-              <!--              <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
-              <!--              <span class="previous-price"> ${{item.price}}</span>-->
-            </ion-row>
-            <ion-row>
-              <h4 class="product-name">{{item.title | slice:0:30}}</h4>
-            </ion-row>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+        <ion-chip *ngFor="let cat of this.categories">
+            <ion-label>{{ cat }}</ion-label>
+        </ion-chip>
     </ion-row>
-  </ion-grid>
-</ion-content>
+    <ion-row>
+        <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of products">
+            <ion-card class="ion-no-margin" (click)="goToProductDetails(item)">
+
+                <!-- Product Image -->
+                <div class="card-img"
+                     [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
+
+                <!--           Wish Button or Product Like/Dislike Button Option -->
+                <ion-fab vertical="top" horizontal="end">
+                    <!--            <ion-fab-button>-->
+                    <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                    <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                    <!--            </ion-fab-button>-->
+                </ion-fab>
+
+                <!-- Product Contents -->
+                <ion-card-content>
+                    <ion-row>
+                        <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
+                        <!--              <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                        <!--              <span class="previous-price"> ${{item.price}}</span>-->
+                    </ion-row>
+                    <ion-row>
+                        <h4 class="product-name">{{item.title | slice:0:30}}</h4>
+                    </ion-row>
+                </ion-card-content>
+            </ion-card>
+        </ion-col>
+    </ion-row>
+</ion-grid>
+<!--</ion-content>-->

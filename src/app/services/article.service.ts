@@ -68,6 +68,11 @@ export class ArticleService {
         return this.http.put(url, averageStar);
     }
 
+    addView(utilisateurId, articleId, views) {
+        const url = `${environment.api_url}/article/views/utilisateurId/${utilisateurId}/articleId/${articleId}`;
+        return this.http.put(url, views);
+    }
+
     checkLike(utilisateurId, articleId, likes) {
         const url = `${environment.api_url}/article/like/utilisateurId/${utilisateurId}/articleId/${articleId}`;
         return this.http.put(url, likes);
@@ -75,7 +80,7 @@ export class ArticleService {
 
     updateArticle() {
         // tslint:disable-next-line:max-line-length
-        return this.http.put(`${environment.api_url}/article/` + this.article._id, this.article, {headers: {'content-Type': 'application/json'}});
+        return this.http.put(`${environment.api_url1}/article/` + this.article._id, this.article, {headers: {'content-Type': 'application/json'}});
     }
 
     deleteArticle(id: string) {

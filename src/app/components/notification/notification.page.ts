@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {MessageService} from '../../services/message.service';
 import {Notification} from '../../models/notification-interface';
 import {Utilisateur} from '../../models/utilisateur-interface';
@@ -21,7 +20,7 @@ export class NotificationPage implements OnInit {
     messageNotifications: Notification[] = [];
     utilisateur = {} as Utilisateur;
 
-    constructor(private storage: NativeStorage, private messageService: MessageService, private activatedRoute: ActivatedRoute,
+    constructor(private messageService: MessageService, private activatedRoute: ActivatedRoute,
                 private navCtrl: NavController, private userStorageUtils: UserStorageUtils) {
         this.likeNotifications = [] as Notification[];
         this.messageNotifications = [] as Notification[];

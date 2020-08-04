@@ -6,6 +6,7 @@ import {ProductDetailPage} from '../product-detail/product-detail.page';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ProductViewPage} from '../product-view/product-view.page';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-featured-products',
@@ -24,7 +25,7 @@ export class FeaturedProductsPage implements OnInit {
     utilisateur = {} as Utilisateur;
     @ViewChild('like', {static: false, read: ElementRef}) fab: ElementRef;
 
-    constructor(private productsService: ArticleService,
+    constructor(public productsService: ArticleService, public authService: AuthService,
                 private modalController: ModalController, private userStorageUtils: UserStorageUtils) {
     }
 
@@ -35,8 +36,8 @@ export class FeaturedProductsPage implements OnInit {
 
     getProductList() {
         this.productsService.loadArticles().subscribe((res) => {
-            this.products = res;
-            this.shuffle(this.products);
+            this.productsService.articles = res;
+            this.shuffle(this.productsService.articles);
         });
     }
 
@@ -50,7 +51,7 @@ export class FeaturedProductsPage implements OnInit {
     }
 
     public isWishList(item: Article) {
-        return item.likes.includes(this.utilisateur._id);
+        return item.likes.includes(this.authService.currentUser._id);
     }
 
     shuffle(array) {

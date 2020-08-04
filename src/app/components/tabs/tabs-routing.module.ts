@@ -68,6 +68,10 @@ const routes: Routes = [
                 loadChildren: () => import('../profile/profile.module').then(m => m.ProfilePageModule)
             },
             {
+                path: 'profile/:option',
+                loadChildren: () => import('../profile/profile.module').then(m => m.ProfilePageModule)
+            },
+            {
                 path: 'messagerie',
                 loadChildren: () => import('../messagerie/messagerie.module').then(m => m.MessageriePageModule)
             },
@@ -106,10 +110,6 @@ const routes: Routes = [
             {
                 path: 'live-chat',
                 loadChildren: () => import('../live-chat/live-chat.module').then(m => m.LiveChatPageModule)
-            },
-            {
-                path: 'tds-sneaker-page',
-                loadChildren: () => import('../tds-sneaker-page/tds-sneaker-page.module').then(m => m.TdsSneakerPagePageModule)
             },
             {
                 path: 'store',

@@ -7,16 +7,42 @@
                 </ion-button>
             </ion-menu-toggle>
         </ion-buttons>
-      <ion-title>Categories</ion-title>
+        <ion-title>Categories</ion-title>
     </ion-toolbar>
 </ion-header>
 
 <ion-content id="categories">
-    <ion-grid>
+    <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
+        <ion-row>
+            <ion-col size="2"></ion-col>
+            <ion-col size="8">
+                <ion-grid>
+                    <ion-row>
+                        <ion-col size="6" *ngFor="let item of categories; let i=index">
+                            <ion-card class="ion-no-padding ion-no-margin" (click)="goToCategory(item)"
+                                      routerDirection="root">
+                                <!--                        <img [src]="shuffleImage(item.image)[0]" />-->
+                                <div class="card-img"
+                                     [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
+                                <ion-card-header>
+                                    <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
+                                </ion-card-header>
+                            </ion-card>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-col>
+            <ion-col size="2"></ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-grid *ngIf="platform.is('ios') || platform.is('android')">
         <ion-row>
             <ion-col size="6" *ngFor="let item of categories; let i=index">
-                <ion-card class="ion-no-padding ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
-                    <img [src]="shuffleImage(item.image)[0]" />
+                <ion-card class="ion-no-padding ion-no-margin" (click)="goToCategory(item)"
+                          routerDirection="root">
+                    <!--                        <img [src]="shuffleImage(item.image)[0]" />-->
+                    <div class="card-img1"
+                         [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
                     <ion-card-header>
                         <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
                     </ion-card-header>

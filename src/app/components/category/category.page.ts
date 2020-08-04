@@ -33,14 +33,14 @@ export class CategoryPage implements OnInit {
                 private photoViewer: PhotoViewer, private navCtrl: NavController, private articleService: ArticleService,
                 private userStorageUtils: UserStorageUtils, public cuService: CurrencyService, private modalController: ModalController) {
         this.cat = [];
-        this.catTitle = "";
+        this.catTitle = '';
     }
 
     async ngOnInit() {
         this.catTitle = this.activatedRoute.snapshot.paramMap.get('catTitle');
         console.log(this.catTitle);
         let carParse = JSON.parse(this.catTitle);
-        if(this.catTitle){
+        if (this.catTitle) {
             this.cat = carParse.cats;
             this.sousTitre = this.cat.length === 3 ? this.cat[2] : this.cat[1];
         }
@@ -84,7 +84,7 @@ export class CategoryPage implements OnInit {
             message: msg,
             duration
         });
-        toast.present();
+        await toast.present();
     }
 
     gotoCartPage() {
@@ -93,7 +93,7 @@ export class CategoryPage implements OnInit {
 
     showOneColumn() {
         this.oneColumn = true;
-        this.grid = false
+        this.grid = false;
         this.list = false;
     }
 

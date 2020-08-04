@@ -44,12 +44,10 @@
 
 .my-custom-dialog .modal-wrapper{
   width: 5%;
-
 }
 
-.my-custom-search-dialog .modal-wrapper{
-  width: 20%;
-
+.my-custom-search-dialog .popover-wrapper{
+  --min-width: 40% !important;
 }
 
 .logo-section{

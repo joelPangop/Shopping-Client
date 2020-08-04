@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {Languages} from '../models/Languages';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
-import {StorageService} from './storage.service';
+import {Storage} from '@ionic/storage';
 
 const LNG_KEY = 'SELECTED_LANGUAGE';
 
@@ -12,37 +10,33 @@ const LNG_KEY = 'SELECTED_LANGUAGE';
 export class LanguageService {
     selected = '';
 
-    constructor(private translate: TranslateService, private localStorage: StorageService, private storage: NativeStorage) {
+    constructor(private translate: TranslateService, private storage: Storage) {
+        translate.addLangs(['en', 'fr']);
     }
 
-    async setInitialAppLanguage(defLanguage) {
-        let language = this.translate.getBrowserLang();
-        if (!defLanguage) {
-            defLanguage = language;
-        }
+    setInitialAppLanguage() {
+        // let language = this.translate.getBrowserLang();
+        this.translate.setDefaultLang('en');
 
-        this.translate.setDefaultLang(defLanguage);
-        this.localStorage.set(LNG_KEY, defLanguage).then();
-        await this.storage.setItem(LNG_KEY, defLanguage);
-
-        this.localStorage.get(LNG_KEY).then(val => {
-            if (val) {
-                this.setLanguage(val);
+        this.storage.get(LNG_KEY).then(value => {
+            if (value) {
+                this.setLanguage(value);
+                this.selected = value;
             }
         });
     }
 
-    getLanguages() {
+    getLanguages(): any {
         return [
-          {text: Languages[Languages.EN], value: Languages.EN},
-          {text: Languages[Languages.FR], value: Languages.FR}
+            {text: 'English', value: 'en', img: 'assets/icon/flag-gb.png'},
+            {text: 'French', value: 'fr', img: 'assets/icon/France-Flag.png'}
         ];
     }
 
-    private async setLanguage(lng) {
-        this.translate.use(lng);
-        this.selected = lng;
-        await this.localStorage.set(LNG_KEY, lng);
-        await this.storage.setItem(LNG_KEY, lng);
+    public setLanguage(value: any) {
+        this.translate.setDefaultLang(value);
+        this.translate.use(value);
+        this.selected = value;
+        this.storage.set(LNG_KEY, value);
     }
 }

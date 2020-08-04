@@ -1,5 +1,5 @@
 // @ts-ignore
-import {Compiler, CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
+import {Compiler, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule} from '@angular/core';
 import {BrowserModule, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 
 import {RouteReuseStrategy} from '@angular/router';
@@ -10,8 +10,7 @@ import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {Facebook} from '@ionic-native/facebook/ngx';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
+import {Facebook} from '@ionic-native/facebook/ngx'
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {JWT_OPTIONS, JwtModule} from '@auth0/angular-jwt';
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
@@ -21,7 +20,6 @@ import {File} from '@ionic-native/file/ngx';
 import {ImagePicker} from '@ionic-native/image-picker/ngx';
 import {ShowOptionsPageModule} from './components/show-options/show-options.module';
 import {ShowOptionsPage} from './components/show-options/show-options.page';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Camera} from '@ionic-native/camera/ngx';
 import {WebView} from '@ionic-native/ionic-webview/ngx';
 import {Deeplinks} from '@ionic-native/deeplinks/ngx';
@@ -39,9 +37,7 @@ import {AppVersion} from '@ionic-native/app-version/ngx';
 import {NetworkInterface} from '@ionic-native/network-interface/ngx';
 import {Network} from '@ionic-native/network/ngx';
 import {Dialogs} from '@ionic-native/dialogs/ngx';
-import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from '@angular/common';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {APP_BASE_HREF, LocationStrategy, PathLocationStrategy, registerLocaleData} from '@angular/common';
 import {IonicStorageModule, Storage} from '@ionic/storage';
 import {ShowNotificationPage} from './components/show-notification/show-notification.page';
 import {ShowNotificationPageModule} from './components/show-notification/show-notification.module';
@@ -74,8 +70,6 @@ import {CheckoutPageModule} from './components/checkout/checkout.module';
 import {OrderViewPage} from './components/order-view/order-view.page';
 import {OrderViewPageModule} from './components/order-view/order-view.module';
 import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
-import {SigninPage} from './components/auth/signin/signin.page';
-import {SigninPageModule} from './components/auth/signin/signin.module';
 import {LandingPagePage} from './components/auth/landing-page/landing-page.page';
 import {LandingPagePageModule} from './components/auth/landing-page/landing-page.module';
 import {SearchCategoriesPage} from './components/search-categories/search-categories.page';
@@ -83,34 +77,32 @@ import {SearchCategoriesPageModule} from './components/search-categories/search-
 import {PreviewSearchPage} from './components/preview-search/preview-search.page';
 import {PreviewSearchPageModule} from './components/preview-search/preview-search.module';
 import {IonicSelectableComponent, IonicSelectableModule} from 'ionic-selectable';
-// @ts-ignore
-
-// const config: SocketIoConfig = {url: 'https://egoalservice.azurewebsites.net', options: {transports: ['websocket']}};
-
-
-// const config:SocketIoConfig = {url: 'http://192.168.2.58:4000', options: {transports: ['websocket']}};
+import {CreateProductPageModule} from './components/create-product/create-product.module';
+import {CreateProductPage} from './components/create-product/create-product.page';
+import {PreviewVideoPage} from './components/preview-video/preview-video.page';
+import {PreviewVideoPageModule} from './components/preview-video/preview-video.module';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {Globalization} from '@ionic-native/globalization/ngx';
+import  localeFr from '@angular/common/locales/fr';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {StreamingMedia} from '@ionic-native/streaming-media/ngx';
 
 export function jwtOptionsFactory(storage) {
     return {
         tokenGetter: () => {
-            return storage.getItem('access_token');
+            return storage.get('access_token');
         },
         whitelistedDomains: ['https://egoalservice.azurewebsites.net']
-        // whitelistedDomains: ['localhost:4000']
     };
 }
-
-
-export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
-
+// const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 // @ts-ignore
 @NgModule({
     declarations: [AppComponent],
     entryComponents: [ShowOptionsPage, CartPage, ShowNotificationPage, ViewProfilePage, StoreListPage, ProductDetailPage, SearchPage,
         FilterPage, HomeTopSliderPage, FeaturedProductsPage, CategoriesPage, HotDealsPage, ShowCatOptionPage, ProductViewPage, CheckoutPage,
-        OrderViewPage, LandingPagePage, SearchCategoriesPage, PreviewSearchPage],
+        OrderViewPage, LandingPagePage, SearchCategoriesPage, PreviewSearchPage, CreateProductPage, PreviewVideoPage],
     imports: [BrowserModule,
         IonicModule.forRoot(),
         AppRoutingModule,
@@ -133,28 +125,29 @@ export function HttpLoaderFactory(http: HttpClient) {
         LandingPagePageModule,
         SearchCategoriesPageModule,
         PreviewSearchPageModule,
-        // BrowserAnimationsModule,
-        // TooltipsModule.forRoot(),
-        IonicStorageModule.forRoot({
-            name: '',
-            driverOrder: ['localstorage']    //'indexeddb',
-        }),
-        // IonicStorageModule.forRoot(),
-        CartPageModule,
-        WebcamModule,
+        CreateProductPageModule,
+        PreviewVideoPageModule,
         // SocketIoModule.forRoot(config),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
-                useFactory: (HttpLoaderFactory),
+                useFactory: httpTranslateLoader,
                 deps: [HttpClient]
             }
         }),
+        // BrowserAnimationsModule,
+        // IonicStorageModule.forRoot({
+        //     name: '',
+        //     driverOrder: ['localstorage']    //'indexeddb',
+        // }),
+        IonicStorageModule.forRoot(),
+        CartPageModule,
+        WebcamModule,
         JwtModule.forRoot({
             jwtOptionsProvider: {
                 provide: JWT_OPTIONS,
                 useFactory: jwtOptionsFactory,
-                deps: [NativeStorage, Storage],
+                deps: [Storage],
             }
         }),
         ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production})],
@@ -163,7 +156,6 @@ export function HttpLoaderFactory(http: HttpClient) {
         StatusBar,
         SplashScreen,
         Facebook,
-        NativeStorage,
         PhotoViewer,
         SocialSharing,
         IonicRatingModule,
@@ -183,8 +175,10 @@ export function HttpLoaderFactory(http: HttpClient) {
         NetworkInterface,
         Network,
         Dialogs,
-        TranslateModule,
+        Globalization,
         IonicSelectableModule,
+        StreamingMedia,
+        { provide: LOCALE_ID, useValue: 'fr' },
         {
             provide: HAMMER_GESTURE_CONFIG,
             useClass: IonicGestureConfig
@@ -199,3 +193,10 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 export class AppModule {
 }
+
+// AOT compilation support
+export function httpTranslateLoader(http: HttpClient) {
+    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+registerLocaleData(localeFr, 'fr');

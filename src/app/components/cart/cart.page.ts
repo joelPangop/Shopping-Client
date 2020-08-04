@@ -1,6 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {itemCart} from '../../models/itemCart-interface';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {LoadingController, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {BehaviorSubject, Subject} from 'rxjs';
@@ -30,7 +29,7 @@ export class CartPage implements OnInit {
 
     constructor(private storage: Storage, private toastCtrl: ToastController, public modalController: ModalController,
                 private navCtrl: NavController, public platform: Platform, public storageService: StorageService,
-                private userStorageUtils: UserStorageUtils, private nativeStorage: NativeStorage, private cartService: CartService,
+                private userStorageUtils: UserStorageUtils, private cartService: CartService,
                 private cmdService: CommandeService, private  loadCtrl: LoadingController) {
 
     }

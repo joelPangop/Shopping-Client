@@ -1,10 +1,11 @@
 <ion-list *ngIf="option === 'language'">
-    <ion-radio-group value="{{language}}">
-        <ion-item button *ngFor="let l of languages | keyvalue" [class.active-item] (click)="setLanguage(l.key)">
-            <ion-label>{{l.key}}</ion-label>
-            <ion-radio slot="end" value="{{l.key}}"></ion-radio>
-        </ion-item>
-    </ion-radio-group>
+    <ion-item button *ngFor="let l of languages" (click)="setLanguage(l.value)" detail="false">
+        <ion-thumbnail slot="start" >
+            <img [src]="l.img">
+        </ion-thumbnail>
+        <ion-label text-wrap>{{l.text}}</ion-label>
+        <ion-icon slot="end" name="checkmark" *ngIf="l.value == language"></ion-icon>
+    </ion-item>
 </ion-list>
 <ion-list *ngIf="option === 'currency' || option === 'userCurrency'">
     <ion-radio-group value="{{currency}}">

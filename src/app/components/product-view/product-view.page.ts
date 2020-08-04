@@ -35,15 +35,33 @@ export class ProductViewPage implements OnInit {
     like: boolean = false;
 
     // Slider Options
+    // slideOpts = {
+    //     speed: 1000,
+    //     cubeEffect: {
+    //         shadow: true,
+    //         slideShadows: true,
+    //         shadowOffset: 20,
+    //         shadowScale: 0.94,
+    //     },
+    //     autoplay: {
+    //         delay: 500
+    //     },
+    //     loop: true,
+    //     pagination: {
+    //         el: '.swiper-pagination',
+    //         dynamicBullets: true,
+    //     },
+    // };
     slideOpts = {
-        initialSlide: 0,
-        loop: true,
-        autoplay: true,
-        speed: 400,
-        pagination: {
-            el: '.swiper-pagination',
-            dynamicBullets: true,
+        speed: 1000,
+        slidesPerView: 1,
+        zoom: {
+            maxRatio: 5,
         },
+        spaceBetween: 25,
+        autoplay: {
+            delay: 4000
+        }
     };
 
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
@@ -276,6 +294,10 @@ export class ProductViewPage implements OnInit {
 
     getRandomInt() {
         return Math.floor(Math.random() * Math.floor(300000000));
+    }
+
+    isImage(img: string): boolean {
+        return img.includes('jpg') || img.includes('jpeg') || img.includes('png') || img.includes('jfif');
     }
 
     async checkLike() {

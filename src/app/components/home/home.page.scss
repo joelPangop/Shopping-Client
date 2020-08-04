@@ -14,7 +14,14 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  height: 50px;
+  height: 300px;
+}
+
+.card-img1 {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 150px;
 }
 
 #home {
@@ -30,13 +37,6 @@
   #grid {
     .img-wrap {
       height: 300px;
-    }
-
-    .card-img {
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center center;
-      height: 150px;
     }
 
     .ion-text-wrap,
@@ -75,5 +75,19 @@
 
 .announceId {
   background-color: #ECEFF1;
+}
+
+ion-item {
+  //max-width: 100% !important;
+  width: 300px;
+  --ion-background-color: #cfd7df;
+  border-radius: 5px;
+  height: 50%;
+}
+
+ion-select {
+  font-size: 10px;
+  max-width: 100% !important;
+  width: 100%;
 }
 

@@ -22,6 +22,10 @@ ion-menu {
   }
 }
 
+ion-grid {
+  min-height: 12vh !important;
+}
+
 .active {
   --ion-text-color: var(--ion-color-danger-shade);
 

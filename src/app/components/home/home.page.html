@@ -8,43 +8,49 @@
 <!-- Header -->
 <ion-header no-border>
     <ion-toolbar color="color1">
+<!--        <ion-button (click)="test()">-->
+<!--            Test Websocket-->
+<!--        </ion-button>-->
         <!-- Menu Option -->
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
             <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
         </ion-buttons>
         <ion-buttons *ngIf="!platform.is('ios') && !platform.is('android')">
-            <ion-button class="ion-no-padding" (click)="chooseCategory($event)">
-                <ion-label>{{category}}</ion-label>
-                <ion-icon name="chevron-down-outline"></ion-icon>
-            </ion-button>
+            <ion-item lines="none">
+                <ion-label>Categories</ion-label>
+                <div class="item-content">
+                    <ion-select [(ngModel)]="choosenCategories" multiple>
+                        <!--                <ion-select-option value="All Categories">All Categories</ion-select-option>-->
+                        <ion-select-option [value]="cat"
+                                           *ngFor="let cat of searchCategories">{{cat}}</ion-select-option>
+                    </ion-select>
+                </div>
+            </ion-item>
             <ion-searchbar class="ion-no-padding" placeholder="Search your product"
                            (ionFocus)="openSearch($event)" (ionInput)="search()"></ion-searchbar>
         </ion-buttons>
 
         <!-- Cart Button Option -->
         <ion-buttons slot="end">
-
             <ion-nav-link style="font-style: italic; color: gray"
-                          [routerLink]="utilisateur._id ? '/menu/tabs/profile' : '/onbroading'"
-                          [routerDirection]="'root'">{{utilisateur._id ? 'Bienvenue ' + utilisateur.username : 'Sign in'}}</ion-nav-link>
+                          [routerLink]="authService.currentUser._id ? '/menu/tabs/profile' : '/onbroading'"
+                          [routerDirection]="'root'">{{authService.currentUser._id ? 'Bienvenue ' + authService.currentUser.username : 'Sign in'}}</ion-nav-link>
             <ion-button (click)="showOptions($event, 'language')">
                 <ion-icon src="assets/globe.svg"></ion-icon>
-                <span>{{language}}</span>
+                {{languageService.selected}}
             </ion-button>
             <ion-button (click)="showOptions($event, 'currency')">
-                <ion-icon src="{{'assets/' + currencyIcon + '.svg'}}"></ion-icon>
-                <span>{{currency}}</span>
+                <ion-icon src="{{'assets/' + authService.currencyIcon + '.svg'}}"></ion-icon>
+                <span>{{authService.currency}}</span>
             </ion-button>
             <ion-button (click)="gotoCartPage()" #cart color="clear">
-                <div class="cart-length">{{ cartItemCount | async }}</div>
+                <div class="cart-length">{{ cartService.cartItemCount | async }}</div>
                 <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
             </ion-button>
         </ion-buttons>
-
     </ion-toolbar>
 </ion-header>
-
 <!-- Contents -->
 <ion-content [fullscreen] padding class="background-image">
 
@@ -59,18 +65,20 @@
     <!-- Categories -->
     <div id="categories" *ngIf="platform.is('ios') || platform.is('android')">
         <ion-item-divider color="white" class="ion-padding-top">
-            <ion-label color="dark" class="text-bold">Categories</ion-label>
+            <ion-label color="dark" class="text-bold">CATEGORIES</ion-label>
             <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear"
                         routerLink="/menu/tabs/categories"
                         routerDirection="root">Sell All
             </ion-button>
         </ion-item-divider>
 
-        <ion-grid class="ion-no-padding">
+        <ion-grid>
             <ion-row>
                 <ion-col size="6" *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
                     <ion-card class="ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
-                        <img [src]="shuffleImage(item.image)[0]" alt=""/>
+<!--                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
+                        <div class="card-img1" [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
+
                         <ion-card-header>
                             <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
                         </ion-card-header>
@@ -88,27 +96,28 @@
 
     <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
         <ion-grid>
+            <!-- Top Banner Slider -->
+            <app-home-top-slider></app-home-top-slider>
+        </ion-grid>
+        <ion-grid>
             <ion-row>
                 <ion-col size="9">
-                    <!-- Top Banner Slider -->
-                    <app-home-top-slider></app-home-top-slider>
-
                     <!-- Categories -->
                     <div id="categories1">
                         <ion-item-divider color="white" class="ion-padding-top">
-                            <ion-label color="dark" class="text-bold">Categories</ion-label>
+                            <ion-label color="dark" class="text-bold">CATEGORIES</ion-label>
                             <ion-button class="ion-margin-end" size="small" slot="end" color="color1" fill="clear"
                                         routerLink="/menu/tabs/categories"
                                         routerDirection="root">Sell All
                             </ion-button>
                         </ion-item-divider>
-                        <ion-grid class="ion-no-padding">
+
+                        <ion-grid>
                             <ion-row>
-                                <ion-col size="6"
-                                         *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
-                                    <ion-card class="ion-no-padding ion-no-margin" (click)="goToCategory(item)"
-                                              routerDirection="root">
-                                        <img [src]="shuffleImage(item.image)[0]" alt=""/>
+                                <ion-col size="6" *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
+                                    <ion-card class="ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
+<!--                                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
+                                        <div class="card-img" [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
                                         <ion-card-header>
                                             <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
                                         </ion-card-header>

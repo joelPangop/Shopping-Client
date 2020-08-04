@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NavController, Platform} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {Message} from '../../models/message-interface';
 import {forkJoin} from 'rxjs';
@@ -23,7 +22,7 @@ export class MessageriePage implements OnInit {
     msgContent: any;
     unread_number: number = 0;
 
-    constructor(public platform: Platform, public msgservice: MessageService, private storage: NativeStorage,
+    constructor(public platform: Platform, public msgservice: MessageService,
                 private navCtrl: NavController, private userStorageUtils: UserStorageUtils) {
     }
 

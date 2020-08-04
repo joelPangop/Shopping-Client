@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MenuController} from '@ionic/angular';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-tabs',
@@ -12,7 +13,7 @@ export class TabsPage {
 
     utilisateur = {} as Utilisateur;
 
-    constructor(private menuController: MenuController, private userStorageUtils: UserStorageUtils) {
+    constructor(private menuController: MenuController, private userStorageUtils: UserStorageUtils, public authService: AuthService) {
         this.menuController.enable(true); // Enable side menu
         this.userStorageUtils.getUser().then(res => {
             this.utilisateur = res as Utilisateur;

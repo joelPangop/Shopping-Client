@@ -1,11 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Article, Availability} from '../../models/article-interface';
 import {cities} from '../../models/cities';
 import {categories} from '../../models/Category';
 import {
     ActionSheetController,
     IonSelect,
-    LoadingController,
+    LoadingController, ModalController,
     NavController,
     Platform,
     PopoverController,
@@ -14,20 +14,25 @@ import {
 
 import {ImagePicker, ImagePickerOptions} from '@ionic-native/image-picker/ngx';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {HttpClient} from '@angular/common/http';
 import {ImageService} from '../../services/image.service';
 import {ArticleService} from '../../services/article.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {WebView} from '@ionic-native/ionic-webview/ngx';
-import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
 import {FileChooser} from '@ionic-native/file-chooser/ngx';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {Store} from '../../models/store-interface';
 import {StoreService} from '../../services/store.service';
-import {environment} from '../../models/environements';
 import {StoreListPage} from '../store-list/store-list.page';
 import {ShowCatOptionPage} from '../show-cat-option/show-cat-option.page';
+import {CameraResultType, CameraSource, Plugins} from '@capacitor/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {Observable} from 'rxjs';
+import {VideoMaster} from '../../models/VideoMaster';
+import {SearchPage} from '../search/search.page';
+import {PreviewVideoPage} from '../preview-video/preview-video.page';
+
+// const {Camera} = Plugins;
 
 // @ts-ignore
 @Component({
@@ -43,7 +48,7 @@ export class CreateProductPage implements OnInit {
     myPictures: any[] = [];
     uploadForm: FormGroup;
     public imagePath;
-    imgURL: any[] = [];
+    imgURL: Map<any, any>;
     public message: string;
     utilisateur: Utilisateur;
     card: any;
@@ -54,16 +59,29 @@ export class CreateProductPage implements OnInit {
     secondCatChildren = {} as any;
     firstCat = '' as string;
     secondCat = '' as string;
+    photo: SafeResourceUrl;
+    myVideos: Observable<VideoMaster[]>;
+    slideOpts = {
+        initialSlide: 0,
+        speed: 400,
+        slidesPerView: 2,
+    };
+
+    @ViewChild('videoPlayer') videoplayer: ElementRef;
+
+    toggleVideo(event: any) {
+        this.videoplayer.nativeElement.play();
+    }
 
     @ViewChild('projectSelect', {static: false}) projectSelect: IonSelect;
 
     constructor(private actionSheet: ActionSheetController, private imagePicker: ImagePicker, private http: HttpClient,
                 public platform: Platform, private formBuilder: FormBuilder, private imageService: ImageService,
-                private camera: Camera, private toastCtrl: ToastController, private fileChooser: FileChooser,
-                public storage: NativeStorage, private navCtrl: NavController, private webView: WebView,
+                private toastCtrl: ToastController, private fileChooser: FileChooser, private modalController: ModalController,
+                private navCtrl: NavController, private webView: WebView,
                 public articleService: ArticleService, public loadingCtrl: LoadingController,
                 private userStorageUtils: UserStorageUtils, private popoverCtrl: PopoverController,
-                private storeService: StoreService) {
+                private storeService: StoreService, private sanitizer: DomSanitizer) {
         this.article = {} as Article;
         this.article.availability = {} as Availability;
         this.article.pictures = [];
@@ -74,11 +92,13 @@ export class CreateProductPage implements OnInit {
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
-        this.imgURL = [];
+        this.imgURL = new Map<any, any>();
+        this.myPictures = [];
     }
 
     async ngOnInit() {
-        this.imgURL = [];
+        this.imgURL = new Map<any, any>();
+        this.myPictures = [];
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
@@ -91,6 +111,16 @@ export class CreateProductPage implements OnInit {
             console.log(this.platform.platforms());
         });
         await this.getStores();
+        const modal = document.getElementById('myModal');
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    }
+
+    ionViewDidEnter() {
+        this.myPictures = [];
     }
 
     getStores() {
@@ -143,25 +173,31 @@ export class CreateProductPage implements OnInit {
     }
 
     color = '' as string;
+
     addColor() {
-        this.article.colors.push(this.color);
-        this.color = '';
+        if (this.color) {
+            this.article.colors.push(this.color);
+            this.color = '';
+        }
     }
 
     size = '' as string;
-    addSize(){
-        this.article.sizes.push(this.size);
-        this.size = '';
+
+    addSize() {
+        if (this.size) {
+            this.article.sizes.push(this.size);
+            this.size = '';
+        }
     }
 
-    removeColor(index){
-        if(this.article.colors.length > 0){
+    removeColor(index) {
+        if (this.article.colors.length > 0) {
             this.article.colors.splice(index, 1);
         }
     }
 
-    removeSize(index){
-        if(this.article.sizes.length > 0){
+    removeSize(index) {
+        if (this.article.sizes.length > 0) {
             this.article.sizes.splice(index, 1);
         }
     }
@@ -188,8 +224,12 @@ export class CreateProductPage implements OnInit {
             } else {
                 this.article.availability.feed = 0;
             }
+            this.imgURL.forEach((key: any, value: any) => {
+                this.myPictures.push(key);
+            });
+            // for(let file of this.imgURL){
+            // }
             // Appeler la methode 'uploadImages'
-
             this.uploadForm.get('image').setValue(this.myPictures);
             // if (this.platform.is('android')) {
             //     await this.imageService.uploadMobileImage(this.myPictures).then(async res => {
@@ -241,20 +281,39 @@ export class CreateProductPage implements OnInit {
         return this.imagePicker.getPictures(options);
     }
 
-    // Grace à cette methode on peut prendre en photo
-
-    async getCam(sourceType) {
-        let options: CameraOptions = {
-            sourceType: sourceType,
-            quality: 100,
-            destinationType: this.camera.DestinationType.DATA_URL,
-            encodingType: this.camera.EncodingType.JPEG,
-            mediaType: this.camera.MediaType.ALLMEDIA
-        };
-
-        return this.camera.getPicture(options);
+    async takePicture(option) {
+        // // Older browsers might not implement mediaDevices at all, so we set an empty object first
+        try {
+            const image = await Plugins.CapacitorVideoPlayer.getPhoto({
+                quality: 100,
+                allowEditing: false,
+                resultType: CameraResultType.Uri,
+                correctOrientation: true,
+                source: CameraSource.Photos
+            });
+            this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+            console.log(this.photo);
+            this.myPictures.push(image);
+            return this.photo;
+        } catch (e) {
+            console.log(e);
+        }
     }
 
+    // Grace à cette methode on peut prendre en photo
+
+    // async getCam(sourceType) {
+    //     let options: CameraOptions = {
+    //         sourceType: sourceType,
+    //         quality: 100,
+    //         destinationType: this.camera.DestinationType.DATA_URL,
+    //         encodingType: this.camera.EncodingType.JPEG,
+    //         mediaType: this.camera.MediaType.ALLMEDIA
+    //     };
+    //
+    //     return this.camera.getPicture(options);
+    // }
+    //
     async action() {
         const actionSheet = await this.actionSheet.create({
             header: 'Sélectionner la source',
@@ -266,13 +325,12 @@ export class CreateProductPage implements OnInit {
                         console.log('Galerie');
                         const file = document.getElementsByClassName('cordova-camera-select');
                         // console.log(this.platform.is(PLATFORMS_MAP.mobileweb));
-                        this.getCam(0).then(image => {
+                        this.takePicture(CameraSource.Prompt).then(image => {
                             console.log('image', image);
                             let base64Image = 'data:image/jpeg;base64,' + image;
-                            let src = this.webView.convertFileSrc(image);
-                            this.myPictures.push(base64Image);
+                            // let src = this.webView.convertFileSrc(image);
+                            this.myPictures.push(image);
                         });
-
                     }
                 },
                 {
@@ -280,11 +338,11 @@ export class CreateProductPage implements OnInit {
                     icon: 'camera',
                     handler: () => {
                         console.log('Camera');
-                        this.getCam(1).then(image => {
+                        this.takePicture(CameraSource.Camera).then(image => {
                             console.log('image', image);
                             let base64Image = 'data:image/jpeg;base64,' + image;
-                            let src = this.webView.convertFileSrc(image);
-                            this.myPictures.push(base64Image);
+                            // let src = this.webView.convertFileSrc(image);
+                            this.myPictures.push(image);
                         });
                     }
                 },
@@ -299,10 +357,10 @@ export class CreateProductPage implements OnInit {
     }
 
     onFileSelect(event) {
-        this.imgURL = [];
+        // this.imgURL = [];
         if (event.target.files.length > 0) {
             const files: [] = event.target.files;
-            this.myPictures = files;
+            // this.myPictures = files;
 
             for (const file of files) {
                 this.preview(file);
@@ -310,27 +368,151 @@ export class CreateProductPage implements OnInit {
         }
     }
 
-    preview(files) {
+    async onMobileFileSelect(event) {
+        if (event.target.files.length > 0) {
+            const files: [] = event.target.files;
+            this.myPictures = files;
+
+            for (const file of event.target.files) {
+                await this.preview(file);
+            }
+        }
+    }
+
+    myFiles: any[] = [];
+
+    async preview(files) {
         const mimeType = files.type;
-        if (mimeType.match(/image\/*/) == null) {
-            this.message = 'Only images are supported.';
+        if (mimeType.match(/image\/*/) == null && mimeType.match(/video\/*/) == null) {
+            this.message = 'Only images or videos are supported.';
+            console.log(this.message);
+            this.presentToast(this.message, 2000);
             return;
         }
 
         // tslint:disable-next-line:prefer-const
         const reader = new FileReader();
         this.imagePath = files;
-        reader.readAsDataURL(files);
-        this.imgURL = [];
+        await reader.readAsDataURL(files);
+        // this.imgURL = [];
         // tslint:disable-next-line:variable-name
-        reader.onload = (_event) => {
-            this.imgURL.push(reader.result);
-            this.myPictures.push(reader.result);
-        };
+
+        if (mimeType.match(/image\/*/) !== null) {
+            // reader.onload = async (_event) => {
+            // tslint:disable-next-line:prefer-const
+            const reader = new FileReader();
+            this.imagePath = files;
+            reader.readAsDataURL(files);
+            // this.imgURL = [];
+            // tslint:disable-next-line:variable-name
+            reader.onload = (_event) => {
+                this.imgURL.set(reader.result, files);
+                // this.myPictures.push(reader.result);
+            };
+            // };
+        }
+        if (mimeType.match(/video\/*/) !== null) {
+            const self = this;
+            reader.onload = async (_event) => {
+                const snapImage = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const image = canvas.toDataURL();
+                    const success = image.length > 100000;
+                    if (success) {
+                        const img = document.createElement('img');
+                        img.src = image;
+                        // self.imgURL.push(img.src);
+                        self.imgURL.set(img.src, files);
+                        // self.myPictures.push(reader.result);
+                        // document.getElementById('videoId').appendChild(img);
+                        // document.getElementsByTagName('div')[0].appendChild(img);
+                        URL.revokeObjectURL(url);
+                    }
+                    return success;
+                };
+                const blob = new Blob([reader.result], {type: files.type});
+                const url = URL.createObjectURL(files);
+                const video: any = document.createElement('video');
+
+                const timeupdate = function() {
+                    if (snapImage()) {
+                        video.removeEventListener('timeupdate', timeupdate);
+                        video.pause();
+                    }
+                };
+                video.addEventListener('loadeddata', function() {
+                    if (snapImage()) {
+                        video.removeEventListener('timeupdate', timeupdate);
+                    }
+                });
+                video.addEventListener('timeupdate', timeupdate);
+                let source = document.createElement('source');
+                source.src = URL.createObjectURL(files);
+                video.appendChild(source);
+
+                const controls = document.createAttribute('controls');
+                video.preload = 'metadata';
+                // source.src = url;
+                video.src = url;
+
+                video.setAttributeNode(controls);
+                // Load video in Safari / IE11
+                video.muted = true;
+                video.playsInline = true;
+                video.load();
+
+                await video.play();
+                // video.onClick(this.openModal(files));
+                // @ts-ignore
+                // document.getElementById('videoId').click(this.openModal(files));
+
+            };
+            reader.readAsArrayBuffer(files);
+            this.imgURL.set(reader.result, files);
+        }
+        // this.myPictures.push(reader.result);
     }
 
-    deleteImage(i: number) {
-        this.imgURL.splice(i, 1);
+    test(test: any) {
+        console.log(test.target.currentSrc);
+        console.log(test.target.files);
+    }
+
+    async openModal(files: any) {
+        console.log(files);
+        if (files.type === 'video/mp4') {
+            // const modal = document.getElementById('myModal');
+            // modal.style.display = 'block';
+            //
+            // const $source: any = document.getElementById('video_here');
+            // $source.src = URL.createObjectURL(files);
+            // $source.parentElement.load();
+            const modal = await this.modalController.create({
+                component: PreviewVideoPage,
+                cssClass: 'cart-modal',
+                componentProps: {
+                    files: files,
+                }
+            });
+            return await modal.present();
+        }
+    }
+
+    showPlay(file: any): boolean {
+        return file.type === 'video/mp4';
+    }
+
+    closeModal() {
+        const modal = document.getElementById('myModal');
+        modal.style.display = 'none';
+    }
+
+    deleteImage(key: any) {
+        this.imgURL.delete(key);
+        // this.imgURL.splice(i, 1);
     }
 
     async presentToast(msg: string, duree: number) {

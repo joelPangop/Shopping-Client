@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {Currency, Utilisateur} from '../../models/utilisateur-interface';
 import {UserInfo} from '../../models/userInfo-interface';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {ArticleService} from '../../services/article.service';
 import {AuthService} from '../../services/auth.service';
 import {ImageService} from '../../services/image.service';
@@ -41,7 +40,7 @@ export class RegisterPage implements OnInit {
     // @ts-ignore
     currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
 
-    constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
+    constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, public localStorage: Storage,
                 private platform: Platform, private popoverController: PopoverController, private router: Router) {
@@ -91,10 +90,10 @@ export class RegisterPage implements OnInit {
                 // @ts-ignore
                 this.user = rep.user as Utilisateur;
                 if (this.platform.is('ios') || this.platform.is('android')) {
-                    await this.authSrv.storage.setItem('Utilisateur', this.utilisateur).then(async data => {
+                    await this.authSrv.localStorage.set('Utilisateur', this.utilisateur).then(async data => {
                         this.authSrv.userInfo = this.utilisateur.userInfo;
                         this.authSrv.address = this.utilisateur.userInfo.address;
-                        await this.authSrv.storage.setItem('IsLogginIn', true);
+                        await this.authSrv.localStorage.set('IsLogginIn', true);
                     });
                 } else {
                     await this.localStorage.set('Utilisateur', this.utilisateur);

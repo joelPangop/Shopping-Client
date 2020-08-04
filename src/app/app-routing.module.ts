@@ -42,14 +42,19 @@ const routes: Routes = [
         path: 'order-view',
         loadChildren: () => import('./components/order-view/order-view.module').then(m => m.OrderViewPageModule),
         canActivate: [AuthGuardService]
-    },  {
+    },
+  {
     path: 'search-categories',
     loadChildren: () => import('./components/search-categories/search-categories.module').then( m => m.SearchCategoriesPageModule)
   },
   {
     path: 'preview-search',
     loadChildren: () => import('./components/preview-search/preview-search.module').then( m => m.PreviewSearchPageModule)
+  },  {
+    path: 'preview-video',
+    loadChildren: () => import('./components/preview-video/preview-video.module').then( m => m.PreviewVideoPageModule)
   }
+
 
 ];
 

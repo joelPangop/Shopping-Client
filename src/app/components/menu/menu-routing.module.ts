@@ -70,10 +70,6 @@ const routes: Routes = [
         loadChildren: () => import('../live-chat/live-chat.module').then( m => m.LiveChatPageModule)
       },
       {
-        path: 'tds-sneaker-page',
-        loadChildren: () => import('../tds-sneaker-page/tds-sneaker-page.module').then( m => m.TdsSneakerPagePageModule)
-      },
-      {
         path: 'store',
         loadChildren: () => import('../store/store.module').then( m => m.StorePageModule)
       }

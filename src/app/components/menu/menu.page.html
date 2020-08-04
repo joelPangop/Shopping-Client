@@ -32,9 +32,9 @@
                     <ion-menu-toggle auto-hide="false" *ngIf="p.url">
                         <ion-item [routerDirection]="'root'" [routerLink]="[p.url]" [routerLinkActive]="'active'">
                             <ion-icon size="small" slot="start" [name]="p.icon" [src]="p.src"></ion-icon>
-                            <ion-label>
+                            <p>
                                 {{p.title | translate}}
-                            </ion-label>
+                            </p>
                         </ion-item>
                     </ion-menu-toggle>
                     <ion-item button *ngIf="p.children?.length > 0" (click)="p.open = !p.open"

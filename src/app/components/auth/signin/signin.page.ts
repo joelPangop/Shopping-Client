@@ -4,7 +4,6 @@ import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../../../services/auth.service';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {NavController} from '@ionic/angular';
 import {Utilisateur} from '../../../models/utilisateur-interface';
 import {environment} from '../../../models/environements';
@@ -21,7 +20,7 @@ export class SigninPage implements OnInit {
     utilisateur = {} as Utilisateur;
 
     constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient, private router: Router,
-                private authService: AuthService, private storage: NativeStorage, private navCtrl: NavController,
+                private authService: AuthService, private navCtrl: NavController,
                 private activatedRoute: ActivatedRoute, private userStorageUtils: UserStorageUtils) {
 
         this.credentialsForm = this.formBuilder.group({

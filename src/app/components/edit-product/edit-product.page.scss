@@ -1,0 +1,17 @@
+ion-grid {
+  min-height: 12vh !important;
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+ion-slide{
+  max-height: 270px !important;
+  max-width: 100%;
+}

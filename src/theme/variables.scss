@@ -132,6 +132,10 @@ ion-footer {
   --ion-background-color: #f5f6f9;
 }
 
+ion-grid {
+  min-height: 12vh !important;
+}
+
 ion-searchbar ion-icon {
   right: 16px !important;
   left: auto !important;

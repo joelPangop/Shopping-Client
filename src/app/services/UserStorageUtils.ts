@@ -1,70 +1,73 @@
 import {Platform} from '@ionic/angular';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Storage} from '@ionic/storage';
-import {Utilisateur} from '../models/utilisateur-interface';
+import {Currency, Utilisateur} from '../models/utilisateur-interface';
 import {Injectable} from '@angular/core';
+import {StorageService} from './storage.service';
+import {Observable} from 'rxjs';
+import {AuthService} from './auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserStorageUtils {
-    constructor(private platform: Platform, private storage: NativeStorage,
-                private localStorage: Storage) {
+
+    public webSocket: WebSocket;
+
+    constructor(private platform: Platform, private localStorage: Storage, private storageService: StorageService) {
     }
 
-    public async getUser() {
+    public async getUser(): Promise<Utilisateur> {
         let utilisateur = {} as Utilisateur;
-        if (this.platform.is('ios') || this.platform.is('android')) {
-            await this.storage.getItem('Utilisateur').then(res => {
-                utilisateur = res as Utilisateur;
-            }).catch((err) => {
+        await this.storageService.getObject('Utilisateur').then(res => {
+            if (res) {
+                utilisateur = res as unknown as Utilisateur;
+            } else {
                 utilisateur = {
                     username: 'guest',
                     type: 'guest'
                 };
-                this.storage.setItem('Utilisateur', utilisateur);
-                console.log(err);
-            });
-        } else if (!this.platform.is('ios') && !this.platform.is('android')) {
-            await this.localStorage.get('Utilisateur').then(res => {
-                if (res) {
-                    utilisateur = res as Utilisateur;
-                } else {
-                    utilisateur = {
-                        username: 'guest',
-                        type: 'guest'
-                    };
-                    this.localStorage.set('Utilisateur', utilisateur);
-                }
-            }).catch((err) => {
-                utilisateur = {
-                    username: 'guest',
-                    type: 'guest'
-                };
-                this.localStorage.set('Utilisateur', utilisateur);
-                console.log(err);
-            });
-        }
+                this.storageService.setObject('Utilisateur', utilisateur);
+            }
+        }).catch((err) => {
+            utilisateur = {
+                username: 'guest',
+                type: 'guest'
+            };
+            this.storageService.setObject('Utilisateur', utilisateur);
+            console.log(err);
+        });
         return utilisateur;
     }
 
     public async getLanguage() {
         let language: any;
-        if (this.platform.is('ios') || this.platform.is('android')) {
-            language = await this.storage.getItem('SELECTED_LANGUAGE');
-        } else if (!this.platform.is('ios') && !this.platform.is('android')) {
-            language = await this.localStorage.get('SELECTED_LANGUAGE');
-        }
+        language = await this.storageService.getObject('SELECTED_LANGUAGE');
         return language;
     }
 
-    public async getCurrency() {
-        let currency: any;
-        if (this.platform.is('ios') || this.platform.is('android')) {
-            currency = await this.storage.getItem('currency');
-        } else if (!this.platform.is('ios') && !this.platform.is('android')) {
-            currency = await this.localStorage.get('currency');
-        }
+    public async getCurrency(): Promise<Currency> {
+        let currency = {} as Currency;
+        // currency = await this.localStorage.get('currency');
+        await this.storageService.getObject('currency').then(res => {
+            currency = res as unknown as Currency;
+        }).catch((err) => {
+            console.log(err);
+        });
         return currency;
+    }
+
+    getWebSocket(): WebSocket {
+        return this.webSocket;
+    }
+
+    setWebSocket(url: string): void {
+        this.webSocket = new WebSocket(url);
+        // this.sleep();
+    }
+
+    async sleep() {
+        await new Promise(r => {
+            setTimeout(r, 2000);
+        });
     }
 }

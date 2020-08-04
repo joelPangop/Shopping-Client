@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {LanguageService} from '../../services/language.service';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {MenuController} from '@ionic/angular';
@@ -40,7 +39,7 @@ export class MenuPage implements OnInit {
         src: 'assets/bxs-store-alt.svg'
     };
 
-    constructor(private languageService: LanguageService, private authService: AuthService, private router: Router,
+    constructor(private authService: AuthService, private router: Router,
                 private menuController: MenuController,
                 private pagesService: PagesService,
                 private userStorageUtils: UserStorageUtils) {
@@ -69,15 +68,18 @@ export class MenuPage implements OnInit {
         });
     }
 
-    logOut() {
-        this.router.navigate(['intro']).then(r => this.authService.logout());
+    async logOut() {
+        await this.router.navigate(['onbroading']).then(r => this.authService.logout());
     }
 
     async sign() {
-        await this.menuController.enable(false); // Make Sidemenu disable
-        if (this.utilisateur._id) {
-            await this.router.navigate(['onbroading']).then(r => this.authService.logout());
+
+        if (this.authService.currentUser._id) {
+            if (this.authService.logout()) {
+                await this.router.navigate(['menu/tabs/tab1']);
+            }
         } else {
+            await this.menuController.enable(false); // Make Sidemenu disable
             await this.router.navigate(['landing-page']);
         }
     }

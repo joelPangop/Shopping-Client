@@ -4,7 +4,6 @@ import {BehaviorSubject} from 'rxjs';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {ModalController, NavController, Platform} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
@@ -22,6 +21,10 @@ import {Commande} from '../../models/commande-interface';
 import {CommandeService} from '../../services/commande.service';
 import {CartService} from '../../services/cart.service';
 import {SearchPage} from '../search/search.page';
+import {FilterPage} from '../filter/filter.page';
+import {TranslateService} from '@ngx-translate/core';
+import {translate} from '@angular/localize/src/tools/src/translate/source_files/source_file_utils';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-product-list',
@@ -35,6 +38,8 @@ export class ProductListPage implements OnInit {
     articles: Article[];
     currency;
     public cartItemCount: BehaviorSubject<number> = new BehaviorSubject(0);
+    // @ts-ignore
+    filterObject: BehaviorSubject<any> = new BehaviorSubject();
     utilisateur = {} as Utilisateur;
     notifications = [];
     ip;
@@ -54,31 +59,20 @@ export class ProductListPage implements OnInit {
     grid: Boolean = true;
     oneColumn: Boolean = false;
     list: Boolean = false;
+    action: string;
+    public language: string;
 
-    constructor(private http: HttpClient, private router: Router, private storage: NativeStorage, private localStorage: Storage,
-                private photoViewer: PhotoViewer, private navCtrl: NavController,
+    constructor(private http: HttpClient, private router: Router, private localStorage: Storage,
+                private photoViewer: PhotoViewer, private navCtrl: NavController, private translateService: TranslateService,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs, private cmdService: CommandeService,
                 public articleService: ArticleService, public cuService: CurrencyService, private modalController: ModalController,
-                private userStorageUtils: UserStorageUtils, public platform: Platform, private cartService: CartService) {
-        // this.event.subscribe('cartItemCount', (res) => {
-        //     this.cartItemCount.next(res);
-        // });
+                private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService,
+                public authService: AuthService) {
 
         this.cartService.getCartItemCount().subscribe((data) => {
-            this.cartItemCount.next(data);
+            this.cartService.cartItemCount.next(data);
         });
 
-        // this.event.subscribe('rate', async (rate) => {
-        //     this.resultRate = rate;
-        //     await this.userStorageUtils.getCurrency().then(res => {
-        //         this.currency = res.currency;
-        //     });
-        //     for (let article of this.articleService.articles) {
-        //         article.price = article.price * parseFloat(this.resultRate);
-        //         console.log(article.price);
-        //     }
-        // });
-        //
         this.cuService.getRateObservable().subscribe(async (rate) => {
             this.resultRate = rate;
             await this.userStorageUtils.getCurrency().then(res => {
@@ -96,23 +90,8 @@ export class ProductListPage implements OnInit {
     }
 
     async ngOnInit() {
-        // this.socket.connect();
-        this.utilisateur = await this.userStorageUtils.getUser();
         await this.loadArticles();
         this.ip = environment.api_url;
-        let data: Commande;
-
-        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
-            {
-                data = res;
-                this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-            }
-        });
-        await this.storage.getItem('cart').then(res => {
-            const rep = res as itemCart[];
-            this.cartItemCount.next(rep.length);
-        });
-        // this.resultRate = this.cuService.currRateOptionSubject.value;
     }
 
     // @ts-ignore
@@ -124,14 +103,8 @@ export class ProductListPage implements OnInit {
                     if (res) {
                         this.currency = res.currency;
                     } else {
-                        this.currency = this.utilisateur.currency;
+                        this.currency = this.authService.currentUser.currency;
                     }
-                    // const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
-                    // let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
-                    // for (let article of this.articleService.articles) {
-                    //     article.price = article.price * parseFloat(rate);
-                    //     console.log(article.price);
-                    // }
                 });
                 console.log('Articles', articles);
             });
@@ -198,7 +171,6 @@ export class ProductListPage implements OnInit {
     }
 
     async openCart() {
-        await this.storage.setItem('page', 'home');
         await this.navCtrl.navigateForward('/cart');
     }
 
@@ -207,7 +179,7 @@ export class ProductListPage implements OnInit {
     }
 
     loadReceivedNotifications() {
-        this.msgService.loadReceivedMessagesNotifications(this.utilisateur._id).subscribe(res => {
+        this.msgService.loadReceivedMessagesNotifications(this.authService.currentUser._id).subscribe(res => {
             this.notifications = res;
         });
     }
@@ -248,7 +220,7 @@ export class ProductListPage implements OnInit {
     }
 
     public isWishList(item: Article) {
-        return item.likes.includes(this.utilisateur._id);
+        return item.likes.includes(this.authService.currentUser._id);
     }
 
     // async checkLike(article: Article) {
@@ -292,8 +264,23 @@ export class ProductListPage implements OnInit {
     async gotoSearchPage() {
         const modal = await this.modalController.create({
             component: SearchPage,
-            cssClass: "cart-modal"
+            cssClass: 'cart-modal'
         });
+        return await modal.present();
+    }
+
+    async openFilterPage() {
+        const modal = await this.modalController.create({
+            component: FilterPage,
+            componentProps: {
+                filterObject: this.filterObject
+            }
+        });
+        modal.onDidDismiss()
+            .then((data) => {
+                console.log(data.data);
+                console.log(this.filterObject);
+            });
         return await modal.present();
     }
 }

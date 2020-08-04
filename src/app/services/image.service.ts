@@ -28,7 +28,7 @@ export class ImageService {
         };
         const formData = new FormData();
         // const url = 'http://192.168.2.58:8080/upload';
-        const url = `${environment.api_url}/upload`;
+        const url = `${environment.api_url1}/upload`;
 
         for (const file of uploadForm.value.image) {
             formData.append('file', file);
@@ -58,7 +58,7 @@ export class ImageService {
     }
 
     deleteImage(filename) {
-        const url = `${environment.api_url}/files/${filename}`;
+        const url = `${environment.api_url1}/files/${filename}`;
         return this.http.delete(url);
     }
 

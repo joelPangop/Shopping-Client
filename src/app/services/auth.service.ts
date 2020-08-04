@@ -4,15 +4,16 @@ import {environment} from '../models/environements';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AlertController, Platform} from '@ionic/angular';
-import {Utilisateur} from '../models/utilisateur-interface';
+import {Currency, Utilisateur} from '../models/utilisateur-interface';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {Address} from '../models/address-interface';
 import {UserInfo} from '../models/userInfo-interface';
 import {RoleType} from '../models/roleType';
 import {Storage} from '@ionic/storage';
 import {Router} from '@angular/router';
 import {AuthResponse} from '../models/auth-response';
+import {StorageService} from './storage.service';
+import {UserStorageUtils} from './UserStorageUtils';
 
 const TOKEN_KEY = 'access_token';
 
@@ -29,18 +30,37 @@ export class AuthService {
     address = {} as Address;
     userInfo = {} as UserInfo;
     local;
+    currency;
+    currencyIcon;
 
-    constructor(private http: HttpClient, public helper: JwtHelperService, public storage: NativeStorage, private router: Router,
-                private plt: Platform, private alertController: AlertController, public localStorage: Storage) {
+    constructor(private http: HttpClient, public helper: JwtHelperService, private router: Router, private userStorageUtils: UserStorageUtils,
+                private plt: Platform, private alertController: AlertController, public localStorage: Storage, private storageService: StorageService) {
         this.currentUser = {} as Utilisateur;
         this.plt.ready().then(() => {
             this.checkToken();
         });
+        this.userStorageUtils.getUser().then(rep => {
+            this.currentUser = rep;
+        });
+
+        this.userStorageUtils.getCurrency().then(res => {
+            let curren: Currency = res;
+            if (curren) {
+                this.currency = curren.currency;
+                this.currencyIcon = curren.icon;
+            } else {
+                if (this.currentUser._id) {
+                    this.currency = this.currentUser.currency.currency;
+                    this.currencyIcon = this.currentUser.currency.icon;
+                }
+            }
+        });
+
     }
 
     checkToken() {
         if (this.plt.is('android') || this.plt.is('ios')) {
-            this.storage.getItem(TOKEN_KEY).then(token => {
+            this.localStorage.get(TOKEN_KEY).then(token => {
                 if (token) {
                     const decoded = this.helper.decodeToken(token);
                     const isExpired = this.helper.isTokenExpired(token);
@@ -49,7 +69,7 @@ export class AuthService {
                         this.user = decoded;
                         this.authenticationState.next(true);
                     } else {
-                        this.storage.remove(TOKEN_KEY);
+                        this.localStorage.remove(TOKEN_KEY);
                     }
                 }
             });
@@ -63,14 +83,14 @@ export class AuthService {
                         this.user = decoded;
                         this.authenticationState.next(true);
                     } else {
-                        this.storage.remove(TOKEN_KEY);
+                        this.localStorage.remove(TOKEN_KEY);
                     }
                 }
             });
         }
     }
 
-    register(credentials) : Observable<AuthResponse>{
+    register(credentials): Observable<AuthResponse> {
         return this.http.post(`${environment.api_url}/api/register`, credentials).pipe(
             tap(async (res: AuthResponse) => {
                 this.user = this.helper.decodeToken(res['access_token']);
@@ -88,19 +108,25 @@ export class AuthService {
         return this.http.post<any>(`${environment.api_url}/login`, credentials)
             .pipe(
                 tap(async (res: AuthResponse) => {
-                    if (this.plt.is('android') || this.plt.is('ios')) {
-                        await this.storage.setItem(TOKEN_KEY, res['access_token']);
-                        this.user = this.helper.decodeToken(res['access_token']);
-                        this.currentUser = res.user[0];
-                        await this.storage.setItem('Utilisateur', res.user[0]);
-                        await this.storage.setItem('IsLogginIn', true);
-                    } else if (!this.plt.is('android') && !this.plt.is('ios')) {
-                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                        this.user = this.helper.decodeToken(res['access_token']);
-                        this.currentUser = res.user[0];
-                        await this.localStorage.set('Utilisateur', res.user[0]);
-                        await this.localStorage.set('IsLogginIn', true);
-                    }
+                    await this.storageService.setObject(TOKEN_KEY, res['access_token']);
+                    this.user = this.helper.decodeToken(res['access_token']);
+                    this.currentUser = res.user[0];
+                    await this.storageService.setObject('Utilisateur', res.user[0]);
+                    await this.storageService.setObject('IsLogginIn', true);
+
+                    // if (this.plt.is('android') || this.plt.is('ios')) {
+                    //     await this.storage.setItem(TOKEN_KEY, res['access_token']);
+                    //     this.user = this.helper.decodeToken(res['access_token']);
+                    //     this.currentUser = res.user[0];
+                    //     await this.storage.setItem('Utilisateur', res.user[0]);
+                    //     await this.storage.setItem('IsLogginIn', true);
+                    // } else if (!this.plt.is('android') && !this.plt.is('ios')) {
+                    //     await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                    //     this.user = this.helper.decodeToken(res['access_token']);
+                    //     this.currentUser = res.user[0];
+                    //     await this.localStorage.set('Utilisateur', res.user[0]);
+                    //     await this.localStorage.set('IsLogginIn', true);
+                    // }
                     this.authenticationState.next(true);
                 }),
                 catchError(e => {
@@ -116,12 +142,12 @@ export class AuthService {
             .pipe(
                 tap(async res => {
                     if (this.plt.is('android') || this.plt.is('ios')) {
-                        await this.storage.setItem(TOKEN_KEY, res['access_token']);
+                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
                         // await this.localStorage.set(TOKEN_KEY, res['access_token']);
                         this.user = this.helper.decodeToken(res['access_token']);
                         this.currentUser = res.user[0];
-                        await this.storage.setItem('Utilisateur', res.user[0]);
-                        await this.storage.setItem('IsLogginIn', true);
+                        await this.localStorage.set('Utilisateur', res.user[0]);
+                        await this.localStorage.set('IsLogginIn', true);
                     } else if (!this.plt.is('android') && !this.plt.is('ios')) {
                         await this.localStorage.set(TOKEN_KEY, res['access_token']);
                         this.user = this.helper.decodeToken(res['access_token']);
@@ -156,72 +182,75 @@ export class AuthService {
     //       );
     // }
 
-    logout() {
-        this.storage.remove(TOKEN_KEY).then(() => {
+    logout(): boolean {
+
+        let rep: boolean = false;
+
+        this.storageService.removeItem(TOKEN_KEY).then(() => {
             this.authenticationState.next(false);
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove(TOKEN_KEY).then(() => {
-            this.authenticationState.next(false);
-        });
-
-        this.storage.remove('page').then(() => {
+        this.storageService.removeItem('page').then(() => {
             console.log('route page removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('page').then(() => {
-            console.log('route page removed');
-        });
-
-        this.storage.remove('Utilisateur').then(() => {
+        this.storageService.removeItem('Utilisateur').then(() => {
             console.log('user removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('Utilisateur').then(() => {
-            console.log('user removed');
-        });
-
-        this.storage.remove('IsLogginIn').then(() => {
+        this.storageService.removeItem('IsLogginIn').then(() => {
             console.log('logged out');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('IsLogginIn').then(() => {
-            console.log('logged out');
-        });
-
-        this.storage.remove('cart').then(() => {
+        this.storageService.removeItem('cart').then(() => {
             console.log('cart removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('cart').then(() => {
-            console.log('cart removed');
-        });
-
-        this.storage.remove('currency').then(() => {
+        this.storageService.removeItem('currency').then(() => {
             console.log('currency removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('currency').then(() => {
-            console.log('currency removed');
-        });
-
-        this.storage.remove('__paypal_storage__').then(() => {
+        this.storageService.removeItem('__paypal_storage__').then(() => {
             console.log('paypal_storage removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
 
-        this.localStorage.remove('__paypal_storage__').then(() => {
-            console.log('paypal_storage removed');
-        });
-
-        this.storage.remove('SELECTED_LANGUAGE').then(() => {
+        this.storageService.removeItem('SELECTED_LANGUAGE').then(() => {
             console.log('SELECTED_LANGUAGE removed');
+            rep = true;
+        }).catch((err) => {
+            console.log('error', err);
+            rep = false;
         });
-
-        this.localStorage.remove('SELECTED_LANGUAGE').then(() => {
-            console.log('SELECTED_LANGUAGE removed');
-        });
-        this.router.navigate(['/onbroading']);
-
+        this.currentUser = {} as Utilisateur;
+        return rep;
     }
 
     getSpecialData() {

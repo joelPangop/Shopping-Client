@@ -4,15 +4,12 @@ import {ShowOptionsPage} from '../show-options/show-options.page';
 import {ArticleService} from '../../services/article.service';
 import {Article} from '../../models/article-interface';
 import {BehaviorSubject, forkJoin} from 'rxjs';
-import {LanguageService} from '../../services/language.service';
 import {CurrencyService} from '../../services/currency.service';
 import {ShowNotificationPage} from '../show-notification/show-notification.page';
 import {MessageService} from '../../services/message.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ViewProfilePage} from '../view-profile/view-profile.page';
-import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 
 @Component({
@@ -38,9 +35,9 @@ export class TopHeaderPage implements OnInit {
     notif_number: number;
 
     constructor(public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
-                private navCtrl: NavController, private languageService: LanguageService, private cuService: CurrencyService,
-                private msgservice: MessageService, private storage: NativeStorage, private router: Router,
-                private alertController: AlertController, private userStorageUtils: UserStorageUtils, private translate: TranslateService,) {
+                private navCtrl: NavController, private cuService: CurrencyService,
+                private msgservice: MessageService, private router: Router,
+                private alertController: AlertController, private userStorageUtils: UserStorageUtils) {
         this.isSearch = false;
 
         this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((res) => {
@@ -69,13 +66,13 @@ export class TopHeaderPage implements OnInit {
         this.showLoadingSpining = false;
 
         this.utilisateur = await this.userStorageUtils.getUser();
-
-        console.log('def language', this.translate.getBrowserLang());
-        if (!this.userStorageUtils.getLanguage()) {
-            this.language = this.translate.getBrowserLang();
-        } else {
-            this.language = await this.userStorageUtils.getLanguage();
-        }
+        //
+        // console.log('def language', this.translate.getBrowserLang());
+        // if (!this.userStorageUtils.getLanguage()) {
+        //     this.language = this.translate.getBrowserLang();
+        // } else {
+        //     this.language = await this.userStorageUtils.getLanguage();
+        // }
 
         await this.userStorageUtils.getCurrency().then(res => {
             if (!res) {
@@ -93,7 +90,6 @@ export class TopHeaderPage implements OnInit {
         this.articleService.loadArticles().subscribe(res => {
             this.articleService.articles = res as Article[];
         });
-        this.languageService.setInitialAppLanguage(this.language);
     }
 
     async presentAlert(data) {

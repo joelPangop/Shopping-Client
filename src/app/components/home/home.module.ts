@@ -11,6 +11,7 @@ import {CategoriesPageModule} from '../categories/categories.module';
 import {HotDealsPageModule} from '../hot-deals/hot-deals.module';
 import {FeaturedProductsPageModule} from '../featured-products/featured-products.module';
 import {HomePageRoutingModule} from './home-routing.module';
+import {TranslateModule} from '@ngx-translate/core';
 // import {ProductListPage} from '../product-list/product-list.page';
 
 @NgModule({
@@ -25,7 +26,8 @@ import {HomePageRoutingModule} from './home-routing.module';
         CategoriesPageModule,
         HotDealsPageModule,
         FormsModule,
-        FeaturedProductsPageModule
+        FeaturedProductsPageModule,
+        TranslateModule
     ],
     declarations: [HomePage],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

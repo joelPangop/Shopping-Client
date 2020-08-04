@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Commande} from '../models/commande-interface';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {environment} from '../models/environements';
 import {Utilisateur} from '../models/utilisateur-interface';
 
@@ -11,6 +11,7 @@ import {Utilisateur} from '../models/utilisateur-interface';
 export class CommandeService {
 
     commande = {} as Commande;
+    public cartItemCount = new BehaviorSubject(0);
 
     constructor(private http: HttpClient) {
         this.commande = {} as Commande;

@@ -2,9 +2,8 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Article} from '../../models/article-interface';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ModalController, NavController, Platform, ToastController} from '@ionic/angular';
+import {IonSlides, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {itemCart} from '../../models/itemCart-interface';
 import {ArticleService} from '../../services/article.service';
 import {ImageService} from '../../services/image.service';
@@ -23,6 +22,14 @@ import {Storage} from '@ionic/storage';
 import {CartService} from '../../services/cart.service';
 import {SigninPage} from '../auth/signin/signin.page';
 import {LandingPagePage} from '../auth/landing-page/landing-page.page';
+import {PreviewVideoPage} from '../preview-video/preview-video.page';
+import {AuthService} from '../../services/auth.service';
+import * as mobilenet from '@tensorflow-models/mobilenet';
+import {Plugins} from '@capacitor/core';
+
+const {CapacitorVideoPlayer, Device} = Plugins;
+import * as PluginsLibrary from 'capacitor-video-player';
+import {StreamingMedia, StreamingVideoOptions} from '@ionic-native/streaming-media/ngx';
 
 @Component({
     selector: 'app-product-detail',
@@ -39,17 +46,17 @@ export class ProductDetailPage implements OnInit {
     // Slider Options
     slideOpts = {
         speed: 1000,
-        cubeEffect: {
-            shadow: true,
-            slideShadows: true,
-            shadowOffset: 20,
-            shadowScale: 0.94,
+        slidesPerView: 1,
+        zoom: {
+            maxRatio: 5,
         },
+        spaceBetween: 25,
         autoplay: {
-            delay: 500
+            delay: 4000
         }
     };
 
+    webSocket: WebSocket;
     cartItems = [] as itemCart[];
     images: any;
     public cartItemCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -59,13 +66,16 @@ export class ProductDetailPage implements OnInit {
     product = {} as Article;
 
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
+    @ViewChild('video') video: ElementRef;
+
+    @ViewChild('slideWithNav', {static: false}) slideWithNav: IonSlides;
     private resultRate: string = '0.1';
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
-                private storage: Storage, private imageService: ImageService, private sharing: SocialSharing,
-                private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService,
+                private storage: Storage, private imageService: ImageService, private sharing: SocialSharing, private authService: AuthService,
+                private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService, private streamingVideo: StreamingMedia,
                 public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService,
-                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,) {
+                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService) {
         this.product = {} as Article;
         this.loadArticle();
 
@@ -73,12 +83,9 @@ export class ProductDetailPage implements OnInit {
 
     async ngOnInit() {
         this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        this.utilisateur = await this.userStorageUtils.getUser();
-        // this.cartItems = await this.storage.getItem('cart');
-        // this.cartItemCount.next(this.cartItems.length);
+        this.utilisateur = await this.authService.currentUser;
         console.log(this.id);
         let data: Commande;
-
         this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
             {
                 data = res;
@@ -86,21 +93,60 @@ export class ProductDetailPage implements OnInit {
             }
         });
         await this.loadArticle();
-
+        this.userStorageUtils.getWebSocket().onopen = (ev) => {
+            console.log('websocket connected !!');
+            console.log(ev);
+        };
         await this.userStorageUtils.getCurrency().then(async res => {
             // this.currency = res ? res.currency : this.utilisateur.currency.currency;
         });
-
         if (!this.rate) {
             this.rate = 0;
         }
     }
 
+    videoPlayer: any;
+
+    public async ionViewWillEnter() {
+        const info = await Device.getInfo();
+        this.views = this.article.views;
+        if (info.platform === 'ios' || info.platform === 'android') {
+            this.videoPlayer = CapacitorVideoPlayer;
+        } else {
+            this.videoPlayer = PluginsLibrary.CapacitorVideoPlayer;
+        }
+    }
+
+    views = 0;
+
+    public async ionViewDidEnter() {
+        // const res:any  = await this.videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId="fullscreen",componentTag="my-page"});
+        // console.log('result of init ', res)
+        setTimeout(async () => {
+            if (this.article.utilisateurId !== this.authService.currentUser._id) {
+                this.article.views++;
+                console.log('views', this.article.views);
+            }
+        }, 5000);
+    }
+
+    public async ionViewDidLeave() {
+        if (this.article.utilisateurId !== this.authService.currentUser._id) {
+            const utilisateurId: string = this.article.utilisateurId;
+            const articleId: string = this.id;
+
+            this.articleService.addView(utilisateurId, articleId, {views: this.article.views}).subscribe(res => {
+                this.article = res as Article;
+            });
+            console.log('views', this.article.views);
+        }
+    }
     // @ts-ignore
     async loadArticle(): Observable<Article> {
         await this.articleService.loadArticle(this.id).subscribe(async res => {
             this.article = res as Article;
             this.images = this.article.pictures;
+            this.views = this.article.views;
             // const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
             // let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
             // this.article.price = this.article.price * parseFloat(rate);
@@ -154,22 +200,28 @@ export class ProductDetailPage implements OnInit {
 
     // methode pour visionner une image avec option de partage
     async showImage(imgId: string, imgTitle: string) {
-        if (this.platform.is('android') || this.platform.is('ios')) {
-            this.photoViewer.show(`${environment.api_url}/image/${imgId}`,
-                imgTitle, {share: true});
-        } else if (this.platform.is('desktop') || this.platform.is('hybrid')) {
-            console.log('platform', this.platform.platforms());
+        if (imgId.includes('jpg') || imgId.includes('jfif') || imgId.includes('png')) {
+            if (this.platform.is('android') || this.platform.is('ios')) {
+                this.photoViewer.show(`${environment.api_url}/image/${imgId}`,
+                    imgTitle, {share: true});
+            } else if (this.platform.is('desktop') || this.platform.is('hybrid')) {
+                console.log('platform', this.platform.platforms());
 
-            // const modal = await this.modalController.create({
-            //
-            //     cssClass: 'my-custom-show-image',
-            //     componentProps: {
-            //         image: imgId,
-            //         title: this.articleService.article.title
-            //     }
-            // });
-            // await modal.present();
+                // const modal = await this.modalController.create({
+                //
+                //     cssClass: 'my-custom-show-image',
+                //     componentProps: {
+                //         image: imgId,
+                //         title: this.articleService.article.title
+                //     }
+                // });
+                // await modal.present();
+            }
         }
+    }
+
+    isImage(img: string): boolean {
+        return img.includes('jpg') || img.includes('jpeg') || img.includes('png') || img.includes('jfif');
     }
 
     // Voici la methode pour laisser une note à un article
@@ -203,7 +255,7 @@ export class ProductDetailPage implements OnInit {
                     this.article.likes.push(this.utilisateur._id);
                 }
 
-                await this.articleService.checkLike(utilisateurId, this.id, this.article).subscribe(res => {
+                this.articleService.checkLike(utilisateurId, this.id, this.article).subscribe(res => {
                     console.log(res);
                     const notification: Notification = {
                         title: 'Nouveaux Like',
@@ -217,14 +269,13 @@ export class ProductDetailPage implements OnInit {
                     };
                     setTimeout(async () => {
                         if (this.like === true) {
-                            this.msgService.addNotification(notification).subscribe(res => {
-                                // this.socket.emit('notifying', {
-                                //     user: this.utilisateur,
-                                //     message: this.utilisateur.username + ' a like votre article'
-                                // });
+                            this.msgService.addNotification(notification).subscribe((res: any) => {
+                                let not = res as Notification;
+                                let res_str = JSON.stringify(not);
+                                this.userStorageUtils.getWebSocket().send(res_str);
                             });
                         }
-                    }, 10000);
+                    }, 1000);
                 });
             }
         }
@@ -419,4 +470,37 @@ export class ProductDetailPage implements OnInit {
         }
         return value;
     }
+
+    async openModal(files: any) {
+        console.log(files);
+        if (files.includes('mp4')) {
+            let options: StreamingVideoOptions = {
+                successCallback: () => {
+                    console.log();
+                },
+                errorCallback: () => {
+                    console.log();
+                },
+                orientation: 'portrait'
+            };
+
+            this.streamingVideo.playVideo(files, options);
+
+            // const modal = document.getElementById('myModal');
+            // modal.style.display = 'block';
+            //
+            // const $source: any = document.getElementById('video_here');
+            // $source.src = URL.createObjectURL(files);
+            // $source.parentElement.load();
+            // const modal = await this.modalController.create({
+            //     component: PreviewVideoPage,
+            //     cssClass: 'cart-modal',
+            //     componentProps: {
+            //         files: files,
+            //     }
+            // });
+            // return await modal.present();
+        }
+    }
+
 }

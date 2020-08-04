@@ -1,17 +1,19 @@
 import './polyfills';
-import { JitCompiler } from "@angular/compiler";
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import {AppModule} from './app/app.module';
+import {environment} from './environments/environment';
+import {defineCustomElements} from '@ionic/pwa-elements/loader';
 
-import "hammerjs"; // HAMMER TIME
+import 'hammerjs'; // HAMMER TIME
 
 if (environment.production) {
-  // enableProdMode();
+  enableProdMode();
   // JitCompiler.apply(this)
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.log(err));
+
+defineCustomElements(window);

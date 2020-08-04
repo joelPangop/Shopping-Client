@@ -10,7 +10,8 @@
       "client_info": {
         "mobilesdk_app_id": "1:442520661807:android:fe25e8437d3dae78cdbbda",
         "android_client_info": {
-          "package_name": "com.egoal.app"
+          "package_name": "io.ionic.starter"
+//          "package_name": "com.egoal.app"
         }
       },
       "oauth_client": [

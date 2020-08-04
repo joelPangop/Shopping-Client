@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="menu/tabs/products" color="white" icon="arrow-round-back"></ion-back-button>
+            <ion-back-button color="white" defaultHref="menu/tabs/products"></ion-back-button>
         </ion-buttons>
         <ion-navbar color="color1">
             <ion-title>{{'CREATE.create' | translate}}</ion-title>
@@ -9,8 +9,256 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content>
-    <ion-list>
+<ion-content fullscreen>
+    <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
+        <ion-row>
+            <ion-col size="2">
+
+            </ion-col>
+            <ion-col size="8">
+                <ion-list>
+                    <ion-card>
+                        <ion-item-divider color="color1">
+                            <ion-icon name="images"></ion-icon>
+                            {{'CREATE.image_produit' | translate}}
+                        </ion-item-divider>
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col>
+                                    <form id="capture-form"
+                                          enctype="multipart/form-data" [formGroup]="uploadForm">
+                                        <ion-buttons>
+                                            <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
+                                                   class="inputfile" multiple accept="video/*"/>
+                                            <label button
+                                                   for='fileId' fill="clear">
+                                                <!--                                   *ngIf="(platform.is('hybrid') || platform.is('desktop')) && (!platform.is('android') && !platform.is('ios'))">-->
+                                                <ion-icon name="camera" slot="icon-only" color="color1"></ion-icon>
+                                            </label>
+                                        </ion-buttons>
+                                        <p style="font-style: italic; font-size: xx-small">It is better to use images or videos of your Gallery</p>
+                                    </form>
+                                </ion-col>
+                            </ion-row>
+                            <ion-row *ngIf="imgURL.size > 0">
+                                <ion-card *ngFor="let img of imgURL | keyvalue; let i = index">
+
+                                    <ion-card-content>
+                                        <ion-thumbnail slot="start" class="card-img">
+                                            <img [src]="img.key" height="350"/>
+                                        </ion-thumbnail>
+                                        <ion-fab *ngIf="showPlay(img.value)" horizontal="center" vertical="center">
+                                            <ion-button (click)="openModal(img.value)" fill="clear">
+                                                <ion-icon name="play" slot="icon-only" color="color1"></ion-icon>
+                                            </ion-button>
+                                        </ion-fab>
+                                        <ion-fab horizontal="right" vertical="top">
+                                            <button fill="clear" (click)="deleteImage(img.key)" >
+                                                <ion-icon slot="icon-only" color="color1" name="close-circle"></ion-icon>
+                                            </button>
+                                        </ion-fab>
+                                    </ion-card-content>
+                                </ion-card>
+                            </ion-row>
+                        </ion-grid>
+                        <!--        <ion-item-divider color="color1">-->
+                        <!--            <ion-icon src="assets/bxs-store.svg"></ion-icon>-->
+                        <!--            {{'CREATE.store' | translate}}-->
+                        <!--        </ion-item-divider>-->
+                        <!--        <ion-item>-->
+                        <!--            <ion-button (click)="openStoresList($event)">-->
+                        <!--                Store-->
+                        <!--            </ion-button>-->
+                        <!--            <ion-thumbnail>-->
+                        <!--                <ion-img *ngIf="store.name" src="{{ip}}/image/{{store.image}}"></ion-img>-->
+                        <!--            </ion-thumbnail>-->
+                        <!--            <ion-label *ngIf="store.name">{{store.name}}</ion-label>-->
+                        <!--            <ion-button *ngIf="store.name" (click)="deleteStore()">-->
+                        <!--                Delete-->
+                        <!--            </ion-button>-->
+                        <!--        </ion-item>-->
+                        <ion-item-divider color="color1">
+                            <ion-icon color="white" name="paper"></ion-icon>
+                            {{'CREATE.detail' | translate}}
+                        </ion-item-divider>
+                        <ion-item-group>
+                            <ion-label>
+                                {{'CREATE.categorie' | translate}}
+                            </ion-label>
+                            <ion-select [(ngModel)]="category" [ngModelOptions]="{standalone: true}" mode="md"
+                                        interface="popover" placeholder="Category">
+                                <ion-select-option [value]="cat" *ngFor="let cat of categories">
+                                    {{cat.title}}
+                                </ion-select-option>
+                            </ion-select>
+                            <ion-buttons *ngIf="category.children">
+                                <ion-item lines="none">
+                                    <ion-button (click)="setChildCat($event, 'firstCatChildren', category.children)">
+                                        <span>{{!firstCatChildren.title ? 'Category' : firstCatChildren.title}}</span>
+                                    </ion-button>
+                                    <ion-button slot="end" (click)="removeFirstChild()">
+                                        <ion-icon name="close-circle"></ion-icon>
+                                    </ion-button>
+                                </ion-item>
+                            </ion-buttons>
+                            <ion-buttons *ngIf="firstCatChildren.children">
+                                <ion-item lines="none">
+                                    <ion-button
+                                            (click)="setChildCat($event, 'secondCatChildren', firstCatChildren.children)">
+                                        <span>{{!secondCatChildren.title ? 'Category' : secondCatChildren.title}}</span>
+                                    </ion-button>
+                                    <ion-button slot="end" (click)="removeSecondChild()">
+                                        <ion-icon name="close-circle"></ion-icon>
+                                    </ion-button>
+                                </ion-item>
+                            </ion-buttons>
+                        </ion-item-group>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.nom' | translate}}</ion-label>
+                            <ion-input type="text" [(ngModel)]="article.title"></ion-input>
+                        </ion-item>
+                        <!--        <ion-item-->
+                        <!--                *ngIf="article.categories.includes('Vetement') || article.categories.includes('Chaussure') || article.categories.includes('Mode')-->
+                        <!--                    || article.categories.includes('Auto')">-->
+                        <ion-item>
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-col size="6">
+                                        <div>
+                                            <ion-row>
+                                                <ion-col size="6">
+                                                    <ion-input [(ngModel)]="color" placeholder="Color" type="text"
+                                                               maxlength="40"
+                                                               [ngModelOptions]="{standalone: true}">
+                                                    </ion-input>
+                                                </ion-col>
+                                                <ion-col size="3">
+                                                    <ion-button (click)="addColor()" color="color1">
+                                                        <ion-icon name="add-circle"></ion-icon>
+                                                    </ion-button>
+                                                </ion-col>
+                                                <ion-col size="3">
+
+                                                </ion-col>
+                                            </ion-row>
+                                        </div>
+                                        <ion-chip *ngFor="let a of article.colors ; let i = index">
+                                            <ion-label>{{a}}</ion-label>
+                                            <ion-icon name="close-circle" (click)="removeColor(i)"></ion-icon>
+                                        </ion-chip>
+                                    </ion-col>
+                                    <ion-col *ngIf="article.categories.includes('Mode')" size="6">
+                                        <div>
+                                            <ion-row>
+                                                <ion-col size="4">
+                                                    <ion-input [(ngModel)]="size" placeholder="Size" type="text"
+                                                               maxlength="10"
+                                                               [ngModelOptions]="{standalone: true}">
+                                                    </ion-input>
+                                                </ion-col>
+                                                <ion-col size="3">
+                                                    <ion-button (click)="addSize()" color="color1">
+                                                        <ion-icon name="add-circle"></ion-icon>
+                                                    </ion-button>
+                                                </ion-col>
+                                                <ion-col size="5">
+
+                                                </ion-col>
+                                            </ion-row>
+                                        </div>
+                                        <ion-chip *ngFor="let a of article.sizes ; let i = index">
+                                            <ion-label>{{a}}</ion-label>
+                                            <ion-icon name="close-circle" (click)="removeSize(i)"></ion-icon>
+                                        </ion-chip>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">Description</ion-label>
+                            <ion-textarea [(ngModel)]="article.description" auto-grow></ion-textarea>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">Brands</ion-label>
+                            <ion-input type="text" [(ngModel)]="article.brands"></ion-input>
+                            <ion-label *ngIf="article.categories.includes('Auto')" position="floating">Model</ion-label>
+                            <ion-input *ngIf="article.categories.includes('Auto')" type="text"
+                                       [(ngModel)]="article.model"></ion-input>
+                        </ion-item>
+                        <ion-item *ngIf="article.categories.includes('Auto')">
+                            <ion-label position="floating">Kilometers</ion-label>
+                            <ion-input type="number" [(ngModel)]="article.kilometers"></ion-input>
+                            <ion-label position="floating">Year</ion-label>
+                            <ion-input type="number" [(ngModel)]="article.year"></ion-input>
+                            <ion-label
+                                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                                    position="floating">Transmission
+                            </ion-label>
+                            <ion-select
+                                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                                    interface="popover" [(ngModel)]="article.transmission">
+                                <ion-select-option value="Automatique">Automatique</ion-select-option>
+                                <ion-select-option value="Manuel">Manuel</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.prix' | translate}} (CAD Dollars)</ion-label>
+                            <ion-input type="number" [(ngModel)]="article.price"></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.location' | translate}}</ion-label>
+                            <ion-select [(ngModel)]="article.city">
+                                <ion-select-option [value]="city.name"
+                                                   *ngFor="let city of cities">{{ city.name }}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item-divider color="color1">
+                            <ion-icon name="build"></ion-icon>
+                            {{'CREATE.produit_state' | translate}}
+                        </ion-item-divider>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.state' | translate}}</ion-label>
+                            <ion-select [(ngModel)]="article.state">
+                                <ion-select-option value="Neuf">{{'CREATE.state1' | translate}}</ion-select-option>
+                                <ion-select-option
+                                        value="Déjà utilisé">{{'CREATE.state2' | translate}}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.delivery' | translate}}</ion-label>
+                            <ion-select [(ngModel)]="article.availability.type">
+                                <ion-select-option
+                                        value="Livraison">{{'CREATE.delivery1' | translate}}</ion-select-option>
+                                <ion-select-option
+                                        value="En Magasin">{{'CREATE.delivery2' | translate}}</ion-select-option>
+                                <ion-select-option
+                                        value="Main en Main">{{'CREATE.delivery3' | translate}}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item
+                                *ngIf="article?.availability?.type === 'Livraison' || article?.availability?.type === 'Delivery'">
+                            <ion-label position="floating">{{'CREATE.delivery4' }} (CAD Dollars)</ion-label>
+                            <ion-input type="number" [(ngModel)]="article.availability.feed"></ion-input>
+                        </ion-item>
+                        <ion-item *ngIf="article?.availability?.type === 'En Magasin'">
+                            <ion-label position="floating">{{'CREATE.address'}}</ion-label>
+                            <ion-textarea placeholder="Entrez l'adresse complète du magasin"
+                                          [(ngModel)]="article.availability.address"></ion-textarea>
+                        </ion-item>
+                        <ion-button expand="block" (click)="create()" color="color1">
+                            <ion-icon slot="start" name="create"></ion-icon>&nbsp;&nbsp;
+                            {{'CREATE.save' | translate}}
+                        </ion-button>
+                    </ion-card>
+                </ion-list>
+            </ion-col>
+            <ion-col size="2">
+
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-list *ngIf="platform.is('ios') || platform.is('android')">
+
         <ion-item-divider color="color1">
             <ion-icon name="images"></ion-icon>
             {{'CREATE.image_produit' | translate}}
@@ -28,62 +276,72 @@
             <!--                </ion-item>-->
             <!--            </ion-row>-->
             <!--&lt;!&ndash;            <ion-row *ngIf="(platform.is('hybrid') || platform.is('desktop') || platform.is('mobileweb')) && imgURL">&ndash;&gt;-->
-            <ion-row>
-                <ion-card *ngFor="let img of imgURL; let i = index">
-                    <ion-card-header>
-                        <button style="color: rosybrown; float: right" (click)="deleteImage(i)">
-                            <ion-icon name="close-circle"></ion-icon>
-                        </button>
-                    </ion-card-header>
-                    <ion-grid>
-                        <ion-card-content>
-                            <ion-thumbnail slot="start">
-                                <img [src]="img" height="200"/>
-                            </ion-thumbnail>
-                        </ion-card-content>
-                    </ion-grid>
-                </ion-card>
-            </ion-row>
-            <ion-row>
-                <ion-col>
+
+            <ion-row class="ion-align-items-center">
+                <ion-col class="ion-text-center">
                     <!--                    <ion-fab *ngIf="platform.is('android') || platform.is('ios')" (click)="action()"-->
                     <!--                             horizontal="center">-->
                     <!--                        <ion-fab-button>-->
                     <!--                            <ion-icon name="camera"></ion-icon>-->
                     <!--                        </ion-fab-button>-->
                     <!--                    </ion-fab>-->
-                    <form id="capture-form"
+                    <!--                    <ion-button fill="clear" (click)="action()">-->
+                    <!--                        <ion-icon slot="icon-only" color="color1" name="camera"></ion-icon>-->
+                    <!--                    </ion-button>-->
+                    <form id="capture-form1" style="text-align: center;"
                           enctype="multipart/form-data" [formGroup]="uploadForm">
-
                         <ion-buttons>
-                            <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
+                            <input type="file" name="file" id="fileId1" (change)="onFileSelect($event)"
                                    class="inputfile" multiple/>
-                            <label button style="color: #FF8080; border-style: solid; border-color: grey"
-                                   for='fileId'>
+                            <label button fill="clear" style="width: 150px" slot="center"
+                                   for='fileId1'>
                                 <!--                                   *ngIf="(platform.is('hybrid') || platform.is('desktop')) && (!platform.is('android') && !platform.is('ios'))">-->
-                                <ion-icon name="camera" slot="icon-only"></ion-icon>
+                                <ion-icon name="camera" slot="icon-only" color="color1"></ion-icon>
                             </label>
+                            <p style="font-style: italic; font-size: xx-small">It is better to use images or videos of your Gallery</p>
                         </ion-buttons>
                     </form>
                 </ion-col>
             </ion-row>
+            <ion-row *ngIf="imgURL.size > 0">
+                <ion-grid>
+                    <ion-row>
+                        <ion-col *ngFor="let img of imgURL | keyvalue; let i = index" size="6">
+                            <div>
+                                <ion-icon slot="icon-only" (click)="deleteImage(img.key)" color="color1"
+                                          name="close-circle"></ion-icon>
+                            </div>
+                            <ion-card-content>
+                                <ion-thumbnail slot="start" class="card-img">
+                                    <img [src]="img.key" height="350"/>
+                                </ion-thumbnail>
+                                <ion-fab *ngIf="showPlay(img.value)" horizontal="start" vertical="top">
+                                    <ion-button fill="clear" (click)="openModal(img.value)">
+                                        <ion-icon name="play" slot="icon-only" color="white"></ion-icon>
+                                    </ion-button>
+                                </ion-fab>
+                            </ion-card-content>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-row>
         </ion-grid>
-<!--        <ion-item-divider color="color1">-->
-<!--            <ion-icon src="assets/bxs-store.svg"></ion-icon>-->
-<!--            {{'CREATE.store' | translate}}-->
-<!--        </ion-item-divider>-->
-<!--        <ion-item>-->
-<!--            <ion-button (click)="openStoresList($event)">-->
-<!--                Store-->
-<!--            </ion-button>-->
-<!--            <ion-thumbnail>-->
-<!--                <ion-img *ngIf="store.name" src="{{ip}}/image/{{store.image}}"></ion-img>-->
-<!--            </ion-thumbnail>-->
-<!--            <ion-label *ngIf="store.name">{{store.name}}</ion-label>-->
-<!--            <ion-button *ngIf="store.name" (click)="deleteStore()">-->
-<!--                Delete-->
-<!--            </ion-button>-->
-<!--        </ion-item>-->
+        <!--        <ion-item-divider color="color1">-->
+        <!--            <ion-icon src="assets/bxs-store.svg"></ion-icon>-->
+        <!--            {{'CREATE.store' | translate}}-->
+        <!--        </ion-item-divider>-->
+        <!--        <ion-item>-->
+        <!--            <ion-button (click)="openStoresList($event)">-->
+        <!--                Store-->
+        <!--            </ion-button>-->
+        <!--            <ion-thumbnail>-->
+        <!--                <ion-img *ngIf="store.name" src="{{ip}}/image/{{store.image}}"></ion-img>-->
+        <!--            </ion-thumbnail>-->
+        <!--            <ion-label *ngIf="store.name">{{store.name}}</ion-label>-->
+        <!--            <ion-button *ngIf="store.name" (click)="deleteStore()">-->
+        <!--                Delete-->
+        <!--            </ion-button>-->
+        <!--        </ion-item>-->
         <ion-item-divider color="color1">
             <ion-icon name="paper"></ion-icon>
             {{'CREATE.detail' | translate}}
@@ -123,20 +381,28 @@
             <ion-label position="floating">{{'CREATE.nom' | translate}}</ion-label>
             <ion-input type="text" [(ngModel)]="article.title"></ion-input>
         </ion-item>
-        <ion-item
-                *ngIf="article.categories.includes('Vetement') || article.categories.includes('Chaussure') || article.categories.includes('Mode')
-                    || article.categories.includes('Auto')">
+        <!--        <ion-item-->
+        <!--                *ngIf="article.categories.includes('Vetement') || article.categories.includes('Chaussure') || article.categories.includes('Mode')-->
+        <!--                    || article.categories.includes('Auto')">-->
+        <ion-item>
             <ion-grid>
                 <ion-row>
-                    <ion-col>
+                    <ion-col size="6">
                         <div>
                             <ion-row>
-                                <ion-input [(ngModel)]="color" placeholder="Color" type="text"
-                                           [ngModelOptions]="{standalone: true}">
-                                </ion-input>
-                                <ion-button (click)="addColor()" color="color1">
-                                    <ion-icon name="add-circle"></ion-icon>
-                                </ion-button>
+                                <ion-col size="6">
+                                    <ion-input [(ngModel)]="color" placeholder="Color" type="text" maxlength="40"
+                                               [ngModelOptions]="{standalone: true}">
+                                    </ion-input>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-button (click)="addColor()" color="color1">
+                                        <ion-icon name="add-circle"></ion-icon>
+                                    </ion-button>
+                                </ion-col>
+                                <ion-col size="3">
+
+                                </ion-col>
                             </ion-row>
                         </div>
                         <ion-chip *ngFor="let a of article.colors ; let i = index">
@@ -144,15 +410,22 @@
                             <ion-icon name="close-circle" (click)="removeColor(i)"></ion-icon>
                         </ion-chip>
                     </ion-col>
-                    <ion-col *ngIf="article.categories.includes('Mode')">
+                    <ion-col *ngIf="article.categories.includes('Mode')" size="6">
                         <div>
                             <ion-row>
-                                <ion-input [(ngModel)]="size" placeholder="Size" type="text"
-                                           [ngModelOptions]="{standalone: true}">
-                                </ion-input>
-                                <ion-button (click)="addSize()" color="color1">
-                                    <ion-icon name="add-circle"></ion-icon>
-                                </ion-button>
+                                <ion-col size="4">
+                                    <ion-input [(ngModel)]="size" placeholder="Size" type="text" maxlength="10"
+                                               [ngModelOptions]="{standalone: true}">
+                                    </ion-input>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-button (click)="addSize()" color="color1">
+                                        <ion-icon name="add-circle"></ion-icon>
+                                    </ion-button>
+                                </ion-col>
+                                <ion-col size="5">
+
+                                </ion-col>
                             </ion-row>
                         </div>
                         <ion-chip *ngFor="let a of article.sizes ; let i = index">
@@ -165,7 +438,28 @@
         </ion-item>
         <ion-item>
             <ion-label position="floating">Description</ion-label>
-            <ion-textarea [(ngModel)]="article.description"></ion-textarea>
+            <ion-textarea [(ngModel)]="article.description" auto-grow></ion-textarea>
+        </ion-item>
+        <ion-item>
+            <ion-label position="floating">Brands</ion-label>
+            <ion-input type="text" [(ngModel)]="article.brands"></ion-input>
+            <ion-label *ngIf="article.categories.includes('Auto')" position="floating">Model</ion-label>
+            <ion-input *ngIf="article.categories.includes('Auto')" type="text"
+                       [(ngModel)]="article.model"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="article.categories.includes('Auto')">
+            <ion-label position="floating">Kilometers</ion-label>
+            <ion-input type="number" [(ngModel)]="article.kilometers"></ion-input>
+            <ion-label position="floating">Year</ion-label>
+            <ion-input type="number" [(ngModel)]="article.year"></ion-input>
+            <ion-label *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                       position="floating">Transmission
+            </ion-label>
+            <ion-select *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                        interface="popover" [(ngModel)]="article.transmission">
+                <ion-select-option value="Automatique">Automatique</ion-select-option>
+                <ion-select-option value="Manuel">Manuel</ion-select-option>
+            </ion-select>
         </ion-item>
         <ion-item>
             <ion-label position="floating">{{'CREATE.prix' | translate}} (CAD Dollars)</ion-label>
@@ -174,7 +468,8 @@
         <ion-item>
             <ion-label position="floating">{{'CREATE.location' | translate}}</ion-label>
             <ion-select [(ngModel)]="article.city">
-                <ion-select-option [value]="city.name" *ngFor="let city of cities">{{ city.name }}</ion-select-option>
+                <ion-select-option [value]="city.name"
+                                   *ngFor="let city of cities">{{ city.name }}</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item-divider color="color1">
@@ -189,7 +484,7 @@
             </ion-select>
         </ion-item>
         <ion-item>
-            <ion-label position="floating">{{'CREATE.delivery' | translate}}</ion-label>
+            <ion-label position="floating">{{'CREATE.delivery'}}</ion-label>
             <ion-select [(ngModel)]="article.availability.type">
                 <ion-select-option value="Livraison">{{'CREATE.delivery1' | translate}}</ion-select-option>
                 <ion-select-option value="En Magasin">{{'CREATE.delivery2' | translate}}</ion-select-option>
@@ -197,11 +492,11 @@
             </ion-select>
         </ion-item>
         <ion-item *ngIf="article?.availability?.type === 'Livraison' || article?.availability?.type === 'Delivery'">
-            <ion-label position="floating">{{'CREATE.delivery4' | translate}} (CAD Dollars)</ion-label>
+            <ion-label position="floating">{{'CREATE.delivery4'}} (CAD Dollars)</ion-label>
             <ion-input type="number" [(ngModel)]="article.availability.feed"></ion-input>
         </ion-item>
         <ion-item *ngIf="article?.availability?.type === 'En Magasin'">
-            <ion-label position="floating">{{'CREATE.address' | translate}}</ion-label>
+            <ion-label position="floating">{{'CREATE.address'}}</ion-label>
             <ion-textarea placeholder="Entrez l'adresse complète du magasin"
                           [(ngModel)]="article.availability.address"></ion-textarea>
         </ion-item>
@@ -209,6 +504,7 @@
             <ion-icon slot="start" name="create"></ion-icon>&nbsp;&nbsp;
             {{'CREATE.save' | translate}}
         </ion-button>
+
     </ion-list>
 </ion-content>
 <!--<ion-footer text-center>-->

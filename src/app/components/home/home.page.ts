@@ -2,17 +2,14 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NavigationExtras, Router} from '@angular/router';
 import {Article} from '../../models/article-interface';
 import {BehaviorSubject} from 'rxjs';
-import {AlertController, MenuController, ModalController, NavController, Platform, PopoverController} from '@ionic/angular';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
+import {AlertController, ModalController, NavController, Platform, PopoverController} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
-import {Utilisateur} from '../../models/utilisateur-interface';
+import {Currency, Utilisateur} from '../../models/utilisateur-interface';
 import {ArticleService} from '../../services/article.service';
 import {CartPage} from '../cart/cart.page';
 import {ShowOptionsPage} from '../show-options/show-options.page';
-import {LanguageService} from '../../services/language.service';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
-import {TranslateService} from '@ngx-translate/core';
 import {CategoriesService} from '../../services/categories.service';
 import {Storage} from '@ionic/storage';
 import {Commande} from '../../models/commande-interface';
@@ -21,6 +18,10 @@ import {CartService} from '../../services/cart.service';
 import {SearchPage} from '../search/search.page';
 import {SearchCategoriesPage} from '../search-categories/search-categories.page';
 import {PreviewSearchPage} from '../preview-search/preview-search.page';
+import {TranslateService} from '@ngx-translate/core';
+import {LanguageService} from '../../services/language.service';
+import {StorageService} from '../../services/storage.service';
+import {AuthService} from '../../services/auth.service';
 
 declare function test1(t): any;
 
@@ -59,84 +60,110 @@ export class HomePage {
     showLoadingSpining = false;
     notif_number: number;
     categories = [];
+    searchCategories: string[] = [];
 
     slideOpts = {
         initialSlide: 0,
         speed: 400,
         slidesPerView: 2,
     };
-
     category: string;
+    choosenCategories: string[] = [];
+    params: {
+        name: 'Simon'
+    };
 
     constructor(private modalController: ModalController, public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
-                private navCtrl: NavController, private languageService: LanguageService, private cuService: CurrencyService,
-                private msgservice: MessageService, private storage: NativeStorage, private cmdService: CommandeService,
-                private alertController: AlertController, private userStorageUtils: UserStorageUtils, private translate: TranslateService,
-                private router: Router, private categoryService: CategoriesService, public cartService: CartService, private localStorage: Storage) {
+                private navCtrl: NavController, private cuService: CurrencyService, public languageService: LanguageService,
+                private msgservice: MessageService, private cmdService: CommandeService, private translate: TranslateService,
+                private alertController: AlertController, private userStorageUtils: UserStorageUtils,
+                private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService) {
 
-        this.category = 'All Categories';
+        // this.choosenCategories = ['All Categories'];
         this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((data) => {
             this.showLoadingSpining = data;
         });
 
-        this.cartService.getCartItemCount().subscribe((data) => {
-            this.cartItemCount.next(data);
-        });
-
-        let data: Commande;
-
-        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
-            {
-                data = res;
-                this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-            }
-        });
-        // this.event.subscribe('nbNotif', (res) => {
-        //     this.notif_number -= res;
-        //     console.log('notifs number', this.notif_number);
+        // this.cartService.getCartItemCount().subscribe((data) => {
+        //     this.cartService.cartItemCount.next(data);
         // });
-        // this.event.subscribe('addNotif', (res) => {
-        //     this.notif_number = this.notif_number + res;
-        //     // this.presentAlert(this.notif_number);
-        //     console.log('notifs number', this.notif_number);
+
+        // let data: Commande;
+        //
+        // this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+        //     {
+        //         data = res;
+        //         this.cartService.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
+        //     }
         // });
-        // this.menuCtrl.toggle();
+
+        // translate.addLangs(['en', 'fr']);
+        // translate.setDefaultLang('en');
+        // translate.use('en');
     }
+
+    webSocket: WebSocket;
 
     async ngOnInit() {
         console.log('test1');
         this.getCategories();
+        this.webSocket = this.userStorageUtils.getWebSocket();
+        this.language = this.languageService.selected;
+        this.searchCategories = [
+            'Automobile',
+            'Auto',
+            'Voiture',
+            'Moto',
+            'Camion',
+            'Mode',
+            'Vetement',
+            'Homme',
+            'Enfant',
+            'Chaussure',
+            'Accessoire',
+            'Sport_Loisir',
+            'Piece_Accessoire',
+            'Depannage',
+            'Electronique',
+            'Ordinateur',
+            'Laptop',
+            'Desktop',
+            'Telephone & Tablet',
+            'Telephone',
+            'Tablet',
+            'TV & Accessoires',
+            'House',
+            'Home',
+            'Chambre',
+            'Salon',
+            'Salle de bain',
+            'Cuisine',
+            'Parking-Garden',
+            'Electromenager',
+            'Office-industrie',
+            'Bureau',
+            'Professionel',
+            'Ecole',
+            'Industrie',
+            'Gadget',
+            'Jeu',
+            'Jeu_Video',
+            'Societe',
+            'Jouet',
+            'Divers'
+        ];
 
         // this.socket.connect();
         this.showLoadingSpining = false;
-        this.cartService.getCartItemCount().subscribe((data) => {
-            this.cartItemCount.next(data);
-        });
-        this.utilisateur = await this.userStorageUtils.getUser();
-
-        console.log('def language', this.translate.getBrowserLang());
-        if (!this.userStorageUtils.getLanguage()) {
-            this.language = this.translate.getBrowserLang();
-        } else {
-            this.language = await this.userStorageUtils.getLanguage();
-        }
+        // this.cartService.getCartItemCount().subscribe((data) => {
+        //     this.cartService.cartItemCount.next(data);
+        // });
 
         let data: Commande;
-
-        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
+        this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
             {
                 data = res;
-                this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-            }
-        });
-
-        await this.userStorageUtils.getCurrency().then(res => {
-            if (!res) {
-                this.currency = 'CAD';
-                this.currencyIcon = 'flag-for-flag-canada';
-            } else {
-                this.currency = res.currency;
-                this.currencyIcon = res.icon;
+                this.cartService.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
             }
         });
 
@@ -146,7 +173,28 @@ export class HomePage {
         this.articleService.loadArticles().subscribe(res => {
             this.articleService.articles = res as Article[];
         });
-        this.languageService.setInitialAppLanguage(this.language);
+    }
+
+    async test() {
+        const OPEN = WebSocket.OPEN;
+        const self = this;
+// const webSocket: WebSocket = new WebSocket('https://egoalservice.azurewebsites.net');
+
+        this.webSocket.send('test');
+        this.webSocket.onmessage = function(event) {
+            console.log(event.data);
+            new Event(event.data);
+
+            self.presentAlert(event.data);
+        };
+    }
+
+    async presentAlert(msg: any): Promise<void> {
+        const alert = await this.alertController.create({
+            message: msg,
+            buttons: ['OK']
+        });
+        await alert.present();
     }
 
     // Go to cart page
@@ -178,11 +226,8 @@ export class HomePage {
 
         popover.onDidDismiss()
             .then((data) => {
-                console.log(data.data);
-                console.log(this.langOptionSubject.value);
-                if (this.langOptionSubject.value) {
-                    this.language = this.langOptionSubject.value;
-                }
+                console.log(this.languageService.selected);
+                this.language = this.languageService.selected;
                 if (this.currOptionSubject.value) {
                     this.currency = this.currOptionSubject.value;
                     this.currencyIcon = this.currIconOptionSubject.value;
@@ -210,7 +255,7 @@ export class HomePage {
                 special: JSON.stringify(cat)
             }
         };
-        this.router.navigate(['tabs/category-preview'], navigationExtras);
+        this.router.navigate(['menu/tabs/category-preview'], navigationExtras);
     }
 
     async gotoSearchPage() {
@@ -220,19 +265,24 @@ export class HomePage {
         });
         return await modal.present();
     }
+
     element: string = '';
-    search(){
+
+    search() {
         this.elementSearchSubject.next(this.element);
     }
 
-    async openSearch(ev){
+    async openSearch(ev) {
+        if (!this.catOptionSubject.value) {
+            this.catOptionSubject.next([this.category]);
+        }
         const popover = await this.popoverController.create({
             component: PreviewSearchPage,
             event: ev,
             translucent: true,
             cssClass: 'my-custom-search-dialog',
             componentProps: {
-                categories: this.catOptionSubject.value,
+                catOptionSubject: this.choosenCategories,
                 elementSearchSubject: this.elementSearchSubject
             }
         });
@@ -246,7 +296,7 @@ export class HomePage {
             translucent: true,
             cssClass: 'my-custom-dialog',
             componentProps: {
-                catOptionSubject: this.catOptionSubject
+                catOptionSubject: this.choosenCategories
             }
         });
 
@@ -254,13 +304,14 @@ export class HomePage {
             .then((data) => {
                 console.log(data.data);
                 console.log(this.catOptionSubject.value);
-                if(this.catOptionSubject.value){
-                    this.category = '';
-                    for(let c of this.catOptionSubject.value as string[]){
-                        this.category +=c+ ' '
-                    }
-                }
+                // if(this.catOptionSubject.value && this.catOptionSubject.value !== 'All Categories'){
+                //     this.category = '';
+                //     for(let c of this.catOptionSubject.value as string[]){
+                //         this.category +=c+ ' '
+                //     }
+                // }
             });
         return await popover.present();
     }
+
 }

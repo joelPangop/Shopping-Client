@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
 import {ArticleService} from '../../../services/article.service';
 import {AuthService} from '../../../services/auth.service';
 import {ImageService} from '../../../services/image.service';
@@ -32,7 +31,7 @@ export class SignupPage implements OnInit {
     utilisateur = {} as Utilisateur;
     genders: string[] = ['M.', 'F.', 'Other'];
 
-    constructor(private nativeStorage: NativeStorage, public formBuilder: FormBuilder, private articleService: ArticleService,
+    constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, public localStorage: Storage,
                 private platform: Platform, private popoverController: PopoverController, private router: Router,

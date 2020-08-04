@@ -6,9 +6,11 @@ import {BehaviorSubject, Subject} from 'rxjs';
 })
 export class CartService {
 
-  private cartItemCount = new Subject<number>();
+  public cartItemCount = new Subject<number>();
 
-  constructor() { }
+  constructor() {
+    this.cartItemCount = new Subject<number>();
+  }
 
   setCartItemCount(value: number){
     this.cartItemCount.next(value);

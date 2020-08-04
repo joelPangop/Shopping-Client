@@ -7,84 +7,140 @@
 
 <!-- Header -->
 <ion-header no-border>
-  <ion-toolbar color="color1">
+    <ion-toolbar color="color1">
 
-    <!-- Page Title -->
-    <ion-title>Filter</ion-title>
+        <!-- Page Title -->
+        <ion-title>Filter</ion-title>
 
-    <!-- Close Button of Filter page -->
-    <ion-buttons slot="end">
-      <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="close">
-      </ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
+        <!-- Close Button of Filter page -->
+        <ion-buttons slot="end">
+            <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="close">
+            </ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 
 <!-- Contents -->
 <ion-content id="filter" fullscreen>
-  <ion-list lines="none">
-
-    <!-- Price Section -->
-    <p class="title">Price</p>
 
     <ion-item>
-      <ion-range pin="true" [(ngModel)]="priceRange" dual-knobs pin color="dark">
-      </ion-range>
+        <ion-label>Categories:</ion-label>
+        <ion-button fill="clear" color="color1" (click)="chooseCategory($event)">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
+        </ion-button>
     </ion-item>
+    <ion-chip *ngFor="let cat of categories">
+        <ion-label>{{cat}}</ion-label>
+    </ion-chip>
+    <ion-list lines="none">
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <p class="title">Price</p>
+                    <ion-item color="color1">
+                        <ion-label>
+                            {{priceRange.lower}} - {{priceRange.upper}}
+                        </ion-label>
+                    </ion-item>
+                    <ion-item>
+                        <ion-range pin="true" [(ngModel)]="priceRange" dual-knobs color="dark" [max]="maxPrice">
+                            <ion-label slot="start">
+                                0
+                            </ion-label>
+                            <ion-label slot="end">
+                                {{maxPrice}}
+                            </ion-label>
+                        </ion-range>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
 
-    <!-- Colors Section -->
-    <p class="title">Colors</p>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <ion-item *ngIf="categories.includes('Voiture') || categories.includes('Camion')">
+            <ion-label>
+                Condition:
+            </ion-label>
+            <ion-segment scrollable="true" [(ngModel)]="condition">
+                <ion-segment-button [value]="'Tout'">
+                    <ion-label>Tout</ion-label>
+                </ion-segment-button>
+                <ion-segment-button [value]="'Neuf'">
+                    <ion-label>Neuf</ion-label>
+                </ion-segment-button>
+                <ion-segment-button [value]="'D\occasion'">
+                    <ion-label>D'occasion</ion-label>
+                </ion-segment-button>
+            </ion-segment>
+        </ion-item>
+        <ion-item>
+            <ion-label>Kilometers:</ion-label>
+            <ion-input type="text" [(ngModel)]="kilometers"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Transmission:</ion-label>
+            <ion-select interface="popover">
+                <ion-select-option value="Automatique">Automatique</ion-select-option>
+                <ion-select-option value="Manuel">Manuel</ion-select-option>
+            </ion-select>
+        </ion-item>
 
-    <ion-radio-group>
-      <ion-row class="ion-padding-start">
-        <ion-col size="3" *ngFor="let item of colors">
-          <ion-item class="border-style" lines="none" [style.border-color]="item">
-            <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-radio-group>
+        <!-- Colors Section -->
+        <p class="title">Colors</p>
 
-    <!-- Size Section -->
-    <p class="title">Sizes</p>
+        <ion-radio-group>
+            <ion-row class="ion-padding-start">
+                <ion-col size="3" *ngFor="let item of colors">
+                    <ion-item class="border-style" lines="none" [style.border-color]="item">
+                        <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-radio-group>
 
-    <ion-radio-group>
-      <ion-row class="ion-padding-start">
-        <ion-col size="3" *ngFor="let item of sizes">
-          <ion-item lines="none">
-            <ion-label class="size-label">{{item}}</ion-label>
-            <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-radio-group>
+        <!-- Size Section -->
+        <p class="title">Sizes</p>
 
-    <!-- Brand Section -->
-    <p class="title">Brands</p>
+        <ion-radio-group>
+            <ion-row class="ion-padding-start">
+                <ion-col size="3" *ngFor="let item of sizes">
+                    <ion-item lines="none">
+                        <ion-label class="size-label">{{item}}</ion-label>
+                        <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+        </ion-radio-group>
 
-    <ion-radio-group allow-empty-selection>
-      <ion-item *ngFor="let item of brands">
-        <ion-label>{{item}}</ion-label>
-        <ion-radio slot="start" color="color1" mode="ios" [value]="item"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+        <!-- Brand Section -->
+        <p class="title">Brands</p>
+
+        <ion-radio-group allow-empty-selection>
+            <ion-item *ngFor="let item of brands">
+                <ion-label>{{item}}</ion-label>
+                <ion-radio slot="start" color="color1" mode="ios" [value]="item"></ion-radio>
+            </ion-item>
+        </ion-radio-group>
+    </ion-list>
 </ion-content>
-
 
 <!-- Footer -->
 <ion-footer no-border>
-  <ion-toolbar class="ion-padding" transparent>
-    <ion-row>
-      <!-- Cancel Button -->
-      <ion-col>
-        <ion-button class="add-to-cart" color="color2" fill="outline" expand="block">Cancel</ion-button>
-      </ion-col>
+    <ion-toolbar class="ion-padding" transparent>
+        <ion-row>
+            <!-- Cancel Button -->
+            <ion-col>
+                <ion-button class="add-to-cart" color="color2" fill="outline" expand="block">Cancel</ion-button>
+            </ion-col>
 
-      <!-- Filter Apply Button -->
-      <ion-col>
-        <ion-button class="add-to-cart" color="color1" fill="outline" expand="block">Apply</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
+            <!-- Filter Apply Button -->
+            <ion-col>
+                <ion-button class="add-to-cart" color="color1" fill="outline" expand="block" (click)="apply()">Apply
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
 </ion-footer>

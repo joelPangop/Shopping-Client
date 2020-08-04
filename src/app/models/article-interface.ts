@@ -23,6 +23,11 @@ export interface Article {
     availability: Availability;
     comments?: string[];
     status?: ArticleStatus;
+    brands?: string;
+    kilometers?: number;
+    transmission?: string;
+    model?: string;
+    year?: number;
 }
 
 export interface Availability {

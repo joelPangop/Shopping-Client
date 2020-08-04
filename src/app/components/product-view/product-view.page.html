@@ -22,26 +22,34 @@
             <ion-icon name="close" slot="start"></ion-icon>
         </ion-button>
     </div>
-    <ion-fab vertical="top" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="gotoCartPage()" #cart>
-            <div class="cart-length">{{ cartItemCount | async }}</div>
-            <ion-icon name="cart" class="cart-icon"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
-    <!-- Slider of Product Images -->
-    <ion-slides pager="true" [options]="slideOpts">
-        <ion-slide *ngFor="let item of product.pictures">
-            <img src="https://egoalservice.azurewebsites.net/image/{{item}}"/>
-
-            <!-- Wish Button or Product Like/Dislike Button Option -->
-            <ion-fab vertical="bottom" horizontal="end">
-                <ion-fab-button (click)="checkLike()">
-                    <ion-icon clear color="color1" name="heart-outline" *ngIf="!like"></ion-icon>
-                    <ion-icon clear color="color1" name="heart" *ngIf="like"></ion-icon>
-                </ion-fab-button>
-            </ion-fab>
-        </ion-slide>
-    </ion-slides>
+    <div id="top-slider">
+        <ion-fab vertical="top" horizontal="end" slot="fixed">
+            <ion-fab-button (click)="gotoCartPage()" #cart>
+                <div class="cart-length">{{ cartItemCount | async }}</div>
+                <ion-icon name="cart" class="cart-icon"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+        <!-- Slider of Product Images -->
+        <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top">
+            <ion-slide *ngFor="let item of product.pictures">
+                <ion-img *ngIf="isImage(item)"
+                         src="https://egoalservice.azurewebsites.net/image/{{item}}" height="400"
+                         width="400"></ion-img>
+                <video *ngIf="!isImage(item)" controls preload height="400" width="400">
+                    <source src="https://egoalservice.azurewebsites.net/image/{{item}}" id="video_here"
+                            type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
+                <!-- Wish Button or Product Like/Dislike Button Option -->
+                <ion-fab vertical="bottom" horizontal="end">
+                    <ion-fab-button (click)="checkLike()">
+                        <ion-icon clear color="color1" name="heart-outline" *ngIf="!like"></ion-icon>
+                        <ion-icon clear color="color1" name="heart" *ngIf="like"></ion-icon>
+                    </ion-fab-button>
+                </ion-fab>
+            </ion-slide>
+        </ion-slides>
+    </div>
 
     <!-- Product Price -->
     <ion-row class="ion-padding">
@@ -105,9 +113,11 @@
 <ion-footer no-border>
     <ion-toolbar class="ion-padding" transparent>
         <!-- Add To Cart Button -->
-        <ion-button *ngIf="!contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        <ion-button *ngIf="!contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart"
+                    color="color1" expand="block" (click)="addToCart()">ADD TO CART
         </ion-button>
-        <ion-button *ngIf="contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart" color="color1" expand="block" (click)="contact()">
+        <ion-button *ngIf="contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart"
+                    color="color1" expand="block" (click)="contact()">
             CONTACT SALER
         </ion-button>
     </ion-toolbar>
