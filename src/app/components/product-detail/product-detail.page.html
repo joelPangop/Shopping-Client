@@ -23,12 +23,157 @@
 <ion-content>
     <ion-grid>
         <ion-row>
-            <ion-col>
+            <ion-col size="2"></ion-col>
+            <ion-col size="8" *ngIf="!platform.is('ios') && !platform.is('android')">
                 <ion-card class="ion-no-margin">
                     <div id="top-slider">
                         <ion-fab vertical="top" horizontal="end" slot="fixed" color="dark-shade">
                             <ion-fab-button color="medium-shade" (click)="checkLike()">
                                 <ion-icon name="heart" color="{{like === true ? 'danger':'dark-tint'}}"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab>
+                        <!--                        <ion-fab vertical="center" horizontal="end" slot="fixed" color="dark-shade">-->
+                        <!--                            <ion-fab-button color="medium-shade" (click)="gotoEdit()">-->
+                        <!--&lt;!&ndash;                                <ion-icon name="create" color='dark-tint'></ion-icon>&ndash;&gt;-->
+                        <!--                            </ion-fab-button>-->
+                        <!--                        </ion-fab>-->
+
+                        <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
+                            <ion-slide (click)="showImage(image, article.title)" *ngFor="let image of images">
+                                <img *ngIf="isImage(image)"
+                                     src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
+                                     width="400"/>
+                                <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
+                                <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
+                                <!--                                </ion-button>-->
+
+                                <video *ngIf="!isImage(image)" id="my-video"
+                                       class="video-js vjs-theme-city"
+                                       controls
+                                       preload="auto"
+                                       height="400" width="400" data-setup="{}">
+                                    <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                            id="video_here" type="video/mp4">
+                                    <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                            id="video_here" type="video/webm">
+                                    Your browser does not support HTML5 video.
+                                </video>
+                            </ion-slide>
+                        </ion-slides>
+                    </div>
+
+                    <div align="center">
+                        <ion-row>
+                            <ion-col>
+                                <ion-label>
+                                    Visite(s)
+                                    <ion-icon color="color1" name="eye"></ion-icon>
+                                    |
+                                </ion-label>
+                                <ion-label color="color1">{{views}}</ion-label>
+                            </ion-col>
+                            <ion-col>
+                                <ion-label>
+                                    Status |
+                                </ion-label>
+                                <ion-label color="color1">{{article.status}}</ion-label>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+
+                    <div class="">
+                        <ion-card-title>
+                            <ion-chip color="primary">
+                                <ion-label>{{ article?.categories }}</ion-label>
+                            </ion-chip>
+                            <ion-chip color="warning">
+                                <ion-label>{{ article?.state }}</ion-label>
+                            </ion-chip>
+                            <ion-chip color="secondary">
+                                <ion-label>{{ article?.availability?.type }}</ion-label>
+                            </ion-chip>
+                            <ion-chip *ngIf="article?.availability?.available === true">
+                                <ion-label>Disponible</ion-label>
+                            </ion-chip>
+                            <ion-chip color="primary">
+                                <ion-label>{{ article?.city }}</ion-label>
+                            </ion-chip>
+                            <ion-chip>
+                                <ion-label>{{ article?.brands }}</ion-label>
+                            </ion-chip>
+                            <ion-chip>
+                                <ion-label>{{ article?.model }}</ion-label>
+                            </ion-chip>
+                            <ion-chip>
+                                <ion-label>{{ article?.year }}</ion-label>
+                            </ion-chip>
+                            <ion-chip>
+                                <ion-label>{{ article?.transmission }}</ion-label>
+                            </ion-chip>
+                            <ion-chip>
+                                <ion-label>{{ article?.kilometers }}</ion-label>
+                            </ion-chip>
+                            <div class="my-container-label">
+                                <div class="span-container">
+                        <span class="price">
+                            {{article?.price | currency:currency:'symbol-narrow':'.2'}}
+                        </span>
+                                    <span *ngIf="article?.averageStar >= 1">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                    <span *ngIf="article?.averageStar >= 2">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                    <span *ngIf="article?.averageStar >= 3">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                    <span *ngIf="article?.averageStar >= 4">
+                             <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                    <span *ngIf="article?.averageStar >= 5">
+                            <ion-icon class="iconStar" name="star"></ion-icon>
+                        </span>
+                                </div>
+                            </div>
+                        </ion-card-title>
+                        <p style="text-align: justify">{{ article?.description }}</p>
+                        <h3 class="title">Laissez une note</h3>
+                        <div class="rating-container">
+                            <rating
+                                    [(ngModel)]="rate"
+                                    readonly="false"
+                                    size="default"
+                                    (ngModelChange)="onModelChange($event)">
+                            </rating>
+                            <ion-button (click)="leaveNote()" color="color1" size="small">Noter</ion-button>
+                        </div>
+                        <br/>
+                        <ion-button class="add-to-cart"
+                                    *ngIf="article.utilisateurId !== authService.currentUser._id"
+                                    color="color1" expand="block" (click)="addToCart()">ADD TO CART
+                        </ion-button>
+                        <ion-button class="add-to-cart"
+                                    *ngIf="article.utilisateurId === authService.currentUser._id"
+                                    color="color1" expand="block" (click)="gotoEdit()">Edit Product
+                        </ion-button>
+                    </div>
+                    <!--                    <ion-button #edit>-->
+                    <!--                        <ion-icon name="edit"></ion-icon>-->
+                    <!--                    </ion-button>-->
+                </ion-card>
+            </ion-col>
+            <ion-col *ngIf="platform.is('ios') || platform.is('android')">
+                <ion-card class="ion-no-margin">
+                    <div id="top-slider">
+                        <ion-fab vertical="top" horizontal="end" slot="fixed" color="dark-shade">
+                            <ion-fab-button color="medium-shade" (click)="checkLike()">
+                                <ion-icon name="heart" color="{{like === true ? 'danger':'dark-tint'}}"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab>
+                        <ion-fab vertical="center" horizontal="end" slot="fixed" color="dark-shade"
+                                 *ngIf="article.utilisateurId === authService.currentUser._id">
+                            <ion-fab-button color="medium-shade" (click)="gotoEdit()">
+                                <ion-icon name="create" color='dark-tint'></ion-icon>
                             </ion-fab-button>
                         </ion-fab>
 
@@ -138,16 +283,19 @@
                         <!--                        <ion-button class="add-to-cart" color="color1" expand="block" (click)="addToCart()">ADD TO CART-->
                         <!--                        </ion-button>-->
                     </div>
-                    <ion-button #edit>
-                        <ion-icon name="edit"></ion-icon>
-                    </ion-button>
+                    <!--                    <ion-button #edit>-->
+                    <!--                        <ion-icon name="edit"></ion-icon>-->
+                    <!--                    </ion-button>-->
                 </ion-card>
             </ion-col>
+            <ion-col size="2"></ion-col>
+
         </ion-row>
     </ion-grid>
 
 </ion-content>
-<ion-footer no-border>
+<ion-footer no-border
+            *ngIf="(platform.is('ios') || platform.is('android')) && article.utilisateurId !== authService.currentUser._id">
     <ion-toolbar class="ion-padding" transparent no-border>
         <!-- Add To Cart Button -->
         <ion-button *ngIf="!contains(product.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart"

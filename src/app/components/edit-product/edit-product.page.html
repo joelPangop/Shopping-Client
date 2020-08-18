@@ -1,13 +1,17 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button color="color1" defaultHref="/menu/tabs/profile/'Mes articles'"></ion-back-button>
+            <ion-menu-toggle menu="pages">
+                <ion-button>
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
+            <ion-title>Modifier {{article?.title}}</ion-title>
         </ion-buttons>
-        <ion-title>Modifier {{article?.title}}</ion-title>
     </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
+<ion-content class="ion-padding">
     <!--    <ion-list>-->
     <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
         <ion-row>
@@ -25,19 +29,27 @@
                             <ion-row>
                                 <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
                                     <ion-slide (click)="showImage(image, article.title)"
-                                               *ngFor="let image of article.pictures">
-                                        <img *ngIf="isImage(image)"
-                                             src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
-                                             width="400"/>
-                                        <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
-                                        <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
-                                        <!--                                </ion-button>-->
-                                        <video *ngIf="!isImage(image)"
-                                               controls preload height="400" width="400" #video>
-                                            <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
-                                                    id="video_here" type="video/mp4">
-                                            Your browser does not support HTML5 video.
-                                        </video>
+                                               *ngFor="let image of article.pictures; let i = index">
+                                        <div>
+                                            <ion-fab vertical="top" horizontal="end">
+                                                <ion-button color="color1" (click)="presentAlertConfirm(image, i)">
+                                                    Remove
+                                                </ion-button>
+                                            </ion-fab>
+                                            <img *ngIf="isImage(image)"
+                                                 src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                                 height="400"
+                                                 width="400"/>
+                                            <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
+                                            <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
+                                            <!--                                </ion-button>-->
+                                            <video *ngIf="!isImage(image)"
+                                                   controls preload height="500" width="600">
+                                                <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                                        id="video_here" type="video/mp4">
+                                                Your browser does not support HTML5 video.
+                                            </video>
+                                        </div>
                                     </ion-slide>
                                 </ion-slides>
                             </ion-row>
@@ -249,23 +261,25 @@
                 <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
                     <ion-slide (click)="showImage(image, article.title)"
                                *ngFor="let image of article.pictures; let i = index">
-                        <ion-fab (click)="presentAlertConfirm(i)" horizontal="left" vertical="top">
-                            <ion-button fill="clear">
-                                <ion-icon color="color1" name="close"></ion-icon>
-                            </ion-button>
-                        </ion-fab>
-                        <img *ngIf="isImage(image)"
-                             src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
-                             width="400"/>
-                        <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
-                        <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
-                        <!--                                </ion-button>-->
-                        <video *ngIf="!isImage(image)"
-                               controls preload height="400" width="400" #video>
-                            <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
-                                    id="video_here1" type="video/mp4">
-                            Your browser does not support HTML5 video.
-                        </video>
+                        <div>
+                            <ion-fab vertical="top" horizontal="end">
+                                <ion-button fill="clear" (click)="presentAlertConfirm(image, i)">
+                                    <ion-icon color="color1" name="close" slot="icon-only"></ion-icon>
+                                </ion-button>
+                            </ion-fab>
+                            <img *ngIf="isImage(image)"
+                                 src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
+                                 width="400"/>
+                            <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
+                            <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
+                            <!--                                </ion-button>-->
+                            <video *ngIf="!isImage(image)"
+                                   controls preload height="400" width="400" #video>
+                                <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                        id="video_here1" type="video/mp4">
+                                Your browser does not support HTML5 video.
+                            </video>
+                        </div>
                     </ion-slide>
                 </ion-slides>
             </ion-row>
@@ -455,11 +469,15 @@
                           [ngModelOptions]="{standalone: true}"
                           [(ngModel)]="article.availability.address"></ion-textarea>
         </ion-item>
-        <ion-button (click)="update()" fill="clear" color="color1" expand="block">
-            <ion-icon slot="start" name="create"></ion-icon>
-            {{'CREATE.edit' | translate}}
-        </ion-button>
+
     </ion-list>
 
 </ion-content>
+<ion-footer class="ion-padding ion-text-center" *ngIf="platform.is('ios') || platform.is('android')">
+    <ion-button (click)="update()" fill="clear" color="color1" expand="block"
+                style="border-width: 3px; border-color: #ed576b">
+        <ion-icon slot="start" name="create"></ion-icon>
+        {{'CREATE.edit' | translate}}
+    </ion-button>
+</ion-footer>
 

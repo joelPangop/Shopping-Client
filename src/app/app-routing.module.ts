@@ -4,7 +4,7 @@ import {AuthGuardService} from './services/auth-guard.service';
 
 const routes: Routes = [
     // {path: '', redirectTo: 'onbroading', pathMatch: 'full'},
-    { path: '', redirectTo: 'menu/tabs/tab1', pathMatch: 'full' },
+    {path: '', redirectTo: 'menu/tabs/tab1', pathMatch: 'full'},
     {
         path: 'menu', loadChildren: () => import('./components/menu/menu.module').then(m => m.MenuPageModule),
         // canActivate: [AuthGuardService]
@@ -43,18 +43,27 @@ const routes: Routes = [
         loadChildren: () => import('./components/order-view/order-view.module').then(m => m.OrderViewPageModule),
         canActivate: [AuthGuardService]
     },
-  {
-    path: 'search-categories',
-    loadChildren: () => import('./components/search-categories/search-categories.module').then( m => m.SearchCategoriesPageModule)
-  },
-  {
-    path: 'preview-search',
-    loadChildren: () => import('./components/preview-search/preview-search.module').then( m => m.PreviewSearchPageModule)
-  },  {
-    path: 'preview-video',
-    loadChildren: () => import('./components/preview-video/preview-video.module').then( m => m.PreviewVideoPageModule)
-  }
+    {
+        path: 'search-categories',
+        loadChildren: () => import('./components/search-categories/search-categories.module').then(m => m.SearchCategoriesPageModule)
+    },
+    {
+        path: 'preview-search',
+        loadChildren: () => import('./components/preview-search/preview-search.module').then(m => m.PreviewSearchPageModule)
+    },
+    // {
+    //     path: 'edit-product/:id',
+    //     loadChildren: () => import('./components/edit-product/edit-product.module').then(m => m.EditProductPageModule)
+    // },
+    // {
+    //     path: 'souscription',
+    //     loadChildren: () => import('./components/souscription/souscription.module').then(m => m.SouscriptionPageModule)
+    // },
 
+    // {
+    //     path: 'preview-video',
+    //     loadChildren: () => import('./components/preview-video/preview-video.module').then(m => m.PreviewVideoPageModule)
+    // }
 
 ];
 

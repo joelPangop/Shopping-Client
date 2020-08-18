@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Telephone} from '../../models/telephone-interface';
@@ -14,6 +14,8 @@ import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
 import {ActivatedRoute, Router} from '@angular/router';
+import {StorageService} from '../../services/storage.service';
+import {EditProductPage} from '../edit-product/edit-product.page';
 
 @Component({
     selector: 'app-profile',
@@ -45,7 +47,7 @@ export class ProfilePage implements OnInit {
     currency;
     option: string;
 
-    constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
+    constructor(public formBuilder: FormBuilder, private articleService: ArticleService, private storage: StorageService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController, private router: Router,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
                 private popoverController: PopoverController, private activatedRoute: ActivatedRoute) {
@@ -206,10 +208,11 @@ export class ProfilePage implements OnInit {
             this.imgURL = reader.result;
         };
     }
-
+    @ViewChild( 'content' ) content;
     async updateArticle(article: Article, index) {
         // await this.storage.setItem('page', 'profile');
-        await this.router.navigate(['menu/tabs/edit-product/' + article._id]);
+        await this.navCtrl.navigateRoot('/menu/tabs/edit-product/' + article._id);
+
     }
 
     async deleteArticle(article: Article, index: number) {

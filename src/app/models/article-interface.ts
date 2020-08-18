@@ -28,6 +28,7 @@ export interface Article {
     transmission?: string;
     model?: string;
     year?: number;
+    quantity?: number;
 }
 
 export interface Availability {

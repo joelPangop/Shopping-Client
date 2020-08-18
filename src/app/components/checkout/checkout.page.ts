@@ -83,7 +83,6 @@ export class CheckoutPage implements OnInit {
 
     payWithStripe() {
         this.stripe.setPublishableKey(this.stripe_key);
-
         this.cardDetails = {
             number: '4242424242424242',
             expMonth: 12,
@@ -91,12 +90,13 @@ export class CheckoutPage implements OnInit {
             cvc: '220'
         };
 
-        this.stripe.createCardToken(this.cardDetails)
+        const result = this.stripe.createCardToken(this.cardDetails)
             .then(token => {
                 console.log(token);
                 this.makePayment(token.id);
             })
             .catch(error => console.error(error));
+
     }
 
     makePayment(token) {

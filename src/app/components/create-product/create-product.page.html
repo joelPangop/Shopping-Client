@@ -117,6 +117,10 @@
                             <ion-label position="floating">{{'CREATE.nom' | translate}}</ion-label>
                             <ion-input type="text" [(ngModel)]="article.title"></ion-input>
                         </ion-item>
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.quantity' | translate}}</ion-label>
+                            <ion-input type="text" [(ngModel)]="article.quantity"></ion-input>
+                        </ion-item>
                         <!--        <ion-item-->
                         <!--                *ngIf="article.categories.includes('Vetement') || article.categories.includes('Chaussure') || article.categories.includes('Mode')-->
                         <!--                    || article.categories.includes('Auto')">-->

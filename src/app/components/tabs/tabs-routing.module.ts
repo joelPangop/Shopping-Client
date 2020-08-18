@@ -122,6 +122,10 @@ const routes: Routes = [
             {
                 path: 'show-cat-option',
                 loadChildren: () => import('../show-cat-option/show-cat-option.module').then(m => m.ShowCatOptionPageModule)
+            },
+            {
+                path: 'tab-souscription',
+                loadChildren: () => import('../souscription/souscription.module').then( m => m.SouscriptionPageModule)
             }
         ]
     }

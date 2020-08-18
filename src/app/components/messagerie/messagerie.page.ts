@@ -63,7 +63,8 @@ export class MessageriePage implements OnInit {
                 console.log('result', res);
                 const msg_rec = res [0];
                 this.messages_received = msg_rec.reverse().filter((thing, i, arr) => {
-                    return arr.indexOf(arr.find(t => t.article._id === thing.article._id && t.article.pictures[0] === thing.article.pictures[0])) === i;
+                    return arr.indexOf(arr.find(
+                        t => t.article._id === thing.article._id && t.article.pictures[0] === thing.article.pictures[0])) === i;
                 });
                 this.messages_sent = res [1];
                 this.notifications = res [2];

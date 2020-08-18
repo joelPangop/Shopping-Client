@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Article} from '../../models/article-interface';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {AlertController, LoadingController, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {ImageService} from '../../services/image.service';
@@ -12,6 +12,7 @@ import {categories} from '../../models/Category';
 import {PreviewVideoPage} from '../preview-video/preview-video.page';
 import {environment} from '../../models/environements';
 import {AuthService} from '../../services/auth.service';
+import {StorageService} from '../../services/storage.service';
 
 @Component({
     selector: 'app-edit-product',
@@ -40,17 +41,16 @@ export class EditProductPage implements OnInit {
             delay: 4000
         }
     };
+    page: string = '';
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private imageService: ImageService, private formBuilder: FormBuilder, private loadingCtrl: LoadingController,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService,
-                public modalController: ModalController, private authService: AuthService, private alertController: AlertController) {
+                public modalController: ModalController, private authService: AuthService, private alertController: AlertController,
+                private storage: StorageService, private router: Router) {
         this.categories = categories;
         this.cities = cities;
         this.myPictures = [];
-
-        // this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        // this.loadData();
 
     }
 
@@ -60,24 +60,28 @@ export class EditProductPage implements OnInit {
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
-        await this.loadData();
+        this.loadData();
     }
 
-    async ionViewWillEnter() {
-        this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        await this.loadData();
-    }
+    // async ionViewWillEnter() {
+    //     this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    //     await this.loadData();
+    // }
 
-    async ionViewDidEnter() {
-        this.id = this.activatedRoute.snapshot.paramMap.get('id');
-        await this.loadData();
-    }
+    // async ionViewDidEnter() {
+    //     this.id = this.activatedRoute.snapshot.paramMap.get('id');
+    //     // this.loadData();
+    // }
 
     // @ts-ignore
-    loadData(): Observable<Article> {
+    loadData() {
         this.articleService.loadArticle(this.id).subscribe((res) => {
             this.article = res as Article;
         });
+    }
+
+    async goBack() {
+        await this.navCtrl.navigateBack([this.page]);
     }
 
     async showImage(imgId: string, imgTitle: string) {
@@ -219,7 +223,6 @@ export class EditProductPage implements OnInit {
             });
             this.uploadForm.get('image').setValue(this.myPictures);
 
-            // } else {
             await (await this.imageService.uploadImages(this.uploadForm)).subscribe(
                 async (res) => {
                     for (let img of res.filename as []) {
@@ -284,10 +287,10 @@ export class EditProductPage implements OnInit {
         }
     }
 
-    removeArticleImage(index) {
-        this.imageService.deleteImage(index).subscribe((res: any) => {
+    removeArticleImage(file, index) {
+        this.imageService.deleteImage(file).subscribe((res: any) => {
             if (res.res === 'success') {
-                this.article.pictures.slice(index, 1);
+                this.article.pictures.splice(index, 1);
                 this.articleService.article = this.article;
                 this.articleService.updateArticle().subscribe((res) => {
                     console.log(res);
@@ -296,7 +299,7 @@ export class EditProductPage implements OnInit {
         });
     }
 
-    async presentAlertConfirm(index) {
+    async presentAlertConfirm(file, index) {
         const alert = await this.alertController.create({
             cssClass: 'my-custom-class',
             header: 'Confirm!',
@@ -312,13 +315,12 @@ export class EditProductPage implements OnInit {
                 }, {
                     text: 'Okay',
                     handler: () => {
-                        this.removeArticleImage(index);
+                        this.removeArticleImage(file, index);
                         console.log('Confirm Okay');
                     }
                 }
             ]
         });
-
         await alert.present();
     }
 }

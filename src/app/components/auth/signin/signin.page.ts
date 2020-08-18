@@ -8,6 +8,9 @@ import {NavController} from '@ionic/angular';
 import {Utilisateur} from '../../../models/utilisateur-interface';
 import {environment} from '../../../models/environements';
 import {UserStorageUtils} from '../../../services/UserStorageUtils';
+import {Plugins} from '@capacitor/core';
+
+const {CapacitorVideoPlayer, Device} = Plugins;
 
 @Component({
     selector: 'app-signin',
@@ -18,6 +21,7 @@ export class SigninPage implements OnInit {
 
     credentialsForm: FormGroup;
     utilisateur = {} as Utilisateur;
+    info: any;
 
     constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient, private router: Router,
                 private authService: AuthService, private navCtrl: NavController,
@@ -30,7 +34,7 @@ export class SigninPage implements OnInit {
         });
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.userStorageUtils.getUser().then(res => {
             this.utilisateur = res as Utilisateur;
         });
@@ -39,6 +43,7 @@ export class SigninPage implements OnInit {
                 this.utilisateur = JSON.parse(params.special).user;
             }
         });
+        this.info = await Device.getInfo();
         this.credentialsForm = this.formBuilder.group({
             password: [!this.utilisateur.password ? '' : this.utilisateur.password, [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
@@ -90,12 +95,39 @@ export class SigninPage implements OnInit {
             if (event.keyCode == 13 && this.credentialsForm.valid) {
                 await this.authService.login(this.credentialsForm.value).subscribe(res => {
                     if (res) {
-                        this.navCtrl.navigateForward('/menu/tabs/tab1');
+                        let deviceIDs = [];
+                        this.authService.currentUser.userInfo.devices.forEach(div => {
+                            deviceIDs.push(div.uuid);
+                        });
+                        if (deviceIDs.includes(this.info.uuid)) {
+                            this.navCtrl.navigateForward('/menu/tabs/tab1');
+                        } else {
+                            this.authService.currentUser.userInfo.devices.push(this.info);
+                            this.authService.updateProfile(this.authService.currentUser).subscribe((res) => {
+                                this.navCtrl.navigateForward('/menu/tabs/tab1');
+                            })
+                        }
                     }
                 });
             }
         } else {
             await this.authService.login(this.credentialsForm.value).subscribe(res => {
+                if (res.user[0]) {
+                    let deviceIDs = [];
+                    if(res.user[0].userInfo.devices) {
+                        res.user[0].userInfo.devices.forEach(div => {
+                            deviceIDs.push(div.uuid);
+                        });
+                    }
+                    if (deviceIDs.includes(this.info.uuid)) {
+                        this.navCtrl.navigateForward('/menu/tabs/tab1');
+                    } else {
+                        res.user[0].userInfo.devices.push(this.info);
+                        this.authService.updateProfile(res.user[0]).subscribe((res) => {
+                            this.navCtrl.navigateForward('/menu/tabs/tab1');
+                        })
+                    }
+                }
             });
         }
     }

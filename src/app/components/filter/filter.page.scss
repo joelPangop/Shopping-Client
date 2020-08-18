@@ -19,9 +19,15 @@
   }
 
   .border-style {
-    border: 4px solid;
-    width: 60px;
+    border: 2px solid;
+    width: 100px;
     border-radius: 15%;
+  }
+
+  .border-price-style {
+    border: 3px solid;
+    width: 100%;
+    //border-radius: 5%;
   }
 
   .size-label {
@@ -29,3 +35,4 @@
     font-size: 1.1rem;
   }
 }
+

@@ -44,20 +44,30 @@ export class MenuPage implements OnInit {
                 private pagesService: PagesService,
                 private userStorageUtils: UserStorageUtils) {
         // this.menuController.enable(true); // Enable side menu
-        this.userStorageUtils.getUser().then(res => {
-            this.utilisateur = res as Utilisateur;
-            if (this.utilisateur._id) {
-                this.signOption = 'Signout';
-            } else {
-                this.signOption = 'Sign In';
-            }
-        });
+        // this.userStorageUtils.getUser().then(res => {
+        //     this.utilisateur = res as Utilisateur;
+        //     if (this.authService.currentUser._id) {
+        //         this.signOption = 'Signout';
+        //     } else {
+        //         this.signOption = 'Sign In';
+        //     }
+        // });
+        if (this.authService.currentUser._id) {
+            this.signOption = 'Signout';
+        } else {
+            this.signOption = 'Sign In';
+        }
     }
 
     ngOnInit() {
         this.userStorageUtils.getUser().then(res => {
             this.utilisateur = res as Utilisateur;
         });
+        if (this.authService.currentUser._id) {
+            this.signOption = 'Signout';
+        } else {
+            this.signOption = 'Sign In';
+        }
         this.appPages = this.pagesService.getPages();
         this.authService.isAuthenticated.subscribe((state) => {
             if (state) {
@@ -73,7 +83,6 @@ export class MenuPage implements OnInit {
     }
 
     async sign() {
-
         if (this.authService.currentUser._id) {
             if (this.authService.logout()) {
                 await this.router.navigate(['menu/tabs/tab1']);

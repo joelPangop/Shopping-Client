@@ -10,7 +10,7 @@
     "main": "Accueil",
     "categorie": "Categories",
     "habit": "Vêtements",
-    "electroniques": "Electroniques",
+    "electroniques": "Electronique",
     "mode_accessoire": "Mode & Accessoires",
     "chaussure": "Chaussures",
     "home": "Maison & Jardin",
@@ -40,7 +40,8 @@
     "Homme": "Homme",
     "Femme": "Femme",
     "Enfant": "Enfant",
-    "Bebe": "Bebe"
+    "Bebe": "Bebe",
+    "Souscription": "Souscription"
   },
   "CREATE": {
     "create": "Creation d'un article",
@@ -63,7 +64,9 @@
     "address": "Adresse Magasin",
     "save": "Créer",
     "edit": "Mise a jour de l'article",
-    "store": "Boutique"
+    "store": "Boutique",
+    "quantity": "Quantite",
+    "tout": "Tout"
   },
   "HEADER": {
     "categorie": "Categorie",
@@ -106,5 +109,9 @@
     "Societe": "Societe",
     "Sport_Loisir": "Sport & Loisir",
     "Piece_Accessoire": "Pieces & Accessoires"
+  },
+  "Filter": {
+    "De": "De",
+    "A": "A"
   }
 }

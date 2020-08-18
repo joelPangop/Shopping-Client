@@ -45,6 +45,7 @@ export class RegisterPage implements OnInit {
                 private loadingCtrl: LoadingController, private navCtrl: NavController, public localStorage: Storage,
                 private platform: Platform, private popoverController: PopoverController, private router: Router) {
         this.userForm = this.formBuilder.group({
+            email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
             password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
             passwordConfirm: new FormControl('', [

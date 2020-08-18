@@ -14,6 +14,8 @@
 
         <!-- Close Button of Filter page -->
         <ion-buttons slot="end">
+            <ion-button color="color2" fill="outline" (click)="clearFilter()">Clear filter
+            </ion-button>
             <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="close">
             </ion-back-button>
         </ion-buttons>
@@ -22,35 +24,65 @@
 
 <!-- Contents -->
 <ion-content id="filter" fullscreen>
+    <ion-item-divider>
+        <ion-label>
+            Categories:
+        </ion-label>
+    </ion-item-divider>
+    <div>
+        <ion-grid fixed>
+            <ion-row>
+                <!--                <ion-col>-->
+                <!--                    <ion-label>Categories:</ion-label>-->
+                <!--                </ion-col>-->
+                <ion-col>
+                    <ion-select [(ngModel)]="mainCategorie" [ngModelOptions]="{standalone: true}"
+                                (click)="mainCategorie"
+                                interface="popover"
+                                placeholder="Category">
+                        <ion-select-option *ngFor="let cat of mainCategories"
+                                           [value]="cat">{{cat.title}}</ion-select-option>
+                    </ion-select>
+                </ion-col>
+                <ion-col *ngIf="mainCategorie.children">
+                    <ion-select *ngIf="mainCategorie.children" [(ngModel)]="secondCategorie"
+                                (ionChange)="selectSecondCategorie()" [ngModelOptions]="{standalone: true}" mode="md"
+                                interface="popover" placeholder="Category of {{mainCategorie.title}}">
+                        <ion-select-option *ngFor="let cat of mainCategorie.children"
+                                           [value]="cat">{{cat.title}}</ion-select-option>
+                    </ion-select>
+                </ion-col>
+                <ion-col *ngIf="secondCategorie.children">
+                    <ion-select *ngIf="secondCategorie.children" [(ngModel)]="thirdCategorie"
+                                (ionChange)="selectThirdCategorie()" [ngModelOptions]="{standalone: true}" mode="md"
+                                interface="popover" [placeholder]="'Category of '+secondCategorie.title">
+                        <ion-select-option *ngFor="let cat of secondCategorie.children"
+                                           [value]="cat">{{cat.title}}</ion-select-option>
+                    </ion-select>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
 
-    <ion-item>
-        <ion-label>Categories:</ion-label>
-        <ion-button fill="clear" color="color1" (click)="chooseCategory($event)">
-            <ion-icon name="add" slot="icon-only"></ion-icon>
-        </ion-button>
-    </ion-item>
-    <ion-chip *ngFor="let cat of categories">
-        <ion-label>{{cat}}</ion-label>
-    </ion-chip>
     <ion-list lines="none">
         <ion-grid>
             <ion-row>
                 <ion-col>
-                    <p class="title">Price</p>
-                    <ion-item color="color1">
+                    <!--                    <p class="title">Price</p>-->
+                    <ion-item-divider>
                         <ion-label>
-                            {{priceRange.lower}} - {{priceRange.upper}}
+                            Price
                         </ion-label>
-                    </ion-item>
-                    <ion-item>
-                        <ion-range pin="true" [(ngModel)]="priceRange" dual-knobs color="dark" [max]="maxPrice">
-                            <ion-label slot="start">
-                                0
-                            </ion-label>
-                            <ion-label slot="end">
-                                {{maxPrice}}
-                            </ion-label>
-                        </ion-range>
+                    </ion-item-divider>
+                    <ion-item *ngIf="mainCategorie" class="border-price-style"
+                              [style.border-color]="'var(--ion-color-color1)'">
+                        <ion-label>{{"Filter.De" | translate}}:</ion-label>
+                        <ion-input [(ngModel)]="minPrice" type="number" placeholder="0"
+                                   [ngModelOptions]="{standalone: true}"></ion-input>
+                        <ion-label> -</ion-label>
+                        <ion-label>{{"Filter.A" | translate}}:</ion-label>
+                        <ion-input [(ngModel)]="maxPrice" type="number" placeholder="0"
+                                   [ngModelOptions]="{standalone: true}"></ion-input>
                     </ion-item>
                 </ion-col>
             </ion-row>
@@ -60,70 +92,95 @@
                 </ion-col>
             </ion-row>
         </ion-grid>
-        <ion-item *ngIf="categories.includes('Voiture') || categories.includes('Camion')">
+        <ion-item-divider>
             <ion-label>
-                Condition:
+                Condition
             </ion-label>
-            <ion-segment scrollable="true" [(ngModel)]="condition">
-                <ion-segment-button [value]="'Tout'">
-                    <ion-label>Tout</ion-label>
-                </ion-segment-button>
-                <ion-segment-button [value]="'Neuf'">
-                    <ion-label>Neuf</ion-label>
-                </ion-segment-button>
-                <ion-segment-button [value]="'D\occasion'">
-                    <ion-label>D'occasion</ion-label>
-                </ion-segment-button>
-            </ion-segment>
-        </ion-item>
-        <ion-item>
-            <ion-label>Kilometers:</ion-label>
-            <ion-input type="text" [(ngModel)]="kilometers"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label>Transmission:</ion-label>
-            <ion-select interface="popover">
-                <ion-select-option value="Automatique">Automatique</ion-select-option>
-                <ion-select-option value="Manuel">Manuel</ion-select-option>
-            </ion-select>
-        </ion-item>
+        </ion-item-divider>
+        <ion-item-group>
+            <ion-item>
+                <ion-segment scrollable="true" [(ngModel)]="condition" color="color1">
+                    <ion-segment-button [value]="'TOUT'">
+                        <ion-label>{{'CREATE.tout' | translate}}</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button [value]="'Neuf'">
+                        <ion-label>{{'CREATE.state1' | translate}}</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button [value]="'D\'occasion'">
+                        <ion-label>{{'CREATE.state2' | translate}}</ion-label>
+                    </ion-segment-button>
+                </ion-segment>
+            </ion-item>
+        </ion-item-group>
+        <ion-item-divider *ngIf="secondCategorie.title === 'Auto'">
+            <ion-label>
+                Kilometers
+            </ion-label>
+        </ion-item-divider>
+        <ion-item-group *ngIf="secondCategorie.title === 'Auto'">
+            <ion-item>
+                <ion-label>De:</ion-label>
+                <ion-input type="text" required="true" [(ngModel)]="start_kilometers"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>A:</ion-label>
+                <ion-input type="text" required="true" [(ngModel)]="end_kilometers"></ion-input>
+            </ion-item>
+        </ion-item-group>
+
+        <ion-item-divider *ngIf="secondCategorie.title === 'Auto'">
+            <ion-label>
+                Transmission
+            </ion-label>
+        </ion-item-divider>
+        <ion-item-group *ngIf="secondCategorie.title === 'Auto'">
+            <ion-item>
+                <ion-select interface="popover" [(ngModel)]="transmission">
+                    <ion-select-option value="Automatique">Automatique</ion-select-option>
+                    <ion-select-option value="Manuel">Manuel</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </ion-item-group>
 
         <!-- Colors Section -->
-        <p class="title">Colors</p>
-
-        <ion-radio-group>
-            <ion-row class="ion-padding-start">
-                <ion-col size="3" *ngFor="let item of colors">
-                    <ion-item class="border-style" lines="none" [style.border-color]="item">
-                        <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-        </ion-radio-group>
+        <ion-item-divider
+                *ngIf="secondCategorie.title === 'Auto' || mainCategorie.title === 'Mode'">
+            <ion-label>
+                Colors
+            </ion-label>
+        </ion-item-divider>
+        <ion-item-group
+                *ngIf="secondCategorie.title === 'Auto' || mainCategorie.title === 'Mode'">
+            <ion-select multiple [(ngModel)]="choosenColors" placeholder="Choose colors">
+                <ion-select-option *ngFor="let item of colors" [value]="item"
+                                   color="color1">{{item}}</ion-select-option>
+            </ion-select>
+        </ion-item-group>
 
         <!-- Size Section -->
-        <p class="title">Sizes</p>
-
-        <ion-radio-group>
-            <ion-row class="ion-padding-start">
-                <ion-col size="3" *ngFor="let item of sizes">
-                    <ion-item lines="none">
-                        <ion-label class="size-label">{{item}}</ion-label>
-                        <ion-radio color="color1" mode="ios" [value]="item"></ion-radio>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-        </ion-radio-group>
+        <ion-item-divider *ngIf="mainCategorie.title === 'Mode'">
+            <ion-label>
+                Sizes
+            </ion-label>
+        </ion-item-divider>
+        <ion-item-group *ngIf="mainCategorie.title === 'Mode'">
+            <ion-select multiple [(ngModel)]="choosenSizes" *ngIf="secondCategorie.title === 'Vetement'" placeholder="Choose sizes">
+                <ion-select-option *ngFor="let item of sizes" [value]="item">{{item}}</ion-select-option>
+            </ion-select>
+            <ion-select multiple [(ngModel)]="choosenSizes" *ngIf="secondCategorie.title === 'Chaussure'" placeholder="Choose sizes">
+                <ion-select-option *ngFor="let item of chose_sizes" [value]="item">{{item}}</ion-select-option>
+            </ion-select>
+        </ion-item-group>
 
         <!-- Brand Section -->
-        <p class="title">Brands</p>
-
-        <ion-radio-group allow-empty-selection>
-            <ion-item *ngFor="let item of brands">
-                <ion-label>{{item}}</ion-label>
-                <ion-radio slot="start" color="color1" mode="ios" [value]="item"></ion-radio>
-            </ion-item>
-        </ion-radio-group>
+        <ion-item-divider>
+            <ion-label>
+                Brands
+            </ion-label>
+        </ion-item-divider>
+        <ion-select multiple [(ngModel)]="choosenBrands" placeholder="Choose a brand">
+            <ion-select-option *ngFor="let item of brands" [value]="item" color="color1">{{item}}</ion-select-option>
+        </ion-select>
     </ion-list>
 </ion-content>
 

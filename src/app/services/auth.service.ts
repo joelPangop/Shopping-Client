@@ -128,6 +128,7 @@ export class AuthService {
                     //     await this.localStorage.set('IsLogginIn', true);
                     // }
                     this.authenticationState.next(true);
+
                 }),
                 catchError(e => {
                     this.showAlert('incorrect username or/and password');
@@ -138,23 +139,23 @@ export class AuthService {
     }
 
     updateProfile(utilisateur) {
-        return this.http.put<any>(`${environment.api_url}/user`, utilisateur)
+        return this.http.put<any>(`${environment.api_url1}/user`, utilisateur)
             .pipe(
                 tap(async res => {
-                    if (this.plt.is('android') || this.plt.is('ios')) {
-                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                        // await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                        this.user = this.helper.decodeToken(res['access_token']);
-                        this.currentUser = res.user[0];
-                        await this.localStorage.set('Utilisateur', res.user[0]);
-                        await this.localStorage.set('IsLogginIn', true);
-                    } else if (!this.plt.is('android') && !this.plt.is('ios')) {
-                        await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                        this.user = this.helper.decodeToken(res['access_token']);
-                        this.currentUser = res.user[0];
-                        await this.localStorage.set('Utilisateur', res.user[0]);
-                        await this.localStorage.set('IsLogginIn', true);
-                    }
+                    // if (this.plt.is('android') || this.plt.is('ios')) {
+                    await this.storageService.setObject(TOKEN_KEY, res['access_token']);
+                    // await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                    this.user = this.helper.decodeToken(res['access_token']);
+                    this.currentUser = res.user[0];
+                    await this.storageService.setObject('Utilisateur', res.user[0]);
+                    await this.storageService.setObject('IsLogginIn', true);
+                    // } else if (!this.plt.is('android') && !this.plt.is('ios')) {
+                    //     await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                    //     this.user = this.helper.decodeToken(res['access_token']);
+                    //     this.currentUser = res.user[0];
+                    //     await this.localStorage.set('Utilisateur', res.user[0]);
+                    //     await this.localStorage.set('IsLogginIn', true);
+                    // }
                     this.authenticationState.next(true);
                 }),
                 catchError(e => {

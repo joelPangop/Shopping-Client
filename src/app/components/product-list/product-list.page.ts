@@ -25,6 +25,7 @@ import {FilterPage} from '../filter/filter.page';
 import {TranslateService} from '@ngx-translate/core';
 import {translate} from '@angular/localize/src/tools/src/translate/source_files/source_file_utils';
 import {AuthService} from '../../services/auth.service';
+import {Utils} from '../../Utils';
 
 @Component({
     selector: 'app-product-list',
@@ -39,7 +40,7 @@ export class ProductListPage implements OnInit {
     currency;
     public cartItemCount: BehaviorSubject<number> = new BehaviorSubject(0);
     // @ts-ignore
-    filterObject: BehaviorSubject<any> = new BehaviorSubject();
+    filterObject: BehaviorSubject<any>;
     utilisateur = {} as Utilisateur;
     notifications = [];
     ip;
@@ -69,6 +70,7 @@ export class ProductListPage implements OnInit {
                 private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService,
                 public authService: AuthService) {
 
+        this.filterObject = new BehaviorSubject({});
         this.cartService.getCartItemCount().subscribe((data) => {
             this.cartService.cartItemCount.next(data);
         });
@@ -277,10 +279,16 @@ export class ProductListPage implements OnInit {
             }
         });
         modal.onDidDismiss()
-            .then((data) => {
+            .then(async (data) => {
                 console.log(data.data);
                 console.log(this.filterObject);
+                if (this.filterObject.value) {
+                    if (this.filterObject.value.articles) {
+                        this.articleService.articles = this.filterObject.value.articles;
+                    }
+                }
             });
         return await modal.present();
     }
+
 }

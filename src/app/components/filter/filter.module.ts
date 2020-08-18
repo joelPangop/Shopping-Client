@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { FilterPageRoutingModule } from './filter-routing.module';
 
 import { FilterPage } from './filter.page';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    FilterPageRoutingModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        FilterPageRoutingModule,
+        TranslateModule
+    ],
   declarations: [FilterPage]
 })
 export class FilterPageModule {}

@@ -219,11 +219,11 @@ export class CreateProductPage implements OnInit {
         });
         await loading.present();
         try {
-            if (this.article.availability.type === 'Livraison') {
-                this.article.availability.address = undefined;
-            } else {
-                this.article.availability.feed = 0;
-            }
+            // if (this.article.availability.type === 'Livraison') {
+            //     this.article.availability.address = undefined;
+            // } else {
+            //     this.article.availability.feed = 0;
+            // }
             this.imgURL.forEach((key: any, value: any) => {
                 this.myPictures.push(key);
             });
@@ -253,6 +253,10 @@ export class CreateProductPage implements OnInit {
                     // this.myPictures.push(res.filename);
                     this.article.pictures = res.filename;
                     this.article.utilisateurId = this.utilisateur._id;
+                    if(this.article.categories.includes('Voiture') || this.article.categories.includes('Moto')
+                        || this.article.categories.includes('Camion')){
+                        this.article.availability.type = "Main en Main";
+                    }
                     await this.articleService.createArticle(this.article, this.utilisateur._id).subscribe(res1 => {
                         loading.dismiss();
                         console.log(res1);

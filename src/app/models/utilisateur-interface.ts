@@ -12,6 +12,7 @@ export interface Utilisateur {
     password ?: string;
     userInfo?: UserInfo;
     currency?: Currency;
+    customer_profile?: any;
     _id ?: string;
 }
 

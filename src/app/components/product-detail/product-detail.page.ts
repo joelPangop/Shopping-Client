@@ -1,8 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Article} from '../../models/article-interface';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {IonSlides, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
+import {LoadingController, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {itemCart} from '../../models/itemCart-interface';
 import {ArticleService} from '../../services/article.service';
@@ -18,18 +18,15 @@ import {CurrencyService} from '../../services/currency.service';
 import {environment} from '../../models/environements';
 import {CommandeService} from '../../services/commande.service';
 import {Commande} from '../../models/commande-interface';
-import {Storage} from '@ionic/storage';
 import {CartService} from '../../services/cart.service';
-import {SigninPage} from '../auth/signin/signin.page';
 import {LandingPagePage} from '../auth/landing-page/landing-page.page';
-import {PreviewVideoPage} from '../preview-video/preview-video.page';
 import {AuthService} from '../../services/auth.service';
-import * as mobilenet from '@tensorflow-models/mobilenet';
 import {Plugins} from '@capacitor/core';
-
-const {CapacitorVideoPlayer, Device} = Plugins;
 import * as PluginsLibrary from 'capacitor-video-player';
 import {StreamingMedia, StreamingVideoOptions} from '@ionic-native/streaming-media/ngx';
+import {StorageService} from '../../services/storage.service';
+
+const {CapacitorVideoPlayer, Device} = Plugins;
 
 @Component({
     selector: 'app-product-detail',
@@ -64,19 +61,19 @@ export class ProductDetailPage implements OnInit {
     like: boolean = false;
     currency: any;
     product = {} as Article;
+    page: string = '';
 
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
-    @ViewChild('video') video: ElementRef;
 
-    @ViewChild('slideWithNav', {static: false}) slideWithNav: IonSlides;
     private resultRate: string = '0.1';
 
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
-                private storage: Storage, private imageService: ImageService, private sharing: SocialSharing, private authService: AuthService,
+                private storage: StorageService, private imageService: ImageService, private sharing: SocialSharing, public authService: AuthService,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService, private streamingVideo: StreamingMedia,
                 public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService,
-                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService) {
-        this.product = {} as Article;
+                private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,
+                private router: Router, private loadingCtrl: LoadingController) {
+        this.article = {} as Article;
         this.loadArticle();
 
     }
@@ -109,6 +106,7 @@ export class ProductDetailPage implements OnInit {
 
     public async ionViewWillEnter() {
         const info = await Device.getInfo();
+        console.log(info);
         this.views = this.article.views;
         if (info.platform === 'ios' || info.platform === 'android') {
             this.videoPlayer = CapacitorVideoPlayer;
@@ -120,8 +118,6 @@ export class ProductDetailPage implements OnInit {
     views = 0;
 
     public async ionViewDidEnter() {
-        // const res:any  = await this.videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId="fullscreen",componentTag="my-page"});
-        // console.log('result of init ', res)
         setTimeout(async () => {
             if (this.article.utilisateurId !== this.authService.currentUser._id) {
                 this.article.views++;
@@ -141,20 +137,21 @@ export class ProductDetailPage implements OnInit {
             console.log('views', this.article.views);
         }
     }
+
     // @ts-ignore
     async loadArticle(): Observable<Article> {
+        const loading = await this.loadingCtrl.create({
+            message: 'Chargement...'
+        });
+        await loading.present();
         await this.articleService.loadArticle(this.id).subscribe(async res => {
             this.article = res as Article;
             this.images = this.article.pictures;
             this.views = this.article.views;
-            // const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
-            // let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
-            // this.article.price = this.article.price * parseFloat(rate);
             if (this.article.likes.includes(this.utilisateur._id)) {
                 this.like = true;
             }
-            this.product = this.article;
-            // this.rate = this.articleService.article.averageStar;
+            await loading.dismiss();
         });
     }
 
@@ -162,7 +159,6 @@ export class ProductDetailPage implements OnInit {
         const node = this.fab.nativeElement;
         node.classList.add('animated', animationName);
 
-        //https://github.com/daneden/animate.css
         function handleAnimationEnd() {
             if (!keepAnimated) {
                 node.classList.remove('animated', animationName);
@@ -281,6 +277,11 @@ export class ProductDetailPage implements OnInit {
         }
     }
 
+    async gotoEdit() {
+        // await this.storage.setObject('page', 'menu/tabs/product-detail/' + this.article._id);
+        await this.router.navigate(['menu/tabs/edit-product/' + this.article._id]);
+    }
+
     async gotoCartPage() {
         this.animateCSS('bounceOutLeft', true);
         const modal = await this.modalController.create({
@@ -303,86 +304,89 @@ export class ProductDetailPage implements OnInit {
                 try {
                     let data: itemCart[];
                     let added = false;
-                    let commande = await this.storage.get('cart') as Commande;
-                    data = commande ? commande.itemsCart : [];
-                    console.log('data', data);
-                    // on vérifie si le panier est vide
-                    if (data === null || data.length === 0) {
-                        data = [];
-                        data.push({
-                            item: this.article,
-                            qty: 1,
-                            amount: this.article.price
-                        });
-                        this.cartItemCount.next(this.cartItemCount.value + 1);
-                        const timestamp = new Date().getUTCMilliseconds();
-                        let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
-                        this.cmdService.commande.num_commande = ran_number;
-                        this.cmdService.commande.itemsCart = data;
-                        this.cmdService.commande.completed = false;
-                        this.cmdService.commande.userId = this.utilisateur._id;
-                        this.cmdService.commande.amount = this.article.price;
-                        this.cmdService.commande.quantity = data.length;
-                        this.cmdService.createCommande().subscribe(async res => {
-                            console.log('resultat', res);
-                            this.cmdService.commande = res;
-                            await this.storage.set('cart', this.cmdService.commande);
-                        });
-                        // this.event.publish('cartItemCount', this.cartItemCount.value);
-                        this.cartService.setCartItemCount(this.cartItemCount.value);
-                    } else {
-                        // tslint:disable-next-line:prefer-const
-                        let names: string[] = [];
-                        data.forEach(d => {
-                            names.push(d.item.title);
-                        });
-                        if (!names.includes(this.article.title)) {
+                    await this.storage.getObject('cart').then((res: any) => {
+                        let commande = res as Commande;
+                        data = commande ? commande.itemsCart : [];
+                        console.log('data', data);
+                        // on vérifie si le panier est vide
+                        if (data === null || data.length === 0) {
+                            data = [];
                             data.push({
                                 item: this.article,
                                 qty: 1,
                                 amount: this.article.price
                             });
                             this.cartItemCount.next(this.cartItemCount.value + 1);
+                            const timestamp = new Date().getUTCMilliseconds();
+                            let ran_number = this.getRandomInt() + timestamp + this.getRandomInt();
+                            this.cmdService.commande.num_commande = ran_number;
+                            this.cmdService.commande.itemsCart = data;
+                            this.cmdService.commande.completed = false;
+                            this.cmdService.commande.userId = this.utilisateur._id;
+                            this.cmdService.commande.amount = this.article.price;
+                            this.cmdService.commande.quantity = data.length;
+                            this.cmdService.createCommande().subscribe(async res => {
+                                console.log('resultat', res);
+                                this.cmdService.commande = res;
+                                await this.storage.setObject('cart', this.cmdService.commande);
+                            });
                             // this.event.publish('cartItemCount', this.cartItemCount.value);
                             this.cartService.setCartItemCount(this.cartItemCount.value);
-
                         } else {
-                            // tslint:disable-next-line:prefer-for-of
-                            for (let i = 0; i < data.length; i++) {
-                                const element: itemCart = data[i];
-                                if (this.article._id === element.item._id) {
-                                    // le panier contient déjà cette article
-                                    element.qty += 1;
-                                    element.amount += this.article.price;
-                                    added = true;
+                            // tslint:disable-next-line:prefer-const
+                            let names: string[] = [];
+                            data.forEach(d => {
+                                names.push(d.item.title);
+                            });
+                            if (!names.includes(this.article.title)) {
+                                data.push({
+                                    item: this.article,
+                                    qty: 1,
+                                    amount: this.article.price
+                                });
+                                this.cartItemCount.next(this.cartItemCount.value + 1);
+                                // this.event.publish('cartItemCount', this.cartItemCount.value);
+                                this.cartService.setCartItemCount(this.cartItemCount.value);
+
+                            } else {
+                                // tslint:disable-next-line:prefer-for-of
+                                for (let i = 0; i < data.length; i++) {
+                                    const element: itemCart = data[i];
+                                    if (this.article._id === element.item._id) {
+                                        // le panier contient déjà cette article
+                                        element.qty += 1;
+                                        element.amount += this.article.price;
+                                        added = true;
+                                    }
                                 }
                             }
+                            this.cmdService.commande.itemsCart = data;
+                            this.cmdService.commande.userId = this.utilisateur._id;
+                            let amount = 0;
+                            for (let i of data) {
+                                amount += i.amount;
+                            }
+                            this.cmdService.commande.amount = amount;
+                            this.cmdService.commande.quantity = data.length;
+                            this.cmdService.updateCommande().subscribe(async res => {
+                                console.log('resultat', res);
+                                this.cmdService.commande = res;
+                                await this.storage.setObject('cart', this.cmdService.commande);
+                            });
                         }
-                        this.cmdService.commande.itemsCart = data;
-                        this.cmdService.commande.userId = this.utilisateur._id;
-                        let amount = 0;
-                        for (let i of data) {
-                            amount += i.amount;
-                        }
-                        this.cmdService.commande.amount = amount;
-                        this.cmdService.commande.quantity = data.length;
-                        this.cmdService.updateCommande().subscribe(async res => {
-                            console.log('resultat', res);
-                            this.cmdService.commande = res;
-                            await this.storage.set('cart', this.cmdService.commande);
-                        });
-                    }
-                    // if (!added) {
-                    //     // le panier n'est pas vide et ne contient pas l'article
-                    //     data.push({
-                    //         item,
-                    //         qty: 1,
-                    //         amount: item.price
-                    //     });
-                    // }
-                    // await this.storage.set('commande', data);
-                    this.animateCSS('tada');
-                    this.presentToast('Votre panier a été mis à jour', 1500);
+                        // if (!added) {
+                        //     // le panier n'est pas vide et ne contient pas l'article
+                        //     data.push({
+                        //         item,
+                        //         qty: 1,
+                        //         amount: item.price
+                        //     });
+                        // }
+                        // await this.storage.set('commande', data);
+                        this.animateCSS('tada');
+                        this.presentToast('Votre panier a été mis à jour', 1500);
+                    });
+
                 } catch (e) {
                     const myData: itemCart[] = [];
                     console.log('error', e);
@@ -392,7 +396,7 @@ export class ProductDetailPage implements OnInit {
                             qty: 1,
                             amount: this.article.price
                         });
-                        await this.storage.set('cart', myData);
+                        await this.storage.setObject('cart', myData);
                         this.presentToast('Votre panier a été mis à jour', 1500);
                     }
                 }

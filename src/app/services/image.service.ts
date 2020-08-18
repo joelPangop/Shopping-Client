@@ -28,7 +28,7 @@ export class ImageService {
         };
         const formData = new FormData();
         // const url = 'http://192.168.2.58:8080/upload';
-        const url = `${environment.api_url1}/upload`;
+        const url = `${environment.api_url}/upload`;
 
         for (const file of uploadForm.value.image) {
             formData.append('file', file);

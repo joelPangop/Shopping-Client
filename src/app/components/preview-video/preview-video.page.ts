@@ -15,10 +15,11 @@ export class PreviewVideoPage implements OnInit {
 
   ngOnInit() {
     this.files = this.navParams.get('files');
-    // const $source: any = document.getElementById('video_here');
-    // $source.src = URL.createObjectURL(this.files);
-    // $source.parentElement.load();
-    this.startVideo();
+    const $source: any = document.getElementById('video_here');
+    const url = URL.createObjectURL(this.files);
+    $source.src = url;
+    $source.parentElement.load();
+    // this.startVideo();
   }
 
   dismiss() {

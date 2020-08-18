@@ -80,7 +80,7 @@ export class ArticleService {
 
     updateArticle() {
         // tslint:disable-next-line:max-line-length
-        return this.http.put(`${environment.api_url1}/article/` + this.article._id, this.article, {headers: {'content-Type': 'application/json'}});
+        return this.http.put(`${environment.api_url}/article/` + this.article._id, this.article, {headers: {'content-Type': 'application/json'}});
     }
 
     deleteArticle(id: string) {

@@ -40,7 +40,8 @@
     "Homme": "Man",
     "Femme": "Woman",
     "Enfant": "Kid",
-    "Bebe": "Baby"
+    "Bebe": "Baby",
+    "Souscription": "Subscription"
   },
   "CREATE": {
     "create": "New article",
@@ -67,7 +68,9 @@
     "Homme": "Man",
     "Femme": "Woman",
     "Enfant": "Kid",
-    "Bebe": "Baby"
+    "Bebe": "Baby",
+    "quantity": "Quantity",
+    "tout": "ALL"
   },
   "HEADER": {
     "categorie": "Category",
@@ -110,5 +113,9 @@
     "Societe": "Society",
     "Sport_Loisir": "Sport & Loisir",
     "Piece_Accessoire": "Pieces & Accessories"
+  },
+  "Filter": {
+    "De": "From",
+    "A": "To"
   }
 }
