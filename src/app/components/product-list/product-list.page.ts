@@ -75,20 +75,6 @@ export class ProductListPage implements OnInit {
             this.cartService.cartItemCount.next(data);
         });
 
-        this.cuService.getRateObservable().subscribe(async (rate) => {
-            this.resultRate = rate;
-            await this.userStorageUtils.getCurrency().then(res => {
-                if (res) {
-                    this.currency = res.currency;
-                } else {
-                    this.currency = this.utilisateur.currency;
-                }
-            });
-            for (let article of this.articleService.articles) {
-                article.price = article.price * parseFloat(this.resultRate);
-                console.log(article.price);
-            }
-        });
     }
 
     async ngOnInit() {
@@ -291,4 +277,8 @@ export class ProductListPage implements OnInit {
         return await modal.present();
     }
 
+    getRatedPrice(price: number, rate: number){
+        const retour = price * rate;
+        return retour;
+    }
 }

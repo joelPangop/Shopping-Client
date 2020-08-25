@@ -8,9 +8,9 @@
 <!-- Header -->
 <ion-header no-border>
     <ion-toolbar color="color1">
-<!--        <ion-button (click)="test()">-->
-<!--            Test Websocket-->
-<!--        </ion-button>-->
+        <!--        <ion-button (click)="test()">-->
+        <!--            Test Websocket-->
+        <!--        </ion-button>-->
         <!-- Menu Option -->
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
@@ -40,10 +40,7 @@
                 <ion-icon src="assets/globe.svg"></ion-icon>
                 {{languageService.selected}}
             </ion-button>
-            <ion-button (click)="showOptions($event, 'currency')">
-                <ion-icon src="{{'assets/' + authService.currencyIcon + '.svg'}}"></ion-icon>
-                <span>{{authService.currency}}</span>
-            </ion-button>
+
             <ion-button (click)="gotoCartPage()" #cart color="clear">
                 <div class="cart-length">{{ cartService.cartItemCount | async }}</div>
                 <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
@@ -76,8 +73,9 @@
             <ion-row>
                 <ion-col size="6" *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
                     <ion-card class="ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
-<!--                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
-                        <div class="card-img1" [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
+                        <!--                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
+                        <div class="card-img1"
+                             [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
 
                         <ion-card-header>
                             <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
@@ -114,10 +112,12 @@
 
                         <ion-grid>
                             <ion-row>
-                                <ion-col size="6" *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
+                                <ion-col size="6"
+                                         *ngFor="let item of (categories ? categories.slice(0,2): []); let i=index">
                                     <ion-card class="ion-no-margin" (click)="goToCategory(item)" routerDirection="root">
-<!--                                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
-                                        <div class="card-img" [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
+                                        <!--                                        <img [src]="shuffleImage(item.image)[0]" alt=""/>-->
+                                        <div class="card-img"
+                                             [style.background-image]="'url('+shuffleImage(item.image)[0] + ')'"></div>
                                         <ion-card-header>
                                             <ion-card-subtitle>{{item.name}}</ion-card-subtitle>
                                         </ion-card-header>

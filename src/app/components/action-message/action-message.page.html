@@ -29,7 +29,7 @@
                 <p text-center>
                     {{article_title}}
 
-                    {{articleService.article.price | currency:cuService.toCurrOptionSubject:'symbol-narrow':'.2'}}
+                    {{(articleService.article.price * cuService.rate) | currency:authSrv.currency.value.currency:'symbol-narrow':'.2'}}
                 </p>
             </div>
         </ion-buttons>

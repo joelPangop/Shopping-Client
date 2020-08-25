@@ -58,7 +58,7 @@ export class ImageService {
     }
 
     deleteImage(filename) {
-        const url = `${environment.api_url1}/files/${filename}`;
+        const url = `${environment.api_url}/files/${filename}`;
         return this.http.delete(url);
     }
 

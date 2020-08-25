@@ -30,7 +30,8 @@ export class AuthService {
     address = {} as Address;
     userInfo = {} as UserInfo;
     local;
-    currency;
+    currency: any = {};
+    currencyTest = '';
     currencyIcon;
 
     constructor(private http: HttpClient, public helper: JwtHelperService, private router: Router, private userStorageUtils: UserStorageUtils,
@@ -41,6 +42,20 @@ export class AuthService {
         });
         this.userStorageUtils.getUser().then(rep => {
             this.currentUser = rep;
+        });
+
+        this.storageService.getObject('currency').then((res: any) => {
+            if (res) {
+                this.currency = res.currency;
+                this.currencyTest = res.currency.currency;
+            } else {
+                if (this.currentUser) {
+                    this.currency = this.currentUser.currency;
+                    this.currencyTest = this.currentUser.currency.currency;
+                } else {
+                    this.currency = {};
+                }
+            }
         });
 
         this.userStorageUtils.getCurrency().then(res => {
@@ -139,7 +154,7 @@ export class AuthService {
     }
 
     updateProfile(utilisateur) {
-        return this.http.put<any>(`${environment.api_url1}/user`, utilisateur)
+        return this.http.put<any>(`${environment.api_url}/user`, utilisateur)
             .pipe(
                 tap(async res => {
                     // if (this.plt.is('android') || this.plt.is('ios')) {
@@ -289,4 +304,17 @@ export class AuthService {
     isAdmin() {
         return this.currentUser.role == RoleType.ADMIN;
     }
+
+    public async setCurrency(value: any) {
+        this.currency = value;
+        this.currencyTest = value.currency;
+        await this.storageService.setObject('currency', {
+            currency: value
+        });
+    }
+
+    getCurrency(): any {
+        return this.currency.asObservable();
+    }
+
 }

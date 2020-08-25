@@ -1,12 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Article} from '../../models/article-interface';
-import {ModalController} from '@ionic/angular';
+import {ModalController, NavParams} from '@ionic/angular';
 import {ArticleService} from '../../services/article.service';
 import {ProductDetailPage} from '../product-detail/product-detail.page';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ProductViewPage} from '../product-view/product-view.page';
 import {AuthService} from '../../services/auth.service';
+import {CurrencyService} from '../../services/currency.service';
 
 @Component({
     selector: 'app-featured-products',
@@ -25,7 +26,7 @@ export class FeaturedProductsPage implements OnInit {
     utilisateur = {} as Utilisateur;
     @ViewChild('like', {static: false, read: ElementRef}) fab: ElementRef;
 
-    constructor(public productsService: ArticleService, public authService: AuthService,
+    constructor(public productsService: ArticleService, public authService: AuthService, public cuService: CurrencyService,
                 private modalController: ModalController, private userStorageUtils: UserStorageUtils) {
     }
 
@@ -72,5 +73,10 @@ export class FeaturedProductsPage implements OnInit {
                 product = data.data.article;
             });
         return await modal.present();
+    }
+
+    getRatedPrice(price: number, rate: number){
+        const retour = price * rate;
+        return retour;
     }
 }

@@ -70,7 +70,9 @@
     "Enfant": "Kid",
     "Bebe": "Baby",
     "quantity": "Quantity",
-    "tout": "ALL"
+    "tout": "ALL",
+    "Automatique": "Automatic",
+    "Manuel": "Manual"
   },
   "HEADER": {
     "categorie": "Category",
@@ -117,5 +119,10 @@
   "Filter": {
     "De": "From",
     "A": "To"
+  },
+  "Profile": {
+    "Profile": "Profile",
+    "articles": "My products",
+    "Compte": "Account"
   }
 }

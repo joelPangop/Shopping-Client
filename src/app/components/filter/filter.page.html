@@ -136,8 +136,9 @@
         <ion-item-group *ngIf="secondCategorie.title === 'Auto'">
             <ion-item>
                 <ion-select interface="popover" [(ngModel)]="transmission">
-                    <ion-select-option value="Automatique">Automatique</ion-select-option>
-                    <ion-select-option value="Manuel">Manuel</ion-select-option>
+                    <ion-select-option value="TOUT">{{'CREATE.tout' | translate}}</ion-select-option>
+                    <ion-select-option value="Automatique">{{'CREATE.Automatique' | translate}}</ion-select-option>
+                    <ion-select-option value="Manuel">{{'CREATE.Manuel' | translate}}</ion-select-option>
                 </ion-select>
             </ion-item>
         </ion-item-group>

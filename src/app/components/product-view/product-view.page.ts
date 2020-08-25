@@ -15,6 +15,9 @@ import {CartService} from '../../services/cart.service';
 import {Notification} from '../../models/notification-interface';
 import {NotificationType} from '../../models/notificationType';
 import {LandingPagePage} from '../auth/landing-page/landing-page.page';
+import {CurrencyService} from '../../services/currency.service';
+import {SocialSharing} from '@ionic-native/social-sharing/ngx';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-product-view',
@@ -68,8 +71,8 @@ export class ProductViewPage implements OnInit {
 
     constructor(public modalController: ModalController, private storageService: StorageService,
                 private userStorageUtils: UserStorageUtils, public articleService: ArticleService,
-                public navParams: NavParams, private toastCtrl: ToastController, private storage: Storage,
-                private cartService: CartService, private cmdService: CommandeService, private navCtrl: NavController) {
+                public navParams: NavParams, private toastCtrl: ToastController, private storage: Storage, public authService: AuthService,
+                private cartService: CartService, private cmdService: CommandeService, private navCtrl: NavController, public cuService: CurrencyService) {
         this.product = this.navParams.data as Article;
     }
 
@@ -363,5 +366,10 @@ export class ProductViewPage implements OnInit {
              value = value + target.includes(word);
         });
         return value
+    }
+
+    getRatedPrice(price: number, rate: number){
+        const retour = price * rate;
+        return retour;
     }
 }

@@ -22,6 +22,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../../services/language.service';
 import {StorageService} from '../../services/storage.service';
 import {AuthService} from '../../services/auth.service';
+import {Currencies} from '../../models/Currencies';
+import {IonicSelectableComponent} from 'ionic-selectable';
 
 declare function test1(t): any;
 
@@ -53,15 +55,11 @@ export class HomePage {
     catOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
     // @ts-ignore
     elementSearchSubject: BehaviorSubject<string> = new BehaviorSubject();
-
     language;
-    currency;
-    currencyIcon;
     showLoadingSpining = false;
     notif_number: number;
     categories = [];
     searchCategories: string[] = [];
-
     slideOpts = {
         initialSlide: 0,
         speed: 400,
@@ -76,30 +74,9 @@ export class HomePage {
     constructor(private modalController: ModalController, public platform: Platform, private popoverController: PopoverController, private articleService: ArticleService,
                 private navCtrl: NavController, private cuService: CurrencyService, public languageService: LanguageService,
                 private msgservice: MessageService, private cmdService: CommandeService, private translate: TranslateService,
-                private alertController: AlertController, private userStorageUtils: UserStorageUtils,
-                private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService) {
+                private alertController: AlertController, private userStorageUtils: UserStorageUtils, private storageService: StorageService,
+                private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService,) {
 
-        // this.choosenCategories = ['All Categories'];
-        this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((data) => {
-            this.showLoadingSpining = data;
-        });
-
-        // this.cartService.getCartItemCount().subscribe((data) => {
-        //     this.cartService.cartItemCount.next(data);
-        // });
-
-        // let data: Commande;
-        //
-        // this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
-        //     {
-        //         data = res;
-        //         this.cartService.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-        //     }
-        // });
-
-        // translate.addLangs(['en', 'fr']);
-        // translate.setDefaultLang('en');
-        // translate.use('en');
     }
 
     webSocket: WebSocket;
@@ -207,6 +184,7 @@ export class HomePage {
     }
 
     public async showOptions(ev, option) {
+
         // @ts-ignore
         const popover = await this.popoverController.create({
             component: ShowOptionsPage,
@@ -214,25 +192,10 @@ export class HomePage {
             translucent: true,
             cssClass: 'my-custom-dialog',
             componentProps: {
-                langOptionSubject: this.langOptionSubject,
                 currOptionSubject: this.currOptionSubject,
-                currIconOptionSubject: this.currIconOptionSubject,
-                language: this.language,
-                currency: this.currency,
-                currencyIcon: this.currencyIcon,
                 option
             }
         });
-
-        popover.onDidDismiss()
-            .then((data) => {
-                console.log(this.languageService.selected);
-                this.language = this.languageService.selected;
-                if (this.currOptionSubject.value) {
-                    this.currency = this.currOptionSubject.value;
-                    this.currencyIcon = this.currIconOptionSubject.value;
-                }
-            });
         return await popover.present();
     }
 

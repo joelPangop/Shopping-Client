@@ -26,7 +26,7 @@ export class ShowOptionsPage implements OnInit {
     public currency;
     public currencyIcon;
     languages: any[];
-    currencies: Map<string, string>;
+    currencies: any[];
     langOptionSubject: BehaviorSubject<any>;
     currOptionSubject: BehaviorSubject<any>;
     currIconOptionSubject: BehaviorSubject<any>;
@@ -38,17 +38,19 @@ export class ShowOptionsPage implements OnInit {
         this.language = this.navParams.get('language');
         this.currency = this.navParams.get('currency');
         this.currencyIcon = this.navParams.get('currencyIcon');
-        this.currencies = new Map<string, string>();
+        this.currencies = [];
+        for (const item in Currencies) {
+            console.log('item:', item);
+            console.log('item value:', Currencies[item]);
+            this.currencies.push({currency: item, icon: Currencies[item]});
+        }
     }
 
     ngOnInit() {
         this.languages = this.languageService.getLanguages();
         this.language = this.languageService.selected;
-        for (const item in Currencies) {
-            console.log('item:', item);
-            console.log('item value:', Currencies[item]);
-            this.currencies.set(item, Currencies[item]);
-        }
+        this.currency = this.authService.currency;
+        // this.currency = this.authService.currency.value;
     }
 
     setLanguage(l: string) {
@@ -57,37 +59,46 @@ export class ShowOptionsPage implements OnInit {
         this.popoverController.dismiss();
     }
 
-    async setCurrency(c: string) {
+    setCurrency(c: any) {
+        console.log(this.currency);
         if (this.option === 'userCurrency') {
             const popover = this.navParams.get('popover');
             popover.dismiss({
-                currency: c,
-                icon: Currencies[c]
+                currency: c.currency,
+                icon: Currencies[c.currency]
             });
         } else {
-            this.currency = c;
-            this.cuService.setShowLoadingSpinningSubjectObservale(true);
-            console.log(this.currency);
-            this.currOptionSubject.next(this.currency);
-            this.currIconOptionSubject.next(Currencies[this.currency]);
-            this.cuService.toCurrOptionSubject = this.currency;
-            this.storageService.setObject('currency', {
-                currency: this.currency,
-                icon: Currencies[this.currency]
+            this.authService.currency = c.currency;
+            this.authService.setCurrency(c).then(r => {
+                console.log('hello');
             });
-            this.authService.currency = this.currency
-            this.authService.currencyIcon = Currencies[this.currency];
-            // this.localStorage.set('currency', {
-            //     currency: this.currency,
-            //     icon: Currencies[this.currency]
-            // });
+            // this.authService.currencyIcon = c.icon;
+            // this.authService.currencyTest = c.currency;
 
-            this.cuService.getCurrencyRate().then((res) => {
-                if (res) {
-                    const popover = this.navParams.get('popover');
-                    popover.dismiss(Currencies[this.currency]);
-                }
+            console.log(this.currency);
+            console.log(this.authService.currency);
+            // this.currOptionSubject.next(this.currency);
+
+            this.getRate(this.authService.currentUser.currency.currency, this.authService.currency.currency);
+
+            const popover = this.navParams.get('popover');
+            popover.dismiss({
+                currency: c.currency,
+                icon: Currencies[c.currency]
             });
         }
+    }
+
+    getRate(c1, c2) {
+        return this.cuService.convertCurrency(c1, c2)
+            .subscribe(
+                response => {
+                    this.cuService.rate = parseFloat(Object.entries(response)[0][1].toFixed(3));
+                    this.storageService.setObject('rate', {
+                        rate: this.cuService.rate
+                    });
+                    console.log('service rate', this.cuService.rate);
+                }
+            );
     }
 }

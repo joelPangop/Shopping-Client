@@ -57,6 +57,16 @@
             <app-home-top-slider></app-home-top-slider>
         </ion-grid>
 
+        <!-- When Cart is Empty -->
+        <ion-grid class="ion-padding" id="empty" *ngIf="articleService.articles.length == 0" style="height: 100%">
+            <ion-row class="ion-align-items-center ion-justify-content-center"
+                     style="height: 100%; flex-direction: column">
+                <div class="ion-text-center ion-padding">
+                    <h4>No Product</h4>
+                </div>
+            </ion-row>
+        </ion-grid>
+        
         <!-- Product View Options -->
         <div class="ion-text-end">
 
@@ -76,6 +86,7 @@
                 <ion-icon slot="icon-only" name="list"></ion-icon>
             </ion-button>
         </div>
+
         <!-- End Product View Options -->
         <!-- Grid View Contents -->
         <ion-grid id="grid" *ngIf="grid">
@@ -105,7 +116,7 @@
                         <!-- Product Contents -->
                         <ion-card-content>
                             <ion-row>
-                                <span class="price">{{item.price | currency:'CAD':'.2'}}</span>
+                                <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                             </ion-row>
                             <ion-row>
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -130,8 +141,8 @@
                                 </div>
                             </ion-row>
                             <ion-row>
-                                    <h5 class="product-name"
-                                        (click)="goToProductDetailsView(item)">{{item.title | slice:0:15}}</h5>
+                                <h5 class="product-name"
+                                    (click)="goToProductDetailsView(item)">{{item.title | slice:0:15}}</h5>
                             </ion-row>
                         </ion-card-content>
                     </ion-card>
@@ -168,7 +179,7 @@
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                 <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                 <div class="span-container">
-                                    <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
+                                    <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                     <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                     <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
@@ -232,7 +243,7 @@
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                 <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                 <div class="span-container">
-                                    <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
+                                    <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                     <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                     <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
@@ -319,7 +330,7 @@
                                     <!-- Product Contents -->
                                     <ion-card-content>
                                         <ion-row>
-                                            <span class="price">{{item.price | currency:'CAD':'.2'}}</span>
+                                            <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                         </ion-row>
                                         <ion-row>
                                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -379,7 +390,7 @@
                                     <!-- Product Contents -->
                                     <ion-card-content>
                                         <ion-row>
-                                            <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
+                                            <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                         </ion-row>
                                         <ion-row>
                                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -450,7 +461,7 @@
                                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                             <div class="span-container">
-                                                <span class="price">{{item.price | currency:'symbol-narrow':'.2'}}</span>
+                                                <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                                 <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>

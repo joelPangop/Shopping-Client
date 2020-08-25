@@ -70,11 +70,21 @@
                         </div>
                     </ion-list>
                 </div>
+
             </ion-list>
         </ion-content>
 
         <!-- Footer -->
         <ion-footer no-border>
+            <ion-item>
+                <ion-label>
+                    Currency
+                </ion-label>
+                <ion-button (click)="setCurrency($event)" color="secondary">
+                    <ion-icon src="{{'assets/' + authService.currency.icon + '.svg'}}"></ion-icon>
+                    <span>{{authService.currency.currency}}</span>
+                </ion-button>
+            </ion-item>
             <div class="ion-padding">
                 <ion-button color="color1" expand="block" (click)="sign()">
                     {{signOption}}

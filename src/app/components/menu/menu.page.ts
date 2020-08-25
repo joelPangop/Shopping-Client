@@ -1,10 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
-import {MenuController} from '@ionic/angular';
+import {MenuController, PopoverController} from '@ionic/angular';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {PagesService} from '../../services/pages.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {ShowOptionsPage} from '../show-options/show-options.page';
+import {Currencies} from '../../models/Currencies';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
     selector: 'app-menu',
@@ -39,10 +42,17 @@ export class MenuPage implements OnInit {
         src: 'assets/bxs-store-alt.svg'
     };
 
-    constructor(private authService: AuthService, private router: Router,
+    // @ts-ignore
+    currOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    icon;
+    currency;
+
+    constructor(public authService: AuthService, private router: Router,
                 private menuController: MenuController,
                 private pagesService: PagesService,
-                private userStorageUtils: UserStorageUtils) {
+                private userStorageUtils: UserStorageUtils, private popoverController: PopoverController) {
         // this.menuController.enable(true); // Enable side menu
         // this.userStorageUtils.getUser().then(res => {
         //     this.utilisateur = res as Utilisateur;
@@ -60,9 +70,9 @@ export class MenuPage implements OnInit {
     }
 
     ngOnInit() {
-        this.userStorageUtils.getUser().then(res => {
-            this.utilisateur = res as Utilisateur;
-        });
+        // this.userStorageUtils.getUser().then(res => {
+        this.utilisateur = this.authService.currentUser;
+        // });
         if (this.authService.currentUser._id) {
             this.signOption = 'Signout';
         } else {
@@ -76,6 +86,14 @@ export class MenuPage implements OnInit {
                 this.status = false;
             }
         });
+
+        if (this.utilisateur.currency) {
+            this.icon = this.utilisateur.currency.icon;
+            this.currency = this.utilisateur.currency.currency;
+        } else {
+            this.icon = 'assets/' + Currencies['CAD'] + '.svg';
+            this.currency = Currencies.CAD;
+        }
     }
 
     async logOut() {
@@ -130,5 +148,35 @@ export class MenuPage implements OnInit {
                     break;
             }
         }
+    }
+
+    public async setCurrency(ev) {
+        // @ts-ignore
+        const popover = await this.popoverController.create({
+            component: ShowOptionsPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+            componentProps: {
+                currOptionSubject: this.currOptionSubject,
+                currIconOptionSubject: this.currIconOptionSubject,
+                currency: this.utilisateur.currency ? this.utilisateur.currency.currency : 'CAD',
+                currencyIcon: this.utilisateur.currency ? this.utilisateur.currency.icon : 'assets/' + Currencies.CAD + '.svg',
+                option: 'currency'
+            }
+        });
+
+        popover.onDidDismiss()
+            .then((data) => {
+                if (data.data) {
+                    console.log(data.data);
+                    this.currency = data.data.currency;
+                    this.icon = data.data.icon;
+                    this.authService.currency = data.data;
+                    this.utilisateur.currency.icon = this.icon;
+                    this.utilisateur.currency.currency = this.currency;
+                }
+            });
+        return await popover.present();
     }
 }

@@ -255,10 +255,24 @@ export class FilterPage implements OnInit {
             });
         }
 
-        if (this.transmission) {
-            articles = articles.filter((art) => {
-                return art.transmission === this.transmission;
+        if ((this.maxPrice > 0 && this.minPrice >= 0) && this.maxPrice > this.minPrice) {
+            articles = articles.filter((res) => {
+                return res.price >= this.minPrice && res.price <= this.maxPrice;
             });
+        }
+
+        if ((this.start_kilometers > 0 && this.end_kilometers > 0) && this.end_kilometers > this.start_kilometers) {
+            articles = articles.filter((res) => {
+                return res.price >= this.minPrice && res.price <= this.maxPrice;
+            });
+        }
+
+        if (this.transmission) {
+            if (this.transmission !== 'TOUT') {
+                articles = articles.filter((art) => {
+                    return art.transmission === this.transmission;
+                });
+            }
         }
 
         if (this.condition) {
@@ -271,16 +285,8 @@ export class FilterPage implements OnInit {
 
         console.log(articles);
 
-        if ((this.maxPrice > 0 && this.minPrice > 0) && this.maxPrice > this.minPrice) {
-            articles = this.articles.filter((res) => {
-                return res.price >= this.minPrice && res.price <= this.maxPrice;
-            });
-            this.submitFilter(articles);
-            this.dismiss();
-        } else {
-            this.submitFilter(articles);
-            this.dismiss();
-        }
+        this.submitFilter(articles);
+        this.dismiss();
     }
 
     submitFilter(articles) {
@@ -361,7 +367,7 @@ export class FilterPage implements OnInit {
                         if (rs.brands) {
                             this.brands.push(rs.brands);
                         }
-                        if (rs.categories.includes('Mode')) {
+                        if (rs.categories.includes('Mode') || rs.categories.includes('Auto')) {
                             rs.colors.forEach(c => {
                                 this.colors.push(c);
                             });

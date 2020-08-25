@@ -6,12 +6,12 @@
                     <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
                 </ion-button>
             </ion-menu-toggle>
-            <ion-title>Modifier {{article?.title}}</ion-title>
+            <ion-title>Modifier {{articleService.article?.title}}</ion-title>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content>
     <!--    <ion-list>-->
     <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
         <ion-row>
@@ -28,8 +28,8 @@
                         <ion-grid>
                             <ion-row>
                                 <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
-                                    <ion-slide (click)="showImage(image, article.title)"
-                                               *ngFor="let image of article.pictures; let i = index">
+                                    <ion-slide (click)="showImage(image, articleService.article.title)"
+                                               *ngFor="let image of articleService.article.pictures; let i = index">
                                         <div>
                                             <ion-fab vertical="top" horizontal="end">
                                                 <ion-button color="color1" (click)="presentAlertConfirm(image, i)">
@@ -99,7 +99,7 @@
                         </ion-item-divider>
                         <ion-item>
                             <ion-label position="floating">Nom</ion-label>
-                            <ion-input type="text" [(ngModel)]="article.title"
+                            <ion-input type="text" [(ngModel)]="articleService.article.title"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                         </ion-item>
 
@@ -124,12 +124,12 @@
                                             </ion-col>
                                         </ion-row>
                                     </div>
-                                    <ion-chip *ngFor="let a of article.colors ; let i = index">
+                                    <ion-chip *ngFor="let a of articleService.article.colors ; let i = index">
                                         <ion-label>{{a}}</ion-label>
                                         <ion-icon name="close-circle" (click)="removeColor(i)"></ion-icon>
                                     </ion-chip>
                                 </ion-col>
-                                <ion-col *ngIf="article.categories.includes('Mode')" size="6">
+                                <ion-col *ngIf="articleService.article.categories.includes('Mode')" size="6">
                                     <div>
                                         <ion-row>
                                             <ion-col size="4">
@@ -148,7 +148,7 @@
                                             </ion-col>
                                         </ion-row>
                                     </div>
-                                    <ion-chip *ngFor="let a of article.sizes ; let i = index">
+                                    <ion-chip *ngFor="let a of articleService.article.sizes ; let i = index">
                                         <ion-label>{{a}}</ion-label>
                                         <ion-icon name="close-circle" (click)="removeSize(i)"></ion-icon>
                                     </ion-chip>
@@ -158,32 +158,32 @@
 
                         <ion-item>
                             <ion-label position="floating">Description</ion-label>
-                            <ion-textarea [(ngModel)]="article.description" auto-grow
+                            <ion-textarea [(ngModel)]="articleService.article.description" auto-grow
                                           [ngModelOptions]="{standalone: true}"></ion-textarea>
                         </ion-item>
                         <ion-item>
                             <ion-label position="floating">Brands</ion-label>
-                            <ion-input type="text" [(ngModel)]="article.brands"
+                            <ion-input type="text" [(ngModel)]="articleService.article.brands"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
-                            <ion-label *ngIf="article.categories.includes('Auto')" position="floating">Model</ion-label>
-                            <ion-input *ngIf="article.categories.includes('Auto')" type="text"
+                            <ion-label *ngIf="articleService.article.categories.includes('Auto')" position="floating">Model</ion-label>
+                            <ion-input *ngIf="articleService.article.categories.includes('Auto')" type="text"
                                        [ngModelOptions]="{standalone: true}"
-                                       [(ngModel)]="article.model"></ion-input>
+                                       [(ngModel)]="articleService.article.model"></ion-input>
                         </ion-item>
-                        <ion-item *ngIf="article.categories.includes('Auto')">
+                        <ion-item *ngIf="articleService.article.categories.includes('Auto')">
                             <ion-label position="floating">Kilometers</ion-label>
-                            <ion-input type="number" [(ngModel)]="article.kilometers"
+                            <ion-input type="number" [(ngModel)]="articleService.article.kilometers"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                             <ion-label position="floating">Year</ion-label>
-                            <ion-input type="number" [(ngModel)]="article.year"
+                            <ion-input type="number" [(ngModel)]="articleService.article.year"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                             <ion-label
-                                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                                    *ngIf="articleService.article.categories.includes('Voiture') || articleService.article.categories.includes('Camion')"
                                     position="floating">Transmission
                             </ion-label>
                             <ion-select
-                                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
-                                    interface="popover" [(ngModel)]="article.transmission"
+                                    *ngIf="articleService.article.categories.includes('Voiture') || articleService.article.categories.includes('Camion')"
+                                    interface="popover" [(ngModel)]="articleService.article.transmission"
                                     [ngModelOptions]="{standalone: true}">
                                 <ion-select-option value="Automatique">Automatique</ion-select-option>
                                 <ion-select-option value="Manuel">Manuel</ion-select-option>
@@ -191,19 +191,19 @@
                         </ion-item>
                         <ion-item>
                             <ion-label position="floating">Prix (en Dollars Américains)</ion-label>
-                            <ion-input type="number" [(ngModel)]="article.price"
+                            <ion-input type="number" [(ngModel)]="articleService.article.price"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                         </ion-item>
                         <ion-item>
                             <ion-label position="floating">Catégorie du produit</ion-label>
-                            <ion-select [(ngModel)]="article.categories" multiple [ngModelOptions]="{standalone: true}">
+                            <ion-select [(ngModel)]="articleService.article.categories" multiple [ngModelOptions]="{standalone: true}">
                                 <ion-select-option [value]="cat.title"
                                                    *ngFor="let cat of categories">{{ cat.title }}</ion-select-option>
                             </ion-select>
                         </ion-item>
                         <ion-item>
                             <ion-label position="floating">Ou se trouve le produit</ion-label>
-                            <ion-select [(ngModel)]="article.city" [ngModelOptions]="{standalone: true}">
+                            <ion-select [(ngModel)]="articleService.article.city" [ngModelOptions]="{standalone: true}">
                                 <ion-select-option [value]="city.name"
                                                    *ngFor="let city of cities">{{ city.name }}</ion-select-option>
                             </ion-select>
@@ -214,30 +214,30 @@
                         </ion-item-divider>
                         <ion-item>
                             <ion-label position="floating">Etat</ion-label>
-                            <ion-select [(ngModel)]="article.state" [ngModelOptions]="{standalone: true}">
+                            <ion-select [(ngModel)]="articleService.article.state" [ngModelOptions]="{standalone: true}">
                                 <ion-select-option value="Neuf">Neuf</ion-select-option>
                                 <ion-select-option value="Déjà utilisé">Déjà utilisé</ion-select-option>
                             </ion-select>
                         </ion-item>
                         <ion-item>
                             <ion-label position="floating">Mode d'acquisition</ion-label>
-                            <ion-select [(ngModel)]="article.availability.type" [ngModelOptions]="{standalone: true}">
+                            <ion-select [(ngModel)]="articleService.article.availability.type" [ngModelOptions]="{standalone: true}">
                                 <ion-select-option value="Livraison">Livraison</ion-select-option>
                                 <ion-select-option value="En Magasin">Disponible en Magasin</ion-select-option>
                                 <ion-select-option value="Main en Main">Main en Main</ion-select-option>
                             </ion-select>
                         </ion-item>
-                        <ion-item *ngIf="article?.availability?.type === 'Livraison'">
+                        <ion-item *ngIf="articleService.article?.availability?.type === 'Livraison'">
                             <ion-label position="floating">Frais de livraison (en Dollars Américains)</ion-label>
-                            <ion-input type="number" [(ngModel)]="article.availability.feed"
+                            <ion-input type="number" [(ngModel)]="articleService.article.availability.feed"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                         </ion-item>
 
-                        <ion-item *ngIf="article?.availability?.type === 'En Magasin'">
+                        <ion-item *ngIf="articleService.article?.availability?.type === 'En Magasin'">
                             <ion-label position="floating">Adresse Magasin</ion-label>
                             <ion-textarea placeholder="Entrez l'adresse complète du magasin"
                                           [ngModelOptions]="{standalone: true}"
-                                          [(ngModel)]="article.availability.address"></ion-textarea>
+                                          [(ngModel)]="articleService.article.availability.address"></ion-textarea>
                         </ion-item>
                         <ion-button (click)="update()" fill="clear" color="color1" expand="block">
                             <ion-icon slot="start" name="create"></ion-icon>
@@ -260,7 +260,7 @@
             <ion-row>
                 <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
                     <ion-slide (click)="showImage(image, article.title)"
-                               *ngFor="let image of article.pictures; let i = index">
+                               *ngFor="let image of articleService.article.pictures; let i = index">
                         <div>
                             <ion-fab vertical="top" horizontal="end">
                                 <ion-button fill="clear" (click)="presentAlertConfirm(image, i)">
@@ -329,7 +329,7 @@
         </ion-item-divider>
         <ion-item>
             <ion-label position="floating">Nom</ion-label>
-            <ion-input type="text" [(ngModel)]="article.title"
+            <ion-input type="text" [(ngModel)]="articleService.article.title"
                        [ngModelOptions]="{standalone: true}"></ion-input>
         </ion-item>
 
@@ -354,12 +354,12 @@
                             </ion-col>
                         </ion-row>
                     </div>
-                    <ion-chip *ngFor="let a of article.colors ; let i = index">
+                    <ion-chip *ngFor="let a of articleService.article.colors ; let i = index">
                         <ion-label>{{a}}</ion-label>
                         <ion-icon name="close-circle" (click)="removeColor(i)"></ion-icon>
                     </ion-chip>
                 </ion-col>
-                <ion-col *ngIf="article.categories.includes('Mode')" size="6">
+                <ion-col *ngIf="articleService.article.categories.includes('Mode')" size="6">
                     <div>
                         <ion-row>
                             <ion-col size="4">
@@ -378,7 +378,7 @@
                             </ion-col>
                         </ion-row>
                     </div>
-                    <ion-chip *ngFor="let a of article.sizes ; let i = index">
+                    <ion-chip *ngFor="let a of articleService.article.sizes ; let i = index">
                         <ion-label>{{a}}</ion-label>
                         <ion-icon name="close-circle" (click)="removeSize(i)"></ion-icon>
                     </ion-chip>
@@ -388,32 +388,32 @@
 
         <ion-item>
             <ion-label position="floating">Description</ion-label>
-            <ion-textarea [(ngModel)]="article.description" auto-grow
+            <ion-textarea [(ngModel)]="articleService.article.description" auto-grow
                           [ngModelOptions]="{standalone: true}"></ion-textarea>
         </ion-item>
         <ion-item>
             <ion-label position="floating">Brands</ion-label>
-            <ion-input type="text" [(ngModel)]="article.brands"
+            <ion-input type="text" [(ngModel)]="articleService.article.brands"
                        [ngModelOptions]="{standalone: true}"></ion-input>
-            <ion-label *ngIf="article.categories.includes('Auto')" position="floating">Model</ion-label>
-            <ion-input *ngIf="article.categories.includes('Auto')" type="text"
+            <ion-label *ngIf="articleService.article.categories.includes('Auto')" position="floating">Model</ion-label>
+            <ion-input *ngIf="articleService.article.categories.includes('Auto')" type="text"
                        [ngModelOptions]="{standalone: true}"
-                       [(ngModel)]="article.model"></ion-input>
+                       [(ngModel)]="articleService.article.model"></ion-input>
         </ion-item>
-        <ion-item *ngIf="article.categories.includes('Auto')">
+        <ion-item *ngIf="articleService.article.categories.includes('Auto')">
             <ion-label position="floating">Kilometers</ion-label>
-            <ion-input type="number" [(ngModel)]="article.kilometers"
+            <ion-input type="number" [(ngModel)]="articleService.article.kilometers"
                        [ngModelOptions]="{standalone: true}"></ion-input>
             <ion-label position="floating">Year</ion-label>
-            <ion-input type="number" [(ngModel)]="article.year"
+            <ion-input type="number" [(ngModel)]="articleService.article.year"
                        [ngModelOptions]="{standalone: true}"></ion-input>
             <ion-label
-                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
+                    *ngIf="articleService.article.categories.includes('Voiture') || articleService.article.categories.includes('Camion')"
                     position="floating">Transmission
             </ion-label>
             <ion-select
-                    *ngIf="article.categories.includes('Voiture') || article.categories.includes('Camion')"
-                    interface="popover" [(ngModel)]="article.transmission"
+                    *ngIf="articleService.article.categories.includes('Voiture') || articleService.article.categories.includes('Camion')"
+                    interface="popover" [(ngModel)]="articleService.article.transmission"
                     [ngModelOptions]="{standalone: true}">
                 <ion-select-option value="Automatique">Automatique</ion-select-option>
                 <ion-select-option value="Manuel">Manuel</ion-select-option>
@@ -421,19 +421,19 @@
         </ion-item>
         <ion-item>
             <ion-label position="floating">Prix (en Dollars Américains)</ion-label>
-            <ion-input type="number" [(ngModel)]="article.price"
+            <ion-input type="number" [(ngModel)]="articleService.article.price"
                        [ngModelOptions]="{standalone: true}"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label position="floating">Catégorie du produit</ion-label>
-            <ion-select [(ngModel)]="article.categories" multiple [ngModelOptions]="{standalone: true}">
+            <ion-select [(ngModel)]="articleService.article.categories" multiple [ngModelOptions]="{standalone: true}">
                 <ion-select-option [value]="cat.title"
                                    *ngFor="let cat of categories">{{ cat.title }}</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item>
             <ion-label position="floating">Ou se trouve le produit</ion-label>
-            <ion-select [(ngModel)]="article.city" [ngModelOptions]="{standalone: true}">
+            <ion-select [(ngModel)]="articleService.article.city" [ngModelOptions]="{standalone: true}">
                 <ion-select-option [value]="city.name"
                                    *ngFor="let city of cities">{{ city.name }}</ion-select-option>
             </ion-select>
@@ -444,26 +444,26 @@
         </ion-item-divider>
         <ion-item>
             <ion-label position="floating">Etat</ion-label>
-            <ion-select [(ngModel)]="article.state" [ngModelOptions]="{standalone: true}">
+            <ion-select [(ngModel)]="articleService.article.state" [ngModelOptions]="{standalone: true}">
                 <ion-select-option value="Neuf">Neuf</ion-select-option>
                 <ion-select-option value="Déjà utilisé">Déjà utilisé</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item>
             <ion-label position="floating">Mode d'acquisition</ion-label>
-            <ion-select [(ngModel)]="article.availability.type" [ngModelOptions]="{standalone: true}">
+            <ion-select [(ngModel)]="articleService.article.availability.type" [ngModelOptions]="{standalone: true}">
                 <ion-select-option value="Livraison">Livraison</ion-select-option>
                 <ion-select-option value="En Magasin">Disponible en Magasin</ion-select-option>
                 <ion-select-option value="Main en Main">Main en Main</ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item *ngIf="article?.availability?.type === 'Livraison'">
+        <ion-item *ngIf="articleService.article?.availability?.type === 'Livraison'">
             <ion-label position="floating">Frais de livraison (en Dollars Américains)</ion-label>
-            <ion-input type="number" [(ngModel)]="article.availability.feed"
+            <ion-input type="number" [(ngModel)]="articleService.article.availability.feed"
                        [ngModelOptions]="{standalone: true}"></ion-input>
         </ion-item>
 
-        <ion-item *ngIf="article?.availability?.type === 'En Magasin'">
+        <ion-item *ngIf="articleService.article?.availability?.type === 'En Magasin'">
             <ion-label position="floating">Adresse Magasin</ion-label>
             <ion-textarea placeholder="Entrez l'adresse complète du magasin"
                           [ngModelOptions]="{standalone: true}"

@@ -51,7 +51,8 @@ export class EditProductPage implements OnInit {
         this.categories = categories;
         this.cities = cities;
         this.myPictures = [];
-
+        this.article = {} as Article;
+        // this.loadArticle();
     }
 
     async ngOnInit() {
@@ -60,7 +61,11 @@ export class EditProductPage implements OnInit {
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
-        this.loadData();
+        this.loadArticle();
+    }
+
+    public async ionViewWillEnter() {
+        await this.loadArticle();
     }
 
     // async ionViewWillEnter() {
@@ -74,9 +79,15 @@ export class EditProductPage implements OnInit {
     // }
 
     // @ts-ignore
-    loadData() {
-        this.articleService.loadArticle(this.id).subscribe((res) => {
-            this.article = res as Article;
+    // @ts-ignore
+    async loadArticle(): Observable<Article> {
+        const loading = await this.loadingCtrl.create({
+            message: 'Chargement...'
+        });
+        await loading.present();
+        this.articleService.loadArticle(this.id).subscribe(async (res) => {
+            this.articleService.article = res as Article;
+            await loading.dismiss();
         });
     }
 
@@ -212,7 +223,7 @@ export class EditProductPage implements OnInit {
     }
 
     async update() {
-        this.articleService.article = this.article;
+        // this.articleService.article = this.article;
         const loading = await this.loadingCtrl.create({
             message: 'Chargement...'
         });
@@ -228,7 +239,7 @@ export class EditProductPage implements OnInit {
                     for (let img of res.filename as []) {
                         this.article.pictures.push(img);
                     }
-                    this.article.utilisateurId = this.authService.currentUser._id;
+                    this.articleService.article.utilisateurId = this.authService.currentUser._id;
                     this.articleService.updateArticle().subscribe(res => {
                         loading.dismiss();
                         console.log(res);
@@ -261,7 +272,7 @@ export class EditProductPage implements OnInit {
 
     addColor() {
         if (this.color) {
-            this.article.colors.push(this.color);
+            this.articleService.article.colors.push(this.color);
             this.color = '';
         }
     }
@@ -270,20 +281,20 @@ export class EditProductPage implements OnInit {
 
     addSize() {
         if (this.size) {
-            this.article.sizes.push(this.size);
+            this.articleService.article.sizes.push(this.size);
             this.size = '';
         }
     }
 
     removeColor(index) {
-        if (this.article.colors.length > 0) {
-            this.article.colors.splice(index, 1);
+        if (this.articleService.article.colors.length > 0) {
+            this.articleService.article.colors.splice(index, 1);
         }
     }
 
     removeSize(index) {
-        if (this.article.sizes.length > 0) {
-            this.article.sizes.splice(index, 1);
+        if (this.articleService.article.sizes.length > 0) {
+            this.articleService.article.sizes.splice(index, 1);
         }
     }
 
@@ -291,7 +302,7 @@ export class EditProductPage implements OnInit {
         this.imageService.deleteImage(file).subscribe((res: any) => {
             if (res.res === 'success') {
                 this.article.pictures.splice(index, 1);
-                this.articleService.article = this.article;
+                // this.articleService.article = this.article;
                 this.articleService.updateArticle().subscribe((res) => {
                     console.log(res);
                 });

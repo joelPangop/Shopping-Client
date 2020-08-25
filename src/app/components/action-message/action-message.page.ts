@@ -38,7 +38,7 @@ export class ActionMessagePage implements OnInit {
     article_title: string;
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private alertController: AlertController,
-                private msgService: MessageService, private authSrv: AuthService,
+                private msgService: MessageService, public authSrv: AuthService,
                 private platform: Platform, private localNotification: LocalNotifications,
                 public articleService: ArticleService, private navCtrl: NavController, public cuService: CurrencyService,
                 private userStorageUtils: UserStorageUtils) {

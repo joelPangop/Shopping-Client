@@ -12,6 +12,7 @@ import {HotDealsPageModule} from '../hot-deals/hot-deals.module';
 import {FeaturedProductsPageModule} from '../featured-products/featured-products.module';
 import {HomePageRoutingModule} from './home-routing.module';
 import {TranslateModule} from '@ngx-translate/core';
+import {IonicSelectableModule} from 'ionic-selectable';
 // import {ProductListPage} from '../product-list/product-list.page';
 
 @NgModule({
@@ -27,7 +28,8 @@ import {TranslateModule} from '@ngx-translate/core';
         HotDealsPageModule,
         FormsModule,
         FeaturedProductsPageModule,
-        TranslateModule
+        TranslateModule,
+        IonicSelectableModule
     ],
     declarations: [HomePage],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

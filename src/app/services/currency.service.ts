@@ -1,59 +1,58 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {StorageService} from './storage.service';
+import {AuthService} from './auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CurrencyService {
-    API_KEY = '7488255780c23c61f7a6';
+    protected baseUrl: string;
+    protected chartUrl: string;
+    protected apiKey: string;
 
-    fromCurrOptionSubject;
-    toCurrOptionSubject;
-    // @ts-ignore
-    currRateOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
-    private showLoadingSpinningSubject = new Subject<boolean>();
+    public rate: number;
+    public currency: any = {};
 
-    private rateSubject = new Subject<any>();
+    constructor(private http: HttpClient, private storageService: StorageService, private authService: AuthService) {
+        this.baseUrl = 'https://free.currconv.com/api/v7';
+        this.chartUrl = 'https://www.google.com/finance/chart?q=CURRENCY';
+        this.apiKey = 'apiKey=4992f41ba9373eb0e7e6';
+        this.storageService.getObject('rate').then((res: any) => {
+            if (res) {
+                this.rate = res.rate;
+            } else {
+                this.rate = 1;
+            }
+        });
+        this.storageService.getObject('currency').then((res: any) => {
+            if (res) {
+                this.currency = res.currency;
+            } else {
+                if (this.authService.currentUser) {
+                    this.currency = this.authService.currentUser.currency;
+                } else {
+                    this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
+                }
+            }
+        });
 
-    constructor(public http: HttpClient) {
     }
 
-    getCountries() {
-        return this.http.get(`https://free.currencyconverterapi.com/api/v6/currencies?apiKey=${this.API_KEY}`).toPromise();
+    convertCurrency(c1: string, c2: string) {
+        return this.http.get(`${this.baseUrl}/convert?q=${c1}_${c2}&compact=ultra&${this.apiKey}`)
+            .pipe(map(response => response));
     }
 
-    getExchangeRate(from, to) {
-        return this.http.get(`http://free.currencyconverterapi.com/api/v5/convert?q=${from}_${to}&compact=y&apiKey=${this.API_KEY}`).toPromise();
+    fetchCurrencies() {
+        return this.http.get(`${this.baseUrl}/currencies?${this.apiKey}`)
+            .pipe(map(response => response));
     }
 
-    async getCurrencyRate() {
-        let res = false;
-        try {
-            const exchangeRate = await this.getExchangeRate(this.fromCurrOptionSubject, this.toCurrOptionSubject);
-            let rate = '';
-            rate = exchangeRate[this.fromCurrOptionSubject + '_' + this.toCurrOptionSubject].val;
-            this.rateSubject.next(rate);
-            this.showLoadingSpinningSubject.next(false);
-            // this.event.publish('showLoadingSpining', false);
-            res = true;
-            this.currRateOptionSubject.next(rate);
-        } catch (err) {
-            console.error(err);
-        }
-        return res;
-    }
-
-    getRateObservable(): Subject<any> {
-        return this.rateSubject;
-    }
-
-    getShowLoadingSpinningSubjectObservale(): Subject<boolean> {
-        return this.showLoadingSpinningSubject;
-    }
-
-    setShowLoadingSpinningSubjectObservale(value){
-        this.showLoadingSpinningSubject.next(value);
+    fetchChart(c1: string, c2: string) {
+        return `${this.chartUrl}:${c1.toUpperCase()}${c2.toUpperCase()}&chst=vkc&tkr=1&chsc=2&chs=270x94&p=5Y`;
     }
 
 }

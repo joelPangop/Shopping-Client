@@ -40,9 +40,6 @@ export class TopHeaderPage implements OnInit {
                 private alertController: AlertController, private userStorageUtils: UserStorageUtils) {
         this.isSearch = false;
 
-        this.cuService.getShowLoadingSpinningSubjectObservale().subscribe((res) => {
-            this.showLoadingSpining = res;
-        })
         // this.event.subscribe('showLoadingSpining', (res) => {
         //     this.showLoadingSpining = res;
         // });

@@ -9,7 +9,7 @@ import {ImageService} from '../../services/image.service';
 import {Article} from '../../models/article-interface';
 import {ArticleService} from '../../services/article.service';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {LoadingController, NavController, PopoverController, ToastController} from '@ionic/angular';
+import {LoadingController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
@@ -50,7 +50,7 @@ export class ProfilePage implements OnInit {
     constructor(public formBuilder: FormBuilder, private articleService: ArticleService, private storage: StorageService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController, private router: Router,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
-                private popoverController: PopoverController, private activatedRoute: ActivatedRoute) {
+                private popoverController: PopoverController, private activatedRoute: ActivatedRoute, public platform: Platform) {
         this.userForm = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
@@ -211,7 +211,10 @@ export class ProfilePage implements OnInit {
     @ViewChild( 'content' ) content;
     async updateArticle(article: Article, index) {
         // await this.storage.setItem('page', 'profile');
-        await this.navCtrl.navigateRoot('/menu/tabs/edit-product/' + article._id);
+        await this.articleService.loadArticle(article._id).subscribe(async (res) => {
+            this.articleService.article = res as Article;
+            await this.navCtrl.navigateRoot('/menu/tabs/edit-product/' + article._id);
+        });
 
     }
 

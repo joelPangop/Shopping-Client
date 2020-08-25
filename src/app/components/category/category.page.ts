@@ -55,10 +55,7 @@ export class CategoryPage implements OnInit {
     loadArticles() {
         this.articleService.loadArticlesByCategory(this.catTitle).subscribe(async data => {
             this.articles = data;
-            const exchangeRate = await this.cuService.getExchangeRate(this.utilisateur.currency.currency, this.currency);
-            let rate = exchangeRate[this.utilisateur.currency.currency + '_' + this.currency].val;
             for (let article of this.articles) {
-                article.price = article.price * parseFloat(rate);
                 console.log(article.price);
             }
         });

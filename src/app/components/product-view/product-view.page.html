@@ -55,7 +55,9 @@
     <ion-row class="ion-padding">
         <!--        <ion-text color="color1" class="price">${{discountPrice}} USD &nbsp;</ion-text>-->
         <!--        <span class="previous-price"> ${{price}}</span>-->
-        <span color="color1" class="price"> {{product.price | currency:currency:'symbol-narrow':'.2'}}</span>
+        <span>
+            {{getRatedPrice(product.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+        </span>
     </ion-row>
     <!-- Product Name -->
     <ion-row class="ion-padding-start product-name">

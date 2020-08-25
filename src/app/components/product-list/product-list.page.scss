@@ -25,6 +25,16 @@
 }
 
 #products {
+  #empty {
+    h4 {
+      color: #888888;
+      font-weight: bolder;
+    }
+    p {
+      color: #888888;
+    }
+  }
+
   .card-img {
     background-size: cover;
     background-repeat: no-repeat;

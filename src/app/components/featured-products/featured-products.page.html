@@ -22,9 +22,7 @@
 
               <ion-card-content>
                 <ion-row>
-                  <ion-text color="color1">${{item.price}} &nbsp;</ion-text>
-<!--                  <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
-<!--                  <span class="previous-price"> ${{item.price}}</span>-->
+                  <ion-text color="color1">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}} &nbsp;</ion-text>
                 </ion-row>
                 <ion-row class="product-name">
                   <h4>{{item.title | slice:0:30}}</h4>

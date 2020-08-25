@@ -118,6 +118,7 @@ export class ProductDetailPage implements OnInit {
     views = 0;
 
     public async ionViewDidEnter() {
+        await this.loadArticle();
         setTimeout(async () => {
             if (this.article.utilisateurId !== this.authService.currentUser._id) {
                 this.article.views++;
@@ -507,4 +508,8 @@ export class ProductDetailPage implements OnInit {
         }
     }
 
+    getRatedPrice(price: number, rate: number){
+        const retour = price * rate;
+        return retour;
+    }
 }
