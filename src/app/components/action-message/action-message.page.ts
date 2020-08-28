@@ -15,6 +15,8 @@ import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {Observable} from 'rxjs';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {Socket} from 'ngx-socket-io';
+import {NotificationService} from '../../services/notification.service';
 
 @Component({
     selector: 'app-action-message',
@@ -38,10 +40,10 @@ export class ActionMessagePage implements OnInit {
     article_title: string;
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private alertController: AlertController,
-                private msgService: MessageService, public authSrv: AuthService,
+                public msgService: MessageService, public authSrv: AuthService,
                 private platform: Platform, private localNotification: LocalNotifications,
                 public articleService: ArticleService, private navCtrl: NavController, public cuService: CurrencyService,
-                private userStorageUtils: UserStorageUtils) {
+                private userStorageUtils: UserStorageUtils, private notificationService: NotificationService) {
     }
 
     async ngOnInit() {
@@ -52,7 +54,10 @@ export class ActionMessagePage implements OnInit {
         this.uid = this.activatedRoute.snapshot.paramMap.get('uid');
         this.artId = this.activatedRoute.snapshot.paramMap.get('artId');
         await this.loadArticle();
-
+        this.userStorageUtils.getWebSocket().onopen = (ev) => {
+            console.log('websocket connected !!');
+            console.log(ev);
+        };
         if (this.uid) {
             await this.authSrv.getUserById(this.uid).subscribe((res) => {
                 this.interlocutor = res;
@@ -83,7 +88,7 @@ export class ActionMessagePage implements OnInit {
     }
 
     ionViewWillLeave(){
-        for(let message of this.messages){
+        for(let message of this.msgService.messages){
             if (this.message.read === false) {
                 this.message.read = true;
                 this.changeState();
@@ -92,7 +97,7 @@ export class ActionMessagePage implements OnInit {
     }
 
     ionViewDidLeave(){
-        for(let message of this.messages){
+        for(let message of this.msgService.messages){
             if (this.message.read === false) {
                 this.message.read = true;
                 this.changeState();
@@ -111,7 +116,7 @@ export class ActionMessagePage implements OnInit {
 
     loadAllMessages(interlocutor) {
         this.msgService.loadMessages(this.utilisateur.username, interlocutor.username, this.artId).subscribe((res) => {
-            this.messages = res as Message[];
+            this.msgService.messages = res as Message[];
             console.log('res', res);
             // this.messages = res.reverse().filter((thing, i, arr) => {
             //     return arr.indexOf(arr.find(t => t.article._id === thing.article._id)) === i;
@@ -128,8 +133,8 @@ export class ActionMessagePage implements OnInit {
 
     loadMessageById() {
         this.msgService.loadMessageById(this.id).subscribe(res => {
-            this.message = res as Message;
-            this.loadInterlocutor(this.message);
+            this.msgService.message = res as Message;
+            this.loadInterlocutor(this.msgService.message);
         });
     }
 
@@ -139,7 +144,7 @@ export class ActionMessagePage implements OnInit {
 
     changeState() {
         this.msgService.changeState(this.id, this.message).subscribe(res => {
-            this.message = res as Message;
+            this.msgService.message = res as Message;
         });
     }
 
@@ -162,7 +167,7 @@ export class ActionMessagePage implements OnInit {
         console.log('url et message', url, message);
         this.msgService.send(url, message).subscribe(res1 => {
             console.log('data', this.interlocutor);
-            this.messages.push(message);
+
             const msg = res1 as Message;
             const notification: Notification = {
                 title: 'Nouveaux message',
@@ -176,10 +181,14 @@ export class ActionMessagePage implements OnInit {
                 sender: this.utilisateur._id
             };
             this.msgService.addNotification(notification).subscribe(res => {
-                // this.socket.emit('notifying', {
-                //     user: this.utilisateur,
-                //     message: message
-                // });
+                let not = res as Notification;
+                let res_str = JSON.stringify(not);
+                this.userStorageUtils.getWebSocket().send(res_str);
+                this.msgService.messages.push(message);
+                this.msgService.loadAllNotifications(this.utilisateur._id).subscribe((res) => {
+                    console.log(res);
+                    this.msgService.setNotificationCount(res.length);
+                });
                 // this.localNotification.schedule({
                 //     id: 1,
                 //     title: notification.message,
@@ -221,7 +230,7 @@ export class ActionMessagePage implements OnInit {
             };
             console.log('url et message', url, message);
             this.msgService.send(url, message).subscribe(res1 => {
-                this.messages.push(message);
+                this.msgService.messages.push(message);
                 const msg = res1 as Message;
                 const notification: Notification = {
                     title: 'Nouveaux message',
@@ -235,11 +244,13 @@ export class ActionMessagePage implements OnInit {
                     sender: this.utilisateur._id
                 };
                 this.msgService.addNotification(notification).subscribe(res => {
+                    let not = res as Notification;
+                    let res_str = JSON.stringify(not);
+                    this.userStorageUtils.getWebSocket().send(res_str);
                     // this.socket.emit('notifying', {
                     //     user: this.utilisateur,
                     //     message: message
                     // });
-                    // this.event.publish('addNotif', 1);
                 });
                 this.presentToast('Message envoye', 1000, 'bottom');
                 this.msgContent = '';
@@ -252,9 +263,9 @@ export class ActionMessagePage implements OnInit {
 
     deleteMessage(msg: Message, index) {
         this.msgService.deleteMessage(msg).subscribe(async () => {
-            this.messages.splice(index, 1);
+            this.msgService.messages.splice(index, 1);
             if (this.id === '1000') {
-                this.message = {} as Message;
+                this.msgService.message = {} as Message;
             } else {
                 await this.loadMessageById();
             }

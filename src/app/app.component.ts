@@ -7,21 +7,19 @@ import {categories} from './models/Category';
 import {Deeplinks} from '@ionic-native/deeplinks/ngx';
 import {ProductDetailPage} from './components/product-detail/product-detail.page';
 import {Utilisateur} from './models/utilisateur-interface';
-import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
 import {Router} from '@angular/router';
 import {AuthService} from './services/auth.service';
 import {Storage} from '@ionic/storage';
 import {PagesService} from './services/pages.service';
 import {UserStorageUtils} from './services/UserStorageUtils';
-import {BehaviorSubject, Observable, timer} from 'rxjs';
+import {timer} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
-import {Globalization} from '@ionic-native/globalization/ngx';
 import {LanguageService} from './services/language.service';
 import {Notification} from './models/notification-interface';
-import openSocket from 'socket.io-client';
-import {Socket} from 'ngx-socket-io';
-import * as io from 'socket.io-client';
 import {NotificationType} from './models/notificationType';
+import {NotificationService} from './services/notification.service';
+import {MessageService} from './services/message.service';
 
 @Component({
     selector: 'app-root',
@@ -45,7 +43,7 @@ export class AppComponent {
         private navCtrl: NavController,
         private deepLinks: Deeplinks,
         private toastCtrl: ToastController,
-        private localNotification: LocalNotifications,
+        private localNotifications: LocalNotifications,
         public authService: AuthService,
         public alertController: AlertController,
         public localStorage: Storage,
@@ -53,14 +51,14 @@ export class AppComponent {
         private pagesService: PagesService,
         private userStorageUtils: UserStorageUtils,
         public translate: TranslateService,
-        private languageService: LanguageService
+        private languageService: LanguageService,
+        private notificationService: NotificationService,
+        private msgService: MessageService
         // private socket: Socket
     ) {
         this.categories = categories;
         translate.addLangs(['en', 'fr']);
         let language = this.translate.getBrowserLang();
-        // translate.setDefaultLang(language);
-        // translate.use(language);
         this.languageService.setLanguage(language);
         this.initializeApp();
     }
@@ -72,21 +70,31 @@ export class AppComponent {
 
             // this.languageService.setInitialAppLanguage();
             const self = this;
-            // this.userStorageUtils.setWebSocket('ws://192.168.2.58:8080');
-            this.userStorageUtils.setWebSocket('wss://egoalservice.azurewebsites.net');
+            this.userStorageUtils.setWebSocket('ws://192.168.2.58:8080');
+            // this.userStorageUtils.setWebSocket('wss://egoalservice.azurewebsites.net');
+
+            this.localNotifications.on('trigger').subscribe(res => {
+                console.log('trigger', res);
+                this.presentAlert(res.title);
+            });
 
             this.userStorageUtils.getWebSocket().onmessage = function(event) {
                 console.log(event.data);
                 let result: Notification = JSON.parse(event.data);
                 let msg = '';
-                if (result.article.utilisateurId === self.authService.currentUser._id) {
+                if (result.sender !== self.authService.currentUser._id && result.article.utilisateurId === self.authService.currentUser._id) {
                     self.authService.getUserById(result.sender).subscribe((res) => {
                         const user = res;
                         if (result.type === NotificationType.MESSAGE) {
-                            msg = 'Nouveaux message de ' + user.userInfo.firstName;
+                            msg = 'Nouveaux message de ' + user.username;
+                            // Schedule a single notification
+                            self.notificationService.scheduleNotification(msg,event.data);
+                            self.notificationService.notify(msg);
                         }
                         if (result.type === NotificationType.LIKE) {
-                            msg = 'Nouveaux like de ' + user.userInfo.firstName;
+                            msg = 'Nouveaux like de ' + user.username;
+                            self.notificationService.notify(msg);
+                            self.notificationService.scheduleNotification(msg,event.data);
                         }
                         self.presentToast(msg);
                     });

@@ -254,6 +254,18 @@
                                      </span>
                         </p>
                     </ion-label>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col>
+                                <ion-button fill="clear" (click)="updateArticle(article, i)">
+                                    <ion-icon name="create" slot="icon-only"></ion-icon>
+                                </ion-button>
+                                <ion-button fill="clear" (click)="deleteArticle(article, i)">
+                                    <ion-icon name="trash" slot="icon-only"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
                 </ion-item>
             </list>
         </div>
@@ -295,6 +307,12 @@
                             <ion-icon name="gift" style="zoom:1.5;"></ion-icon>
                             <br/>
                             Deals
+                        </ion-col>
+                        <ion-col>
+                            <ion-icon button name="mail" style="zoom:1.5;" routerLink="/menu/tabs/messagerie"
+                                      routerDirection="root"></ion-icon>
+                            <br/>
+                            Messages
                         </ion-col>
                     </ion-row>
                 </ion-grid>

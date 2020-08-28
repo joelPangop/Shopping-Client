@@ -136,10 +136,6 @@ export function jwtOptionsFactory(storage) {
             }
         }),
         // BrowserAnimationsModule,
-        // IonicStorageModule.forRoot({
-        //     name: '',
-        //     driverOrder: ['localstorage']    //'indexeddb',
-        // }),
         IonicStorageModule.forRoot(),
         CartPageModule,
         WebcamModule,

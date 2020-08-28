@@ -3,3 +3,14 @@ ion-tab-bar {
   --color-selected: var(--ion-color-color1);
   --color: var(--ion-color-medium);
 }
+.notification-length {
+  //color: var(--ion-color-color1);
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  font-weight: 600;
+  font-size: 1.5em;
+  min-width: 40px;
+  z-index: 10;
+  font-style: inherit;
+}

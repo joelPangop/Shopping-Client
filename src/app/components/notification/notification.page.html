@@ -35,9 +35,16 @@
     <div [ngSwitch]="notifType">
         <div *ngSwitchCase="'messages'">
             <list>
-                <ion-item button *ngFor="let msgNotif of messageNotifications; let i = index" (click)="messageView(msgNotif)">
+                <ion-item button *ngFor="let msgNotif of messageNotifications; let i = index"
+                          (click)="messageView(msgNotif)">
+                    <div>
+                        <ion-thumbnail>
+                            <ion-img
+                                    src="https://egoalservice.azurewebsites.net/image/{{msgNotif.article.pictures[0]}}"></ion-img>
+                        </ion-thumbnail>
+                    </div>
                     <ion-col class="col">
-                        <ion-label>
+                        <ion-label style="font-size: small">
                             {{msgNotif.message}}
                         </ion-label>
                         <div class="time">
@@ -53,17 +60,21 @@
             <list>
                 <list>
                     <ion-item *ngFor="let likeNotif of likeNotifications; let i = index">
-                        <ion-thumbnail>
-                            <img src="https://egoalservice.azurewebsites.net/image/{{likeNotif.avatar}}"/>
-                        </ion-thumbnail>
-                        <ion-label>
-                            {{likeNotif.message}}
-                        </ion-label>
-                        <div class="time">
-                            <ion-note slot="end">
-                                {{getMomentDate(likeNotif.createdAt)}}
-                            </ion-note>
+                        <div>
+                            <ion-thumbnail>
+                                <img src="https://egoalservice.azurewebsites.net/image/{{likeNotif.avatar}}"/>
+                            </ion-thumbnail>
                         </div>
+                        <ion-col class="col">
+                            <ion-label>
+                                {{likeNotif.message}}
+                            </ion-label>
+                            <div class="time">
+                                <ion-note slot="end">
+                                    {{getMomentDate(likeNotif.createdAt)}}
+                                </ion-note>
+                            </div>
+                        </ion-col>
                     </ion-item>
                 </list>
             </list>

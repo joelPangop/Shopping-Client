@@ -1,8 +1,11 @@
 <ion-header>
-    <ion-toolbar color="primary">
+    <ion-toolbar color="color1">
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="menu">
-            </ion-back-button>
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
         </ion-buttons>
         <ion-buttons>
             <ion-icon name="chatbubbles"></ion-icon>
@@ -42,7 +45,7 @@
                 <ion-item-sliding *ngFor="let msg of messages_received; let i = index">
                     <ion-item button (click)="messageView(msg, i)">
                         <ion-avatar slot="start">
-                            <ion-img src="http://192.168.2.58:4000/image/{{msg.picture}}"></ion-img>
+                            <ion-img src="https://egoalservice.azurewebsites.net/image/{{msg.picture}}"></ion-img>
                         </ion-avatar>
                         <ion-label>
                             <h2>{{msg.title}}</h2>

@@ -24,14 +24,16 @@ export class UserStorageUtils {
             } else {
                 utilisateur = {
                     username: 'guest',
-                    type: 'guest'
+                    type: 'guest',
+                    currency: {currency: 'CAD', icon: 'flag-for-flag-canada'}
                 };
                 this.storageService.setObject('Utilisateur', utilisateur);
             }
         }).catch((err) => {
             utilisateur = {
                 username: 'guest',
-                type: 'guest'
+                type: 'guest',
+                currency: {currency: 'CAD', icon: 'flag-for-flag-canada'}
             };
             this.storageService.setObject('Utilisateur', utilisateur);
             console.log(err);

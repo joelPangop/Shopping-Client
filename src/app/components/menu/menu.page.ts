@@ -173,8 +173,6 @@ export class MenuPage implements OnInit {
                     this.currency = data.data.currency;
                     this.icon = data.data.icon;
                     this.authService.currency = data.data;
-                    this.utilisateur.currency.icon = this.icon;
-                    this.utilisateur.currency.currency = this.currency;
                 }
             });
         return await popover.present();

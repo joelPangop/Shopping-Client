@@ -206,7 +206,7 @@
                             </ion-select>
                         </ion-item>
                         <ion-item>
-                            <ion-label position="floating">{{'CREATE.prix' | translate}} (CAD Dollars)</ion-label>
+                            <ion-label position="floating">{{'CREATE.prix' | translate}} ({{authSrv.currency.currency}})</ion-label>
                             <ion-input type="number" [(ngModel)]="article.price"></ion-input>
                         </ion-item>
                         <ion-item>
@@ -466,7 +466,7 @@
             </ion-select>
         </ion-item>
         <ion-item>
-            <ion-label position="floating">{{'CREATE.prix' | translate}} (CAD Dollars)</ion-label>
+            <ion-label position="floating">{{'CREATE.prix' | translate}} ({{authSrv.currency.currency}})</ion-label>
             <ion-input type="number" [(ngModel)]="article.price"></ion-input>
         </ion-item>
         <ion-item>

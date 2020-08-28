@@ -153,8 +153,12 @@
                                     color="color1" expand="block" (click)="addToCart()">ADD TO CART
                         </ion-button>
                         <ion-button class="add-to-cart"
-                                    *ngIf="article.utilisateurId === authService.currentUser._id && contains(article.categories,['Automobile', 'Auto', 'Voiture'])"
+                                    *ngIf="article.utilisateurId === authService.currentUser._id"
                                     color="color1" expand="block" (click)="gotoEdit()">Edit Product
+                        </ion-button>
+                        <ion-button *ngIf="contains(article.categories,['Automobile', 'Auto'])" class="add-to-cart"
+                                    color="color1" expand="block" (click)="contact()">
+                            CONTACT SALER
                         </ion-button>
                     </div>
                     <!--                    <ion-button #edit>-->
@@ -298,10 +302,13 @@
             *ngIf="(platform.is('ios') || platform.is('android')) && article.utilisateurId !== authService.currentUser._id">
     <ion-toolbar class="ion-padding" transparent no-border>
         <!-- Add To Cart Button -->
-        <ion-button *ngIf="!contains(article.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart"
+        <ion-button *ngIf="article.utilisateurId !== authService.currentUser._id && !contains(article.categories,['Automobile', 'Auto'])" class="add-to-cart"
                     color="color1" expand="block" (click)="addToCart()">ADD TO CART
         </ion-button>
-        <ion-button *ngIf="contains(article.categories,['Automobile', 'Auto', 'Voiture'])" class="add-to-cart"
+        <ion-button *ngIf="article.utilisateurId === authService.currentUser._id" class="add-to-cart"
+                    color="color1" expand="block" (click)="gotoEdit()">Edit Product
+        </ion-button>
+        <ion-button *ngIf="contains(article.categories,['Automobile', 'Auto'])" class="add-to-cart"
                     color="color1" expand="block" (click)="contact()">
             CONTACT SALER
         </ion-button>

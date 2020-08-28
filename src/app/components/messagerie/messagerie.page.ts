@@ -88,12 +88,12 @@ export class MessageriePage implements OnInit {
     }
 
     messageWrite(msg: Message, i: number) {
-        this.navCtrl.navigateRoot(`/action-message/${msg._id}/write/${1000}/${msg.article._id}`);
+        this.navCtrl.navigateRoot(`/menu/tabs/action-message/${msg._id}/write/${1000}/${msg.article._id}`);
     }
 
     messageView(msg: Message, i: number) {
         this.unread_number = 0;
-        this.navCtrl.navigateRoot(`/action-message/${msg._id}/read/${msg.utilisateurId}/${msg.article._id}`);
+        this.navCtrl.navigateRoot(`/menu/tabs/action-message/${msg._id}/read/${msg.utilisateurId}/${msg.article._id}`);
         // this.navCtrl.navigateForward(`/action-message/${msg._id}/read/${1000}/${msg.article._id}`);
     }
 

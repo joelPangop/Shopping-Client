@@ -31,6 +31,7 @@ import {Observable} from 'rxjs';
 import {VideoMaster} from '../../models/VideoMaster';
 import {SearchPage} from '../search/search.page';
 import {PreviewVideoPage} from '../preview-video/preview-video.page';
+import {AuthService} from '../../services/auth.service';
 
 // const {Camera} = Plugins;
 
@@ -78,7 +79,7 @@ export class CreateProductPage implements OnInit {
     constructor(private actionSheet: ActionSheetController, private imagePicker: ImagePicker, private http: HttpClient,
                 public platform: Platform, private formBuilder: FormBuilder, private imageService: ImageService,
                 private toastCtrl: ToastController, private fileChooser: FileChooser, private modalController: ModalController,
-                private navCtrl: NavController, private webView: WebView,
+                private navCtrl: NavController, private webView: WebView, public authSrv: AuthService,
                 public articleService: ArticleService, public loadingCtrl: LoadingController,
                 private userStorageUtils: UserStorageUtils, private popoverCtrl: PopoverController,
                 private storeService: StoreService, private sanitizer: DomSanitizer) {
@@ -103,7 +104,7 @@ export class CreateProductPage implements OnInit {
             image: ['']
         });
         this.article.categories = [];
-        this.utilisateur = await this.userStorageUtils.getUser();
+        this.utilisateur = this.authSrv.currentUser;
         this.article.owner = this.utilisateur.username;
         this.article.colors = [];
         this.article.sizes = [];

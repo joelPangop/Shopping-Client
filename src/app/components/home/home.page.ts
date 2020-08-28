@@ -75,7 +75,7 @@ export class HomePage {
                 private navCtrl: NavController, private cuService: CurrencyService, public languageService: LanguageService,
                 private msgservice: MessageService, private cmdService: CommandeService, private translate: TranslateService,
                 private alertController: AlertController, private userStorageUtils: UserStorageUtils, private storageService: StorageService,
-                private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService,) {
+                private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService) {
 
     }
 
@@ -156,7 +156,6 @@ export class HomePage {
         const OPEN = WebSocket.OPEN;
         const self = this;
 // const webSocket: WebSocket = new WebSocket('https://egoalservice.azurewebsites.net');
-
         this.webSocket.send('test');
         this.webSocket.onmessage = function(event) {
             console.log(event.data);
@@ -184,7 +183,6 @@ export class HomePage {
     }
 
     public async showOptions(ev, option) {
-
         // @ts-ignore
         const popover = await this.popoverController.create({
             component: ShowOptionsPage,

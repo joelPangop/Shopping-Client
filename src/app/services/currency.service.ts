@@ -27,17 +27,17 @@ export class CurrencyService {
                 this.rate = 1;
             }
         });
-        this.storageService.getObject('currency').then((res: any) => {
-            if (res) {
-                this.currency = res.currency;
-            } else {
-                if (this.authService.currentUser) {
-                    this.currency = this.authService.currentUser.currency;
-                } else {
-                    this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
-                }
-            }
-        });
+        // this.storageService.getObject('currency').then((res: any) => {
+        //     if (res) {
+        //         this.currency = res.currency;
+        //     } else {
+        //         if (this.authService.currentUser) {
+        //             this.currency = this.authService.currentUser.currency;
+        //         } else {
+        //             this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
+        //         }
+        //     }
+        // });
 
     }
 

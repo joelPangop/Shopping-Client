@@ -31,7 +31,6 @@ export class AuthService {
     userInfo = {} as UserInfo;
     local;
     currency: any = {};
-    currencyTest = '';
     currencyIcon;
 
     constructor(private http: HttpClient, public helper: JwtHelperService, private router: Router, private userStorageUtils: UserStorageUtils,
@@ -47,13 +46,15 @@ export class AuthService {
         this.storageService.getObject('currency').then((res: any) => {
             if (res) {
                 this.currency = res.currency;
-                this.currencyTest = res.currency.currency;
             } else {
                 if (this.currentUser) {
-                    this.currency = this.currentUser.currency;
-                    this.currencyTest = this.currentUser.currency.currency;
+                    if(this.currentUser.currency){
+                        this.currency = this.currentUser.currency;
+                    } else {
+                        this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
+                    }
                 } else {
-                    this.currency = {};
+                    this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
                 }
             }
         });
@@ -110,6 +111,7 @@ export class AuthService {
             tap(async (res: AuthResponse) => {
                 this.user = this.helper.decodeToken(res['access_token']);
                 this.currentUser = res.user[0];
+                this.currency = this.currentUser.currency;
             }),
             catchError(e => {
                 this.showAlert(e.error.msg);
@@ -128,20 +130,7 @@ export class AuthService {
                     this.currentUser = res.user[0];
                     await this.storageService.setObject('Utilisateur', res.user[0]);
                     await this.storageService.setObject('IsLogginIn', true);
-
-                    // if (this.plt.is('android') || this.plt.is('ios')) {
-                    //     await this.storage.setItem(TOKEN_KEY, res['access_token']);
-                    //     this.user = this.helper.decodeToken(res['access_token']);
-                    //     this.currentUser = res.user[0];
-                    //     await this.storage.setItem('Utilisateur', res.user[0]);
-                    //     await this.storage.setItem('IsLogginIn', true);
-                    // } else if (!this.plt.is('android') && !this.plt.is('ios')) {
-                    //     await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                    //     this.user = this.helper.decodeToken(res['access_token']);
-                    //     this.currentUser = res.user[0];
-                    //     await this.localStorage.set('Utilisateur', res.user[0]);
-                    //     await this.localStorage.set('IsLogginIn', true);
-                    // }
+                    this.currency = this.currentUser.currency;
                     this.authenticationState.next(true);
 
                 }),
@@ -164,13 +153,7 @@ export class AuthService {
                     this.currentUser = res.user[0];
                     await this.storageService.setObject('Utilisateur', res.user[0]);
                     await this.storageService.setObject('IsLogginIn', true);
-                    // } else if (!this.plt.is('android') && !this.plt.is('ios')) {
-                    //     await this.localStorage.set(TOKEN_KEY, res['access_token']);
-                    //     this.user = this.helper.decodeToken(res['access_token']);
-                    //     this.currentUser = res.user[0];
-                    //     await this.localStorage.set('Utilisateur', res.user[0]);
-                    //     await this.localStorage.set('IsLogginIn', true);
-                    // }
+                    this.currency = this.currentUser.currency;
                     this.authenticationState.next(true);
                 }),
                 catchError(e => {
@@ -244,6 +227,11 @@ export class AuthService {
 
         this.storageService.removeItem('currency').then(() => {
             console.log('currency removed');
+            this.currentUser = {
+                username: 'guest',
+                type: 'guest',
+                currency: {currency: 'CAD', icon: 'flag-for-flag-canada'}
+            };
             rep = true;
         }).catch((err) => {
             console.log('error', err);
@@ -307,14 +295,13 @@ export class AuthService {
 
     public async setCurrency(value: any) {
         this.currency = value;
-        this.currencyTest = value.currency;
         await this.storageService.setObject('currency', {
             currency: value
         });
     }
 
     getCurrency(): any {
-        return this.currency.asObservable();
+        return this.currency;
     }
 
 }

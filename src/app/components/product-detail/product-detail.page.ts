@@ -270,6 +270,10 @@ export class ProductDetailPage implements OnInit {
                                 let not = res as Notification;
                                 let res_str = JSON.stringify(not);
                                 this.userStorageUtils.getWebSocket().send(res_str);
+                                this.msgService.loadAllNotifications(this.utilisateur._id).subscribe((res) => {
+                                    console.log(res);
+                                    this.msgService.setNotificationCount(res.length);
+                                });
                             });
                         }
                     }, 1000);
@@ -279,8 +283,8 @@ export class ProductDetailPage implements OnInit {
     }
 
     async gotoEdit() {
-        // await this.storage.setObject('page', 'menu/tabs/product-detail/' + this.article._id);
-        await this.router.navigate(['menu/tabs/edit-product/' + this.article._id]);
+        this.articleService.article = this.article;
+        await this.navCtrl.navigateRoot('menu/tabs/edit-product/' + this.article._id);
     }
 
     async gotoCartPage() {
@@ -429,7 +433,7 @@ export class ProductDetailPage implements OnInit {
             message,
             duration
         });
-        toast.present();
+        await toast.present();
     }
 
     async loadImages() {
@@ -508,7 +512,7 @@ export class ProductDetailPage implements OnInit {
         }
     }
 
-    getRatedPrice(price: number, rate: number){
+    getRatedPrice(price: number, rate: number) {
         const retour = price * rate;
         return retour;
     }

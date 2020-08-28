@@ -4,7 +4,7 @@ import {CategorieTelephone} from '../../models/CategorieTelephone';
 import {Languages} from '../../models/Languages';
 import {Currencies} from '../../models/Currencies';
 import {forEach} from '@angular-devkit/schematics';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {ArticleService} from '../../services/article.service';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
@@ -89,7 +89,7 @@ export class ShowOptionsPage implements OnInit {
         }
     }
 
-    getRate(c1, c2) {
+    getRate(c1, c2): Subscription {
         return this.cuService.convertCurrency(c1, c2)
             .subscribe(
                 response => {
