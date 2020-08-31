@@ -24,6 +24,7 @@ import {StorageService} from '../../services/storage.service';
 import {AuthService} from '../../services/auth.service';
 import {Currencies} from '../../models/Currencies';
 import {IonicSelectableComponent} from 'ionic-selectable';
+import {WebsocketService} from '../../services/websocket.service';
 
 declare function test1(t): any;
 
@@ -84,7 +85,7 @@ export class HomePage {
     async ngOnInit() {
         console.log('test1');
         this.getCategories();
-        this.webSocket = this.userStorageUtils.getWebSocket();
+        // this.webSocket = this.websocketService.getWebSocket();
         this.language = this.languageService.selected;
         this.searchCategories = [
             'Automobile',

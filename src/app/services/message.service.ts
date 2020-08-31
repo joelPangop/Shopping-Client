@@ -73,9 +73,8 @@ export class MessageService {
         return this.http.post(url, message);
     }
 
-
-    changeState(id, body) {
-        return this.http.put(`${environment.api_url}/Message/${id}`, body);
+    changeState(id, body):Observable<Message> {
+        return this.http.put<Message>(`${environment.api_url}/Message/${id}`, body);
     }
 
     deleteMessage(msg) {

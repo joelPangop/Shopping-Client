@@ -1,17 +1,20 @@
-import {Platform} from '@ionic/angular';
+import {AlertController, Platform, ToastController} from '@ionic/angular';
 import {Storage} from '@ionic/storage';
 import {Currency, Utilisateur} from '../models/utilisateur-interface';
 import {Injectable} from '@angular/core';
 import {StorageService} from './storage.service';
 import {Observable} from 'rxjs';
 import {AuthService} from './auth.service';
+import {Notification} from '../models/notification-interface';
+import {NotificationType} from '../models/notificationType';
+import {NotificationService} from './notification.service';
+import {MessageService} from './message.service';
+import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserStorageUtils {
-
-    public webSocket: WebSocket;
 
     constructor(private platform: Platform, private localStorage: Storage, private storageService: StorageService) {
     }
@@ -58,18 +61,4 @@ export class UserStorageUtils {
         return currency;
     }
 
-    getWebSocket(): WebSocket {
-        return this.webSocket;
-    }
-
-    setWebSocket(url: string): void {
-        this.webSocket = new WebSocket(url);
-        // this.sleep();
-    }
-
-    async sleep() {
-        await new Promise(r => {
-            setTimeout(r, 2000);
-        });
-    }
 }

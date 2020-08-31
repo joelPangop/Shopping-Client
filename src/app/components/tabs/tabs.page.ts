@@ -25,7 +25,8 @@ export class TabsPage {
     async ngOnInit() {
         this.messageService.loadAllNotifications(this.authService.currentUser._id).subscribe((res) => {
             console.log(res);
-            this.messageService.setNotificationCount(res.length);
+            let notifications = res.filter((not) => { return not.read === false});
+            this.messageService.setNotificationCount(notifications ? notifications.length : 0);
         });
     }
 

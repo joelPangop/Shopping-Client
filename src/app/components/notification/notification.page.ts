@@ -7,6 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {NavController} from '@ionic/angular';
 import * as moment from 'moment';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
+import {Message} from '../../models/message-interface';
 
 @Component({
     selector: 'app-notification',
@@ -34,25 +35,52 @@ export class NotificationPage implements OnInit {
         this.loadAll();
     }
 
+    ionViewDidEnter() {
+        this.loadAll();
+    }
+
+    ionViewWillEnter() {
+        this.loadAll();
+    }
+
+    changeState(message: Message) {
+        message.read = true;
+        this.likeNotifications.forEach((not) => {
+            if (not.message_id === message._id) {
+                not.read = true;
+                this.messageService.updateNotification(not._id, not).subscribe((n) => {
+                    not = n as Notification;
+                });
+                this.messageService.changeState(message._id, message).subscribe(res => {
+                    message = res as Message;
+                });
+            }
+        });
+    }
+
     segmentChanged($event: CustomEvent) {
         // tslint:disable-next-line:no-unused-expression
         $event.detail.value;
         if (this.notifType === 'likes') {
-            let likeNotificationsNotRead: Notification[] = this.likeNotifications.filter(like => {
+            let likeNotificationsNotRead: Notification[] = this.messageService.likeNotifications.filter(like => {
                 return like.read === false;
             });
             let count: number = this.messageService._notificationCount.value;
             if (count > 0) {
-                for (let msgNotif of likeNotificationsNotRead) {
-                    if (msgNotif.read === false) {
-                        msgNotif.read = !msgNotif.read;
-                        this.messageService.updateNotification(msgNotif._id, msgNotif).subscribe((res) => {
-                            msgNotif = res;
-                        });
+                if (likeNotificationsNotRead.length > 0) {
+                    for (let msgNotif of likeNotificationsNotRead) {
+                        if (msgNotif.read === false) {
+                            msgNotif.read = !msgNotif.read;
+                            this.messageService.updateNotification(msgNotif._id, msgNotif).subscribe((res) => {
+                                msgNotif = res;
+                                this.messageService.setNotificationCount(count - 1);
+                            });
+                        }
                     }
+                } else {
+                    this.messageService.setNotificationCount(0);
                 }
             }
-            this.messageService.setNotificationCount(count - likeNotificationsNotRead.length);
         }
     }
 
@@ -154,8 +182,17 @@ export class NotificationPage implements OnInit {
                 msgNotif.read = !msgNotif.read;
                 this.messageService.updateNotification(msgNotif._id, msgNotif).subscribe((res) => {
                     msgNotif = res;
-                    let count: number = this.messageService._notificationCount.value;
-                    this.messageService.setNotificationCount(count - 1);
+                    this.messageService.loadMessageById(msgNotif.message_id).subscribe((message) => {
+                        message.read = !message.read;
+                        this.messageService.changeState(message._id, message).subscribe((m) => {
+                            message = m;
+                            let count: number = this.messageService._notificationCount.value;
+                            if (count > 0) {
+                                this.messageService.setNotificationCount(count - 1);
+                            }
+                        });
+                    });
+
                 });
             }
         }

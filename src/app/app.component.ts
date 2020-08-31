@@ -20,6 +20,7 @@ import {Notification} from './models/notification-interface';
 import {NotificationType} from './models/notificationType';
 import {NotificationService} from './services/notification.service';
 import {MessageService} from './services/message.service';
+import {WebsocketService} from './services/websocket.service';
 
 @Component({
     selector: 'app-root',
@@ -52,7 +53,7 @@ export class AppComponent {
         private userStorageUtils: UserStorageUtils,
         public translate: TranslateService,
         private languageService: LanguageService,
-        private notificationService: NotificationService,
+        private websocketService: WebsocketService,
         private msgService: MessageService
         // private socket: Socket
     ) {
@@ -70,36 +71,57 @@ export class AppComponent {
 
             // this.languageService.setInitialAppLanguage();
             const self = this;
-            this.userStorageUtils.setWebSocket('ws://192.168.2.58:8080');
-            // this.userStorageUtils.setWebSocket('wss://egoalservice.azurewebsites.net');
+            this.websocketService.init('ws://192.168.2.58:8080');
+            // this.userStorageUtils.init('wss://egoalservice.azurewebsites.net');
 
             this.localNotifications.on('trigger').subscribe(res => {
                 console.log('trigger', res);
                 this.presentAlert(res.title);
             });
 
-            this.userStorageUtils.getWebSocket().onmessage = function(event) {
-                console.log(event.data);
-                let result: Notification = JSON.parse(event.data);
-                let msg = '';
-                if (result.sender !== self.authService.currentUser._id && result.article.utilisateurId === self.authService.currentUser._id) {
-                    self.authService.getUserById(result.sender).subscribe((res) => {
-                        const user = res;
-                        if (result.type === NotificationType.MESSAGE) {
-                            msg = 'Nouveaux message de ' + user.username;
-                            // Schedule a single notification
-                            self.notificationService.scheduleNotification(msg,event.data);
-                            self.notificationService.notify(msg);
-                        }
-                        if (result.type === NotificationType.LIKE) {
-                            msg = 'Nouveaux like de ' + user.username;
-                            self.notificationService.notify(msg);
-                            self.notificationService.scheduleNotification(msg,event.data);
-                        }
-                        self.presentToast(msg);
-                    });
-                }
-            };
+            // this.userStorageUtils.getWebSocket().onmessage = function(event) {
+            //     console.log(event.data);
+            //     let result: Notification = JSON.parse(event.data);
+            //     let msg = '';
+            //     if (result.sender !== self.authService.currentUser._id) {
+            //         self.authService.getUserById(result.sender).subscribe((res) => {
+            //             const user = res;
+            //             if (result.type === NotificationType.MESSAGE) {
+            //                 msg = 'Nouveaux message de ' + user.username;
+            //                 // Schedule a single notification
+            //                 self.msgService.loadMessageById(result.message_id).subscribe((message) => {
+            //                     if (self.router.routerState.snapshot.url.includes('action-message')) {
+            //                         message.read = true;
+            //                         result.read = true;
+            //                         self.msgService.changeState(message._id, message).subscribe((m) => {
+            //                             message = m;
+            //                             self.notificationService.scheduleNotification(msg, event.data);
+            //                             self.notificationService.notify(msg);
+            //                             self.msgService.messages.push(message);
+            //                             self.msgService.updateNotification(result._id, result).subscribe((not) => {
+            //                                 result = not;
+            //                             });
+            //                         });
+            //                     } else {
+            //                         self.msgService.loadAllNotifications(self.authService.currentUser._id).subscribe((res) => {
+            //                             let not = res.filter((r) => {
+            //                                 return r.read === false;
+            //                             });
+            //                             self.msgService.setNotificationCount(not.length);
+            //                             self.msgService.messages.push(message);
+            //                         });
+            //                     }
+            //                 });
+            //             }
+            //             if (result.type === NotificationType.LIKE) {
+            //                 msg = 'Nouveaux like de ' + user.username;
+            //                 self.notificationService.notify(msg);
+            //                 self.notificationService.scheduleNotification(msg, event.data);
+            //             }
+            //             self.presentToast(msg);
+            //         });
+            //     }
+            // };
             this.statusBar.backgroundColorByHexString('0bb8cc');
             this.deepLinks.routeWithNavController(this.navCtrl, {
                 'product-detail/:id': ProductDetailPage

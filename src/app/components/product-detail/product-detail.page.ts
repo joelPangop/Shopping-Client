@@ -25,6 +25,7 @@ import {Plugins} from '@capacitor/core';
 import * as PluginsLibrary from 'capacitor-video-player';
 import {StreamingMedia, StreamingVideoOptions} from '@ionic-native/streaming-media/ngx';
 import {StorageService} from '../../services/storage.service';
+import {WebsocketService} from '../../services/websocket.service';
 
 const {CapacitorVideoPlayer, Device} = Plugins;
 
@@ -70,7 +71,7 @@ export class ProductDetailPage implements OnInit {
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private storage: StorageService, private imageService: ImageService, private sharing: SocialSharing, public authService: AuthService,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService, private streamingVideo: StreamingMedia,
-                public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService,
+                public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService, private websocketService: WebsocketService,
                 private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,
                 private router: Router, private loadingCtrl: LoadingController) {
         this.article = {} as Article;
@@ -90,16 +91,17 @@ export class ProductDetailPage implements OnInit {
             }
         });
         await this.loadArticle();
-        this.userStorageUtils.getWebSocket().onopen = (ev) => {
-            console.log('websocket connected !!');
-            console.log(ev);
-        };
+        // this.userStorageUtils.getWebSocket().onopen = (ev) => {
+        //     console.log('websocket connected !!');
+        //     console.log(ev);
+        // };
         await this.userStorageUtils.getCurrency().then(async res => {
             // this.currency = res ? res.currency : this.utilisateur.currency.currency;
         });
         if (!this.rate) {
             this.rate = 0;
         }
+
     }
 
     videoPlayer: any;
@@ -269,7 +271,12 @@ export class ProductDetailPage implements OnInit {
                             this.msgService.addNotification(notification).subscribe((res: any) => {
                                 let not = res as Notification;
                                 let res_str = JSON.stringify(not);
-                                this.userStorageUtils.getWebSocket().send(res_str);
+                                if (!this.websocketService.getWebSocket()){
+                                    console.log('No WebSocket connected :(');
+                                    return;
+                                }
+                                this.websocketService.getWebSocket().send(res_str);
+                                // this.userStorageUtils.getWebSocket().dispatchEvent('test')
                                 this.msgService.loadAllNotifications(this.utilisateur._id).subscribe((res) => {
                                     console.log(res);
                                     this.msgService.setNotificationCount(res.length);
