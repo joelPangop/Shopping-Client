@@ -1,0 +1,122 @@
+<ion-header>
+    <ion-toolbar color="color1">
+        <ion-buttons slot="start">
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>souscription</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <form id="subscription-form" [formGroup]="subscriptionForm">
+                    <div id="card-element" class="MyCardElement">
+                        <ion-label>{{authService.currentUser.email}}</ion-label>
+                        <!-- Elements will create input elements here -->
+                    </div>
+                    <p class="title">Select Payment</p>
+
+                    <!-- Payment Card Options -->
+                    <ion-radio-group>
+                        <ion-row>
+                            <ion-col *ngFor="let item of cards | keyvalue">
+                                <ion-item lines="none">
+                                    <ion-radio color="color1" mode="ios" [value]="item.key"
+                                               (click)="showPaymentOption(item.key)"></ion-radio>
+                                    <img [src]="item.value">
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+                    </ion-radio-group>
+                    <div *ngIf="cc">
+                        <!-- Card Information Form -->
+                        <!--                        <form class="ion-padding">-->
+                        <!-- Cardholder Name -->
+                        <ion-card>
+                            <ion-item>
+                                <ion-input placeholder="Cardholder Name" [(ngModel)]="cardName"
+                                           [ngModelOptions]="{standalone: true}"></ion-input>
+                            </ion-item>
+
+                            <!-- Card Number -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Card Number" [(ngModel)]="cardNumber" [ngModelOptions]="{standalone: true}"></ion-input>
+                            </ion-item>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- MM -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="MM" [(ngModel)]="mm"
+                                                   [ngModelOptions]="{standalone: true}"></ion-input>
+                                    </ion-item>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- YY -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="YY" [(ngModel)]="yy"
+                                                   [ngModelOptions]="{standalone: true}"></ion-input>
+                                    </ion-item>
+                                </ion-col>
+                            </ion-row>
+
+                            <!-- CVV -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="CVV" [(ngModel)]="cvc"
+                                           [ngModelOptions]="{standalone: true}"></ion-input>
+                            </ion-item>
+                            <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>
+                            <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
+                            <!--                        </form>-->
+                        </ion-card>
+                    </div>
+                    <div *ngIf="paypal">
+                        <form class="ion-padding" id="paypalFormId">
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-col>
+                                        Use this Pay button in your app's payment page with the attached logic.
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                            <ion-card class="welcome-card">
+                                <ion-img src="/assets/paypal.jpg"></ion-img>
+                                <ion-card-header>
+                                    <ion-card-subtitle>Get Started</ion-card-subtitle>
+                                    <ion-card-title>PayPal Sample</ion-card-title>
+                                    <ion-row>
+                                        <ion-col>
+                                            Total Payment
+                                        </ion-col>
+                                        <ion-col>
+                                            {{currencyIcon}}{{paymentAmount}}
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-card-header>
+                                <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">
+                                    <ion-button expand="full" color="success"
+                                                (click)="payWithPaypal()">Pay with PayPal
+                                    </ion-button>
+                                </ion-card-content>
+                                <div *ngIf="!platform.is('ios') && !platform.is('android')"
+                                     id="paypal-button-container"></div>
+                            </ion-card>
+                        </form>
+                    </div>
+                    <!-- We'll put the error messages in this element -->
+                    <div id="card-errors" role="alert"></div>
+                    <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>
+                </form>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-grid>
+
+</ion-content>

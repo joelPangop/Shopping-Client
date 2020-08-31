@@ -1,0 +1,6 @@
+<ion-list>
+    <ion-item button *ngFor="let l of categories" [class.active-item] (click)="setCategory(l)">
+        <ion-label>{{l}}</ion-label>
+        <ion-checkbox [checked]="choosenCategories.includes(l)"></ion-checkbox>
+    </ion-item>
+</ion-list>
