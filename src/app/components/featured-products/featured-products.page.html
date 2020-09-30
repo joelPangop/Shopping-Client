@@ -21,7 +21,14 @@
               </ion-fab>
 
               <ion-card-content>
-                <ion-row>
+                <ion-row *ngIf="item.price_discounted">
+                  <ion-text color="color1" class="price">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+                  </ion-text>&nbsp;&nbsp;
+                  <span class="previous-price">
+                {{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+            </span>
+                </ion-row>
+                <ion-row *ngIf="!item.price_discounted">
                   <ion-text color="color1">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}} &nbsp;</ion-text>
                 </ion-row>
                 <ion-row class="product-name">

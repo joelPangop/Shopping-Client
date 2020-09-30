@@ -10,7 +10,7 @@ import {StatusBar} from '@ionic-native/status-bar/ngx';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {Facebook} from '@ionic-native/facebook/ngx'
+import {Facebook} from '@ionic-native/facebook/ngx';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {JWT_OPTIONS, JwtModule} from '@auth0/angular-jwt';
 import {SocialSharing} from '@ionic-native/social-sharing/ngx';
@@ -84,9 +84,12 @@ import {PreviewVideoPageModule} from './components/preview-video/preview-video.m
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
 import {Globalization} from '@ionic-native/globalization/ngx';
-import  localeFr from '@angular/common/locales/fr';
+import localeFr from '@angular/common/locales/fr';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {StreamingMedia} from '@ionic-native/streaming-media/ngx';
+import {EmailComposer} from '@ionic-native/email-composer/ngx';
+import {SMS} from '@ionic-native/sms/ngx';
+import {AngularFireModule} from '@angular/fire';
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -96,6 +99,18 @@ export function jwtOptionsFactory(storage) {
         whitelistedDomains: ['https://egoalservice.azurewebsites.net']
     };
 }
+
+let CREDENTIALS = {
+    apiKey: 'AIzaSyAPhAsMPLUjU8eCDWOE17_yoIyaCu7D3kU',
+    authDomain: 'egoal-shopping.firebaseapp.com',
+    databaseURL: 'https://egoal-shopping.firebaseio.com',
+    projectId: 'egoal-shopping',
+    storageBucket: 'egoal-shopping.appspot.com',
+    messagingSenderId: '135938716350',
+    appId: '1:135938716350:web:8d5e38fada46137f26a4ef',
+    measurementId: 'G-1QECVFYK2L'
+
+};
 // const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 // @ts-ignore
 @NgModule({
@@ -174,7 +189,9 @@ export function jwtOptionsFactory(storage) {
         Globalization,
         IonicSelectableModule,
         StreamingMedia,
-        { provide: LOCALE_ID, useValue: 'fr' },
+        EmailComposer,
+        SMS,
+        {provide: LOCALE_ID, useValue: 'fr'},
         {
             provide: HAMMER_GESTURE_CONFIG,
             useClass: IonicGestureConfig

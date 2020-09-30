@@ -50,7 +50,12 @@ const routes: Routes = [
     {
         path: 'preview-search',
         loadChildren: () => import('./components/preview-search/preview-search.module').then(m => m.PreviewSearchPageModule)
-    },
+    },  {
+    path: 'footer-view',
+    loadChildren: () => import('./components/footer-view/footer-view.module').then( m => m.FooterViewPageModule)
+  },
+
+
     // {
     //     path: 'edit-product/:id',
     //     loadChildren: () => import('./components/edit-product/edit-product.module').then(m => m.EditProductPageModule)

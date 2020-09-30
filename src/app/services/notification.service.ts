@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from '@ionic/angular';
 import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {Plugins} from '@capacitor/core';
+const {CapacitorVideoPlayer, Device} = Plugins;
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +13,8 @@ export class NotificationService {
     }
 
     notify(msg) {
-        if (!('Notification' in window)) {
+        const info = Device.getInfo();
+        if (!('Notification' in window) && info) {
             this.presentAlert('This browser does not support desktop notification, try Chromium');
         } else if (Notification.permission === 'granted') {
             const notification = new Notification('Chat App', {

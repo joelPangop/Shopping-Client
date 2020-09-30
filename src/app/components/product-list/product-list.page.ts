@@ -26,6 +26,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {translate} from '@angular/localize/src/tools/src/translate/source_files/source_file_utils';
 import {AuthService} from '../../services/auth.service';
 import {Utils} from '../../Utils';
+import {StorageService} from '../../services/storage.service';
 
 @Component({
     selector: 'app-product-list',
@@ -62,31 +63,52 @@ export class ProductListPage implements OnInit {
     list: Boolean = false;
     action: string;
     public language: string;
+    blurClass;
+    page = 0;
+    totalPages;
+    itemPerPage = 3;
+    indexPage = 1;
 
-    constructor(private http: HttpClient, private router: Router, private localStorage: Storage,
+    constructor(private http: HttpClient, private router: Router, private storage: StorageService,
                 private photoViewer: PhotoViewer, private navCtrl: NavController, private translateService: TranslateService,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs, private cmdService: CommandeService,
                 public articleService: ArticleService, public cuService: CurrencyService, private modalController: ModalController,
                 private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService,
                 public authService: AuthService) {
+        this.cartItemCount = this.cartService.getCartItemCount();
 
         this.filterObject = new BehaviorSubject({});
-        this.cartService.getCartItemCount().subscribe((data) => {
-            this.cartService.cartItemCount.next(data);
-        });
-
     }
 
     async ngOnInit() {
+        this.utilisateur = await this.authService.currentUser;
         await this.loadArticles();
         this.ip = environment.api_url;
+    }
+
+    async ionViewDidEnter() {
+        if (this.authService.currentUser) {
+            await this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+                {
+                    let data = res;
+                    this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+                }
+            });
+        } else {
+            this.storage.getObject('cart').then((res: any) => {
+                let data = res;
+                this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+            });
+        }
     }
 
     // @ts-ignore
     async loadArticles() {
         await this.articleService.loadArticles()
-            .subscribe(async (articles: Article[]) => {
+            .subscribe(async (articles) => {
                 this.articleService.articles = articles;
+                this.totalPages = Math.ceil(articles.length / this.itemPerPage);
+                this.updatePageInfo();
                 await this.userStorageUtils.getCurrency().then(async res => {
                     if (res) {
                         this.currency = res.currency;
@@ -178,23 +200,103 @@ export class ProductListPage implements OnInit {
 
     // One column view function
     showOneColumn() {
+        this.itemPerPage = 2;
         this.oneColumn = true;
         this.grid = false;
         this.list = false;
+        this.totalPages = Math.ceil(this.articleService.articles.length / this.itemPerPage);
+        let i = 0;
+        let y = 0;
+        this.indexPage = 0;
+        let arr: number[][] = [];
+        while (i < this.articleService.articles.length - 1) {
+            for (let a = i; a > i + this.itemPerPage; a++) {
+                arr[this.indexPage].push(a);
+            }
+            if (this.page >= i && this.page < i + this.itemPerPage) {
+
+                this.page = i;
+            }
+            this.indexPage++;
+            i += this.itemPerPage;
+        }
+
+        console.log(arr);
+        console.log(this.page);
+        this.updatePageInfo();
     }
 
     // Grid view function
     showGrid() {
+        this.itemPerPage = 3;
         this.grid = true;
         this.oneColumn = false;
         this.list = false;
+        this.totalPages = Math.ceil(this.articleService.articles.length / this.itemPerPage);
+        let i = 0;
+        let w = 0;
+        let item = 0;
+        let total = this.articleService.articles.length;
+        this.indexPage = 0;
+        let arr: number[][] = [];
+
+        for (let i = 1; i <= this.totalPages; i++) {
+            arr.push([]);
+        }
+        console.log('arr', arr);
+        let y = 0;
+        while ( y < arr.length) {
+            while (w < total) {
+                let items = Math.abs(total - w) < this.itemPerPage ? total - w : this.itemPerPage;
+                for (let i = 1; i <= items; i++) {
+                    if(arr[y]){
+                        arr[y].push(w + 1);
+                        w++;
+                    }
+                }
+                y++;
+            }
+        }
+
+        for(let x = 0; x < arr.length; x++){
+            if(arr[x].includes(this.page)){
+                this.page = arr[x][arr[x].length - 1];
+                this.indexPage = x + 2;
+            }
+            // this.indexPage++;
+        }
+
+        // while (i < this.articleService.articles.length - 1) {
+        //     if (this.page >= i && this.page < i + this.itemPerPage) {
+        //         this.page = i;
+        //     }
+        //     this.indexPage++;
+        //     i += this.itemPerPage;
+        // }
+
+        console.log(this.page);
+        this.updatePageInfo();
     }
 
     // List view function
     showList() {
+        this.itemPerPage = 4;
         this.list = true;
         this.grid = false;
         this.oneColumn = false;
+        this.totalPages = Math.ceil(this.articleService.articles.length / this.itemPerPage);
+        let i = 0;
+        this.indexPage = 0;
+        while (i < this.articleService.articles.length - 1) {
+            if (this.page >= i && this.page < i + this.itemPerPage) {
+                this.page = i;
+            }
+            this.indexPage++;
+            i += this.itemPerPage;
+        }
+
+        console.log(this.page);
+        this.updatePageInfo();
     }
 
     // Go to product details page
@@ -277,8 +379,86 @@ export class ProductListPage implements OnInit {
         return await modal.present();
     }
 
-    getRatedPrice(price: number, rate: number){
+    getRatedPrice(price: number, rate: number) {
         const retour = price * rate;
         return retour;
+    }
+
+    changeBorderColor($ev, pos: number) {
+        console.log($ev.target.value);
+        if (pos === 1) {
+            //In JS file set the blur variable to the blur class
+            this.blurClass = 'blurHover';
+        } else if (pos === 2) {
+// when done just set the blur to false
+            this.blurClass = false;
+        }
+    }
+
+    // Get Search Result
+    getProducts($ev) {
+        // this.getProductList();
+
+        // set val to the value of the searchbar
+        const val = $ev.target.value;
+
+        // if the value is an empty string don't filter the product
+        // if (val && val.trim() !== '') {
+        this.articleService.loadArticles().subscribe((rep) => {
+            this.articleService.articles = rep.filter((item) => {
+                let resp = (item.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
+                console.log('resp', resp);
+                return resp;
+            });
+        });
+
+        console.log('result', this.articleService.articles);
+        // $ev.target.complete;
+
+        // }
+    }
+
+    nextPage() {
+        if (this.page < this.itemPerPage * (this.totalPages - 1)) {
+            this.page += this.itemPerPage;
+            this.indexPage++;
+            this.updatePageInfo();
+        }
+    }
+
+    prevPage() {
+        if (this.page > 0) {
+            this.page -= this.itemPerPage;
+            this.indexPage--;
+            this.updatePageInfo();
+        }
+    }
+
+    goFirst() {
+        if (this.page > 0) {
+            this.page = 0;
+            this.indexPage = 1;
+            this.updatePageInfo();
+        }
+    }
+
+    goLast() {
+        if (this.page < this.articleService.articles.length - 1) {
+            this.page = (this.totalPages - 1) * this.itemPerPage;
+            this.indexPage = this.totalPages;
+            this.updatePageInfo();
+        }
+    }
+
+    updatePageInfo() {
+        if (this.articleService.articles) {
+            this.articles = this.articleService.articles.slice(this.page, this.articleService.articles.length > this.page + this.itemPerPage ?
+                this.page + this.itemPerPage : this.articleService.articles.length);
+
+        }
+    }
+
+    setFirstPage() {
+
     }
 }

@@ -73,13 +73,15 @@ export class NotificationPage implements OnInit {
                             msgNotif.read = !msgNotif.read;
                             this.messageService.updateNotification(msgNotif._id, msgNotif).subscribe((res) => {
                                 msgNotif = res;
-                                this.messageService.setNotificationCount(count - 1);
+                                count = count - 1;
+                                this.messageService.setNotificationCount(count);
                             });
                         }
                     }
-                } else {
-                    this.messageService.setNotificationCount(0);
                 }
+                // else {
+                //     this.messageService.setNotificationCount(0);
+                // }
             }
         }
     }

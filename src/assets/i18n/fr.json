@@ -50,6 +50,8 @@
     "detail": "Details du produit",
     "nom": "Nom",
     "prix": "Prix",
+    "prix_discounted": "Prix du rabais",
+    "discount": "Rabais",
     "categorie": "Categorie du produit",
     "location": "Ou se trouve le produit",
     "produit_state": "Etat du produit",
@@ -120,5 +122,18 @@
     "Profile": "Profile",
     "articles": "Mes articles",
     "Compte": "Compte"
+  },
+  "Footer": {
+    "service_client": "SERVICE CLIENT",
+    "how_to_buy": "Comment acheter sur Egoal",
+    "contact": "Nous contacter",
+    "return_politic": "Politique de retour",
+    "delivery_price": "Frais de livraison",
+    "a_propos": "A propos",
+    "carriere": "Carrières chez Egoal",
+    "sale": "Vendre sur Egoal",
+    "gen_condition": "Condition general",
+    "help": "Aide",
+    "about_us": "QUI SOMMES NOUS?"
   }
 }

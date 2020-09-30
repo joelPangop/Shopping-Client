@@ -1,6 +1,6 @@
 <ion-list *ngIf="option === 'language'">
     <ion-item button *ngFor="let l of languages" (click)="setLanguage(l.value)" detail="false">
-        <ion-thumbnail slot="start" >
+        <ion-thumbnail slot="start">
             <img [src]="l.img">
         </ion-thumbnail>
         <ion-label text-wrap>{{l.text}}</ion-label>
@@ -8,15 +8,15 @@
     </ion-item>
 </ion-list>
 <ion-list *ngIf="option === 'currency' || option === 'userCurrency'">
-<!--    <ion-radio-group value="{{authService.currency}}">-->
-        <ion-item button *ngFor="let c of currencies" (click)="setCurrency(c)">
-            <ion-label text-wrap>
-<!--                <img src="{{'assets/' + c.icon + '.svg'}}" >-->
-                <ion-icon src="{{'assets/' + c.icon + '.svg'}}" slot="icon-only"></ion-icon>
-                {{c.currency}}
-            </ion-label>
-<!--            <ion-radio slot="end" value="{{c.key}}"></ion-radio>-->
-            <ion-icon slot="end" name="checkmark" *ngIf="c.currency === currency.currency"></ion-icon>
-        </ion-item>
-<!--    </ion-radio-group>-->
+    <!--    <ion-radio-group value="{{authService.currency}}">-->
+    <ion-item button *ngFor="let c of currencies" (click)="setCurrency(c)">
+        <ion-label text-wrap>
+            <!--                <img src="{{'assets/' + c.icon + '.svg'}}" >-->
+            <ion-icon src="{{'assets/' + c.icon + '.svg'}}" slot="icon-only"></ion-icon>
+            {{c.currency}}
+        </ion-label>
+        <!--            <ion-radio slot="end" value="{{c.key}}"></ion-radio>-->
+        <ion-icon slot="end" name="checkmark" *ngIf="c.currency === currency.currency"></ion-icon>
+    </ion-item>
+    <!--    </ion-radio-group>-->
 </ion-list>

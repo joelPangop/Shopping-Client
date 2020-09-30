@@ -71,7 +71,7 @@ export class ProfilePage implements OnInit {
             image: ['']
         });
         this.options = Object.keys(CategorieTelephone);
-        this.utilisateur = await this.userStorageUtils.getUser();
+        this.utilisateur = await this.authSrv.currentUser;
         console.log(this.utilisateur);
         this.authSrv.userInfo = this.utilisateur.userInfo;
         this.authSrv.address = this.utilisateur.userInfo.address;

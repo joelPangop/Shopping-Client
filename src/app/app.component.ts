@@ -71,8 +71,8 @@ export class AppComponent {
 
             // this.languageService.setInitialAppLanguage();
             const self = this;
-            this.websocketService.init('ws://192.168.2.58:8080');
-            // this.userStorageUtils.init('wss://egoalservice.azurewebsites.net');
+            // this.websocketService.init('ws://192.168.2.58:8080');
+            this.websocketService.init('wss://egoalservice.azurewebsites.net');
 
             this.localNotifications.on('trigger').subscribe(res => {
                 console.log('trigger', res);

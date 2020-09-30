@@ -145,7 +145,7 @@ export class RegisterPage implements OnInit {
     }
 
     removeControl(i: number) {
-
+        this.authSrv.userInfo.telephones.splice(i, 1);
     }
 
     addTelephone() {

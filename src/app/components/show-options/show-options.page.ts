@@ -78,8 +78,9 @@ export class ShowOptionsPage implements OnInit {
             console.log(this.currency);
             console.log(this.authService.currency);
             // this.currOptionSubject.next(this.currency);
-
-            this.getRate(this.authService.currentUser.currency.currency, this.authService.currency.currency);
+            if (this.authService.currentUser.currency) {
+                this.getRate(this.authService.currentUser.currency.currency, this.authService.currency.currency);
+            }
 
             const popover = this.navParams.get('popover');
             popover.dismiss({

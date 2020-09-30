@@ -13,6 +13,7 @@ export interface Utilisateur {
     userInfo?: UserInfo;
     currency?: Currency;
     customer_profile?: any;
+    verified?: boolean;
     _id ?: string;
 }
 

@@ -5,6 +5,9 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Message} from '../models/message-interface';
 import {Notification} from '../models/notification-interface';
 import {Utilisateur} from '../models/utilisateur-interface';
+import {catchError, tap} from 'rxjs/operators';
+import {AuthResponse} from '../models/auth-response';
+import {Mail} from '../models/mail-interface';
 
 @Injectable({
     providedIn: 'root'
@@ -73,7 +76,7 @@ export class MessageService {
         return this.http.post(url, message);
     }
 
-    changeState(id, body):Observable<Message> {
+    changeState(id, body): Observable<Message> {
         return this.http.put<Message>(`${environment.api_url}/Message/${id}`, body);
     }
 
@@ -81,7 +84,11 @@ export class MessageService {
         return this.http.delete(`${environment.api_url}/Message/${msg._id}`);
     }
 
-    updateNotification(id, body):Observable<Notification> {
+    delete(msg) {
+        return this.http.delete(`${environment.api_url}/Message/${msg._id}`);
+    }
+
+    updateNotification(id, body): Observable<Notification> {
         return this.http.put<Notification>(`${environment.api_url}/Notification/${id}`, body);
     }
 
@@ -91,5 +98,10 @@ export class MessageService {
 
     setNotificationCount(value: number) {
         this._notificationCount.next(value);
+    }
+
+    sendMail(content: Mail): Observable<Mail> {
+        const url = `${environment.api_url1}/mail`;
+        return this.http.post<Mail>(url, content);
     }
 }

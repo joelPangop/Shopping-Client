@@ -50,10 +50,12 @@
     "detail": "Product detail",
     "nom": "Name",
     "prix": "Price",
+    "prix_discounted": "Discount Price",
+    "discount": "Discount",
     "categorie": "Product category",
     "location": "Where is the product",
     "produit_state": "Product condition",
-    "state": "Sate",
+    "state": "State",
     "state1": "Brand new",
     "state2": "Already used",
     "delivery": "Mode of acquisition",
@@ -124,5 +126,18 @@
     "Profile": "Profile",
     "articles": "My products",
     "Compte": "Account"
+  },
+  "Footer": {
+    "service_client": "Customer Service",
+    "how_to_buy": "How to buy on Egoal",
+    "contact": "Contact us",
+    "return_politic": "Return politic",
+    "delivery_price": "Delivery price",
+    "a_propos": "About",
+    "carriere": "Careers at Egoal",
+    "sale": "Sale on Egoal",
+    "gen_condition": "General condition",
+    "help": "Help",
+    "about_us": "ABOUT US?"
   }
 }

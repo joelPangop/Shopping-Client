@@ -1,13 +1,18 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
-import {MenuController, PopoverController} from '@ionic/angular';
+import {AlertController, LoadingController, MenuController, PopoverController, ToastController} from '@ionic/angular';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {PagesService} from '../../services/pages.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
 import {BehaviorSubject} from 'rxjs';
+import {CategoriesService} from '../../services/categories.service';
+import {CartService} from '../../services/cart.service';
+import {StorageService} from '../../services/storage.service';
+import {itemCart} from '../../models/itemCart-interface';
+import {Message} from '../../models/message-interface';
 
 @Component({
     selector: 'app-menu',
@@ -49,35 +54,28 @@ export class MenuPage implements OnInit {
     icon;
     currency;
 
-    constructor(public authService: AuthService, private router: Router,
-                private menuController: MenuController,
-                private pagesService: PagesService,
-                private userStorageUtils: UserStorageUtils, private popoverController: PopoverController) {
-        // this.menuController.enable(true); // Enable side menu
-        // this.userStorageUtils.getUser().then(res => {
-        //     this.utilisateur = res as Utilisateur;
-        //     if (this.authService.currentUser._id) {
-        //         this.signOption = 'Signout';
-        //     } else {
-        //         this.signOption = 'Sign In';
-        //     }
-        // });
-        if (this.authService.currentUser._id) {
-            this.signOption = 'Signout';
-        } else {
-            this.signOption = 'Sign In';
-        }
+    constructor(public authService: AuthService, private router: Router, public cartService: CartService,
+                private menuController: MenuController, private toastCtrl: ToastController,
+                private pagesService: PagesService, private loadingCtrl: LoadingController, private storage: StorageService,
+                private userStorageUtils: UserStorageUtils, private popoverController: PopoverController,
+                private alertController: AlertController) {
+
+        // if (this.authService.currentUser._id) {
+        //     this.signOption = 'Signout';
+        // } else {
+        //     this.signOption = 'Sign In';
+        // }
     }
 
     ngOnInit() {
         // this.userStorageUtils.getUser().then(res => {
         this.utilisateur = this.authService.currentUser;
         // });
-        if (this.authService.currentUser._id) {
-            this.signOption = 'Signout';
-        } else {
-            this.signOption = 'Sign In';
-        }
+        // if (this.authService.currentUser._id) {
+        //     this.signOption = 'Signout';
+        // } else {
+        //     this.signOption = 'Sign In';
+        // }
         this.appPages = this.pagesService.getPages();
         this.authService.isAuthenticated.subscribe((state) => {
             if (state) {
@@ -97,14 +95,31 @@ export class MenuPage implements OnInit {
     }
 
     async logOut() {
-        await this.router.navigate(['onbroading']).then(r => this.authService.logout());
+        const loading = await this.loadingCtrl.create({
+            message: 'Chargement...'
+        });
+        await loading.present();
+        await this.authService.logout().then((rep) => {
+            if (rep === true) {
+                loading.dismiss();
+                this.storage.getObject('cart').then((res) => {
+                    if(res){
+                        let cart = res as unknown as itemCart[];
+                        this.cartService.setCartItemCount(cart.length);
+                    } else {
+                        this.cartService.setCartItemCount(0);
+                    }
+                })
+                // this.router.navigate(['menu/tabs/tab1']);
+            } else {
+                this.presentToast('Log out not fully done', 2000);
+            }
+        });
     }
 
-    async sign() {
+    async sign($event) {
         if (this.authService.currentUser._id) {
-            if (this.authService.logout()) {
-                await this.router.navigate(['menu/tabs/tab1']);
-            }
+            this.handleLogOutButtonClick($event)
         } else {
             await this.menuController.enable(false); // Make Sidemenu disable
             await this.router.navigate(['landing-page']);
@@ -156,7 +171,7 @@ export class MenuPage implements OnInit {
             component: ShowOptionsPage,
             event: ev,
             translucent: true,
-            cssClass: 'my-custom-dialog',
+            cssClass: 'popover-currency',
             componentProps: {
                 currOptionSubject: this.currOptionSubject,
                 currIconOptionSubject: this.currIconOptionSubject,
@@ -177,4 +192,38 @@ export class MenuPage implements OnInit {
             });
         return await popover.present();
     }
+
+    async presentToast(message: string, duration: number) {
+        const toast = await this.toastCtrl.create({
+            message,
+            duration
+        });
+        await toast.present();
+    }
+
+    async handleLogOutButtonClick($event) {
+        const alert = await this.alertController.create({
+            message: 'Delete this message?',
+            buttons: [
+                {
+                    text: 'No',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('No');
+                    }
+                },
+                {
+                    text: 'Yes',
+                    role: 'OK',
+                    handler: () => {
+                        console.log('Yes');
+                        this.logOut();
+                    }
+                }]
+        });
+        return alert.present().then(r => {
+            console.log('res:', r);
+        });
+    }
+
 }

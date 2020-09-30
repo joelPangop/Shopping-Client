@@ -54,4 +54,35 @@
     z-index: -1;
   }
 
+  .toggle_box {
+    display: flex;
+    align-items: center;
+    min-width: fit-content;
+
+    span {
+      display: block;
+      font-size: 0.92rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    ion-toggle {
+      --background: #F4F7F1;
+      --background-checked: #F4F7F1;
+      --handle-background: var(--text-light);
+      --handle-background-checked: var(--primary);
+      --handle-height: 13px;
+      --handle-width: 13px;
+      --handle-box-shadow: none;
+      height: 19px;
+      width: 34px;
+    }
+
+    &.in_stock {
+      span {
+        color: var(--primary);
+      }
+    }
+  }
+
 }

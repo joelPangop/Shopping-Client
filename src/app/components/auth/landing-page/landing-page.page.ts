@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {MenuController, ModalController} from '@ionic/angular';
+import {MenuController, ModalController, Platform} from '@ionic/angular';
 import {Utilisateur} from '../../../models/utilisateur-interface';
 import {UserStorageUtils} from '../../../services/UserStorageUtils';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -12,17 +13,15 @@ export class LandingPagePage implements OnInit {
 
   utilisateur = {} as Utilisateur;
 
-  constructor(public modalController: ModalController, private userStorageUtils: UserStorageUtils) { }
+  constructor(public modalController: ModalController, public platform: Platform) { }
 
   ngOnInit() {
-    this.userStorageUtils.getUser().then(res => {
-      this.utilisateur = res as Utilisateur;
-    });
+
   }
 
   dismiss() {
-    this.modalController.dismiss({
-      dismissed: true
-    });
+    // this.modalController.dismiss({
+    //   dismissed: true
+    // });
   }
 }

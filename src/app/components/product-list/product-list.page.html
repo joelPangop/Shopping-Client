@@ -9,8 +9,15 @@
                     <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
                 </ion-button>
             </ion-menu-toggle>
+            <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
+
         </ion-buttons>
-        <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
+        <ion-buttons *ngIf="!platform.is('ios') && !platform.is('android')">
+            <!--            <ion-item lines="none">-->
+            <!--            </ion-item>-->
+            <ion-searchbar placeholder="Search your product" showCancelButton animated
+                           (ionInput)="getProducts($event)"></ion-searchbar>
+        </ion-buttons>
         <!-- Title of the app -->
 
         <!--        <ion-buttons>-->
@@ -30,15 +37,21 @@
                           [routerLink]="authService.currentUser._id ? '/menu/tabs/profile' : '/onbroading'"
                           [routerDirection]="'root'">{{authService.currentUser._id ? ' ' : 'Sign in'}}</ion-nav-link>
             <ion-button (click)="gotoCartPage()" #cart color="clear">
-                <div class="cart-length">{{ cartService.cartItemCount | async }}</div>
+                <div class="cart-length">{{ cartItemCount.value}}</div>
                 <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
+    <ion-toolbar *ngIf="platform.is('ios') || platform.is('android')">
+        <div>
+            <ion-searchbar placeholder="Search your product" showCancelButton animated
+                           (ionInput)="getProducts($event)"></ion-searchbar>
+        </div>
+    </ion-toolbar>
 </ion-header>
 
 <!--<ion-content [fullscreen]="true" >-->
-<ion-content id="products" class="ion-padding">
+<ion-content id="products">
     <div *ngIf="platform.is('ios') || platform.is('android')">
         <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
             <ion-refresher-content
@@ -66,7 +79,7 @@
                 </div>
             </ion-row>
         </ion-grid>
-        
+
         <!-- Product View Options -->
         <div class="ion-text-end">
 
@@ -91,8 +104,8 @@
         <!-- Grid View Contents -->
         <ion-grid id="grid" *ngIf="grid">
             <ion-row>
-                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articleService.articles">
-                    <ion-card class="ion-no-margin">
+                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles">
+                    <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                         <!-- Product Image -->
                         <div class="card-img"
@@ -115,8 +128,14 @@
 
                         <!-- Product Contents -->
                         <ion-card-content>
-                            <ion-row>
-                                <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                            <ion-row *ngIf="item.price_discounted">
+                                <ion-text
+                                        color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                </ion-text>
+                                <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                            </ion-row>
+                            <ion-row *ngIf="!item.price_discounted">
+                                <span>{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                             </ion-row>
                             <ion-row>
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -141,8 +160,7 @@
                                 </div>
                             </ion-row>
                             <ion-row>
-                                <h5 class="product-name"
-                                    (click)="goToProductDetailsView(item)">{{item.title | slice:0:15}}</h5>
+                                <h5 class="product-name">{{item.title | slice:0:15}}</h5>
                             </ion-row>
                         </ion-card-content>
                     </ion-card>
@@ -152,8 +170,8 @@
         <!-- One Column View Contents -->
         <ion-grid id="oneColumn" *ngIf="oneColumn">
             <ion-row>
-                <ion-col size="12" *ngFor="let item of articleService.articles">
-                    <ion-card class="ion-no-margin">
+                <ion-col size="12" *ngFor="let item of articles">
+                    <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                         <!-- Product Image -->
                         <div class="card-img"
@@ -179,7 +197,13 @@
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                 <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                 <div class="span-container">
-                                    <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    <ion-row *ngIf="item.price_discounted">
+                                        <ion-text
+                                                color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                        </ion-text>
+                                        <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    </ion-row>
+                                    <span *ngIf="!item.price_discounted">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                     <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                     <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
@@ -199,8 +223,7 @@
                                 </div>
                             </ion-row>
                             <ion-row>
-                                <h5 class="product-name"
-                                    (click)="goToProductDetailsView(item)">{{item.title | slice:0:30}}</h5>
+                                <h5 class="product-name">{{item.title | slice:0:30}}</h5>
                             </ion-row>
                         </ion-card-content>
                     </ion-card>
@@ -209,7 +232,7 @@
         </ion-grid>
         <!-- List View Contents -->
         <div id="list" *ngIf="list">
-            <ion-card *ngFor="let item of articleService.articles">
+            <ion-card *ngFor="let item of articles" [ngClass]="blurClass">
                 <ion-list lines="none">
                     <ion-item class="ion-no-padding">
 
@@ -232,8 +255,7 @@
                         <!-- Product Contents -->
                         <ion-label class="ion-text-wrap">
                             <ion-row>
-                                <h5 class="product-name"
-                                    (click)="goToProductDetailsView(item)">{{item.title | slice:0:30}}</h5>
+                                <h5 class="product-name">{{item.title | slice:0:30}}</h5>
                             </ion-row>
                             <!--                        <ion-row>-->
                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -243,7 +265,14 @@
                                 <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                 <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                 <div class="span-container">
-                                    <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    <ion-row *ngIf="item.price_discounted">
+                                        <ion-text
+                                                color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                        </ion-text>
+                                        <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    </ion-row>
+                                    <span *ngIf="!item.price_discounted"
+                                          class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                     <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                     <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
@@ -267,6 +296,37 @@
                 </ion-list>
             </ion-card>
         </div>
+        <ion-row>
+            <ion-col size="12" class="ion-text-center">
+                {{indexPage}} of {{totalPages}}
+            </ion-col>
+        </ion-row>
+        <ion-row>
+<!--            <ion-col size="2"></ion-col>-->
+            <ion-col class="ion-text-center">
+                <ion-col size="2">
+                    <button fill="clear" (click)="goFirst()">
+                        <ion-icon name="play-back" slot="icon-only" color="color1"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col size="2">
+                    <button fill="clear" (click)="prevPage()">
+                        <ion-icon name="chevron-back" slot="icon-only" color="color1"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col size="2">
+                    <button fill="clear" (click)="nextPage()">
+                        <ion-icon name="chevron-forward" slot="icon-only" color="color1"></ion-icon>
+                    </button>
+                </ion-col>
+                <ion-col size="2">
+                    <button fill="clear" (click)="goLast()">
+                        <ion-icon name="play-forward" slot="icon-only" color="color1"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-col>
+<!--            <ion-col size="2"></ion-col>-->
+        </ion-row>
     </div>
     <div *ngIf="!platform.is('ios') && !platform.is('android')">
         <ion-grid>
@@ -304,8 +364,9 @@
                     <!-- Grid View Contents -->
                     <ion-grid id="grid" *ngIf="grid">
                         <ion-row>
-                            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articleService.articles">
-                                <ion-card class="ion-no-margin">
+                            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles"
+                                     class="">
+                                <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                                     <!-- Product Image -->
                                     <div class="card-img"
@@ -329,7 +390,13 @@
 
                                     <!-- Product Contents -->
                                     <ion-card-content>
-                                        <ion-row>
+                                        <ion-row *ngIf="item.price_discounted">
+                                            <ion-text
+                                                    color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                            </ion-text>
+                                            <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row *ngIf="!item.price_discounted">
                                             <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                         </ion-row>
                                         <ion-row>
@@ -355,8 +422,7 @@
                                             </div>
                                         </ion-row>
                                         <ion-row>
-                                            <h5 class="product-name"
-                                                (click)="goToProductDetailsView(item)">{{item.title | slice:0:30}}</h5>
+                                            <h5 class="product-name">{{item.title | slice:0:30}}</h5>
                                         </ion-row>
                                     </ion-card-content>
                                 </ion-card>
@@ -366,7 +432,7 @@
                     <!-- One Column View Contents -->
                     <ion-grid id="oneColumn" *ngIf="oneColumn">
                         <ion-row>
-                            <ion-col size="12" *ngFor="let item of articleService.articles">
+                            <ion-col size="12" *ngFor="let item of articles">
                                 <ion-card class="ion-no-margin">
                                     <!-- Product Image -->
                                     <div class="card-img"
@@ -389,7 +455,13 @@
                                     </ion-fab>
                                     <!-- Product Contents -->
                                     <ion-card-content>
-                                        <ion-row>
+                                        <ion-row *ngIf="item.price_discounted">
+                                            <ion-text
+                                                    color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                            </ion-text>
+                                            <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row *ngIf="!item.price_discounted">
                                             <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                         </ion-row>
                                         <ion-row>
@@ -415,8 +487,7 @@
                                             </div>
                                         </ion-row>
                                         <ion-row>
-                                            <h5 class="product-name2"
-                                                (click)="goToProductDetailsView(item)">{{item.title | slice:0:50}}</h5>
+                                            <h5 class="product-name2">{{item.title | slice:0:50}}</h5>
                                         </ion-row>
                                     </ion-card-content>
                                 </ion-card>
@@ -425,7 +496,7 @@
                     </ion-grid>
                     <!-- List View Contents -->
                     <div id="list" *ngIf="list">
-                        <ion-card *ngFor="let item of articleService.articles">
+                        <ion-card *ngFor="let item of articles">
                             <ion-list lines="none">
                                 <ion-item class="ion-no-padding">
 
@@ -450,8 +521,7 @@
                                     <!-- Product Contents -->
                                     <ion-label class="ion-text-wrap">
                                         <ion-row>
-                                            <h5 class="product-name"
-                                                (click)="goToProductDetailsView(item)">{{item.title | slice:0:30}}</h5>
+                                            <h5 class="product-name">{{item.title | slice:0:30}}</h5>
                                         </ion-row>
                                         <!--                        <ion-row>-->
                                         <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
@@ -461,7 +531,14 @@
                                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                                             <div class="span-container">
-                                                <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                                <ion-row *ngIf="item.price_discounted">
+                                                    <ion-text
+                                                            color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                                    </ion-text>
+                                                    <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                                </ion-row>
+                                                <span class="price"
+                                                      *ngIf="!item.price_discounted">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
                                                 <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
                                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
@@ -485,14 +562,49 @@
                             </ion-list>
                         </ion-card>
                     </div>
+                    <ion-row>
+                        <ion-col size="12" class="ion-text-center">
+                            {{indexPage}} of {{totalPages}}
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col size="2"></ion-col>
+                        <ion-col size="8" class="ion-text-center">
+                            <ion-col size="2">
+                                <ion-button fill="clear" (click)="goFirst()">
+                                    <ion-icon name="play-back" slot="icon-only" color="color1"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                            <ion-col size="2">
+                                <ion-button fill="clear" (click)="prevPage()">
+                                    <ion-icon name="chevron-back" slot="icon-only" color="color1"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                            <ion-col size="4">
+                            </ion-col>
+                            <ion-col size="2">
+                                <ion-button fill="clear" (click)="nextPage()">
+                                    <ion-icon name="chevron-forward" slot="icon-only" color="color1"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                            <ion-col size="2">
+                                <ion-button fill="clear" (click)="goLast()">
+                                    <ion-icon name="play-forward" slot="icon-only" color="color1"></ion-icon>
+                                </ion-button>
+                            </ion-col>
+                        </ion-col>
+                        <ion-col size="2"></ion-col>
+                    </ion-row>
                     <ion-button color="color1" *ngIf="authService.currentUser._id" translate
                                 (click)="goToCreate()">{{'HOME.action'}}</ion-button>
                 </ion-col>
                 <ion-col size="2">
                 </ion-col>
             </ion-row>
+
         </ion-grid>
     </div>
+    <app-footer></app-footer>
 </ion-content>
 <ion-footer no-border *ngIf="platform.is('ios') || platform.is('android')">
     <ion-toolbar class="ion-padding" no-border fill="clear" color="shade">

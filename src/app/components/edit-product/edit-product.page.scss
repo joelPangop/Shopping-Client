@@ -15,3 +15,34 @@ ion-slide{
   max-height: 270px !important;
   max-width: 100%;
 }
+
+.toggle_box {
+  display: flex;
+  align-items: center;
+  min-width: fit-content;
+
+  span {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  ion-toggle {
+    --background: #6d6b6b;
+    --background-checked: #6d6b6b;
+    --handle-background: #464646;
+    --handle-background-checked: var(--ion-color-color1);
+    --handle-height: 13px;
+    --handle-width: 13px;
+    --handle-box-shadow: none;
+    height: 19px;
+    width: 34px;
+  }
+
+  &.in_stock {
+    span {
+      color: var(--ion-color-color1);
+    }
+  }
+}

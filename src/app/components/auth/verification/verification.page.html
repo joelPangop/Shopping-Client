@@ -7,62 +7,68 @@
 
 <!-- Header -->
 <ion-header no-border>
-  <ion-toolbar>
-    <!-- Back To Landing Page -->
-    <ion-buttons slot="start">
-      <ion-back-button color="color1" default-href="" routerLink="/landing-page"
-                       routerDirection="root">
-      </ion-back-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <!-- Back To Landing Page -->
+        <ion-buttons slot="start">
+            <ion-back-button color="color1" default-href="" routerLink="/landing-page"
+                             routerDirection="root">
+            </ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 
 <!-- Contents -->
 <ion-content id="verification" fullscreen>
-  <div class="section_one ion-padding">
-    <h2>VERIFICATION</h2>
-    <p>Enter the verification code we just send you on your registered phone number</p>
-  </div>
-
-  <div class="section_two ion-padding">
-
-    <img class="ion-padding" src="assets/images/otp.jpg" />
-
-    <!-- Enter Verification Code -->
-    <ion-row>
-      <ion-col>
-        <ion-item lines="none">
-          <ion-input class="ion-text-center" type="number" name="number1"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col>
-        <ion-item lines="none">
-          <ion-input class="ion-text-center" type="number" name="number2"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col>
-        <ion-item lines="none">
-          <ion-input class="ion-text-center" type="number" name="number3"></ion-input>
-        </ion-item>
-      </ion-col>
-      <ion-col>
-        <ion-item lines="none">
-          <ion-input class="ion-text-center" type="number" name="number4"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-
-    <!-- Resend Varification Code Option Button -->
-    <ion-button fill="clear" color="color2">
-      <span>If you dont receive the code ?</span>
-      <ion-text color="color1"><strong>RESEND</strong></ion-text>
-    </ion-button>
-
-    <!-- Submit Button -->
-    <div class="buttons ion-padding-top">
-      <ion-button expand="block" color="color1" routerLink="/tabs/tab1" routerDirection="root">
-        <ion-text><strong>VERIFY & PROCEED</strong></ion-text>
-      </ion-button>
+    <div class="section_one ion-padding">
+        <h2>VERIFICATION</h2>
+        <p>Enter the verification code we just send you on your registered phone number</p>
     </div>
-  </div>
+    <form class="ion-padding" (ngSubmit)="send()" [formGroup]="userForm">
+        <div class="section_two ion-padding">
+
+            <img class="ion-padding" src="assets/images/otp.jpg"/>
+
+            <!-- Enter Verification Code -->
+            <ion-row>
+                <ion-col>
+                    <ion-item lines="none">
+                        <ion-input class="ion-text-center" formControlName="word1" name="word1"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item lines="none">
+                        <ion-input class="ion-text-center" formControlName="word2" name="word2"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item lines="none">
+                        <ion-input class="ion-text-center" formControlName="word3" name="word3"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item lines="none">
+                        <ion-input class="ion-text-center" formControlName="word4" name="word4"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item lines="none">
+                        <ion-input class="ion-text-center" formControlName="word5" name="word5"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <!-- Resend Varification Code Option Button -->
+            <ion-button fill="clear" color="color2">
+                <span>If you dont receive the code ?</span>
+                <ion-text color="color1"><strong>RESEND</strong></ion-text>
+            </ion-button>
+
+            <!-- Submit Button -->
+            <div class="buttons ion-padding-top">
+                <ion-button expand="block" color="color1" type="submit">
+                    <ion-text><strong>VERIFY & PROCEED</strong></ion-text>
+                </ion-button>
+            </div>
+        </div>
+    </form>
 </ion-content>

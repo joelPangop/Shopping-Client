@@ -13,7 +13,7 @@
             </ion-button>
             <ion-fab-button (click)="gotoCartPage()" #cart color="clear">
                 <div *ngIf="cartItemCount.value > 0" class="cart-length"
-                     style="color: brown">{{cartItemCount | async}}</div>
+                     style="color: brown">{{cartItemCount.value}}</div>
                 <ion-icon name="cart" class="cart-icon"></ion-icon>
             </ion-fab-button>
         </ion-buttons>
@@ -98,26 +98,33 @@
                             <ion-chip color="primary">
                                 <ion-label>{{ article?.city }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.brands">
                                 <ion-label>{{ article?.brands }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.model">
                                 <ion-label>{{ article?.model }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.year">
                                 <ion-label>{{ article?.year }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.transmission">
                                 <ion-label>{{ article?.transmission }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
-                                <ion-label>{{ article?.kilometers }}</ion-label>
+                            <ion-chip *ngIf="article.kilometers">
+                                <ion-label>{{ article?.kilometers }} km</ion-label>
                             </ion-chip>
                             <div class="my-container-label">
                                 <div class="span-container">
-                        <span class="price">
-                                   {{getRatedPrice(article.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
-                        </span>
+                                    <ion-row class="ion-padding" *ngIf="article.price_discounted">
+                                        <ion-text color="color1" class="price">{{getRatedPrice(article.discountPrice, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+                                        </ion-text>
+                                        <span class="previous-price">
+                                            {{getRatedPrice(article.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+                                        </span>
+                                    </ion-row>
+                                    <span class="price" *ngIf="!article.price_discounted">
+                                            {{getRatedPrice(article.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+                                    </span>
                                     <span *ngIf="article?.averageStar >= 1">
                             <ion-icon class="iconStar" name="star"></ion-icon>
                         </span>
@@ -133,6 +140,28 @@
                                     <span *ngIf="article?.averageStar >= 5">
                             <ion-icon class="iconStar" name="star"></ion-icon>
                         </span>
+                                </div>
+                                <br/>
+                                <div *ngIf="article.colors">
+                                    <span *ngIf="article.colors">
+                                        Colors |
+                                    </span>
+                                    <span style="color: #6d6b6b; font-family: 'Britannic Bold'">
+                                        <ion-chip *ngFor="let c of article.colors">
+                                <ion-label>{{ c }}</ion-label>
+                                        </ion-chip>
+                                    </span>
+                                </div>
+                                <br/>
+                                <div *ngIf="article.sizes">
+                                    <span>
+                                        Sizes |
+                                    </span>
+                                    <span style="color: #6d6b6b; font-family: 'Britannic Bold'">
+                                        <ion-chip *ngFor="let s of article.sizes">
+                                <ion-label>{{ s }}</ion-label>
+                            </ion-chip>
+                                    </span>
                                 </div>
                             </div>
                         </ion-card-title>
@@ -156,8 +185,10 @@
                                     *ngIf="article.utilisateurId === authService.currentUser._id"
                                     color="color1" expand="block" (click)="gotoEdit()">Edit Product
                         </ion-button>
-                        <ion-button *ngIf="contains(article.categories,['Automobile', 'Auto'])" class="add-to-cart"
-                                    color="color1" expand="block" (click)="contact()">
+                        <ion-button
+                                *ngIf="article.utilisateurId !== authService.currentUser._id && contains(article.categories,['Automobile', 'Auto'])"
+                                class="add-to-cart"
+                                color="color1" expand="block" (click)="contact()">
                             CONTACT SALER
                         </ion-button>
                     </div>
@@ -235,20 +266,20 @@
                             <ion-chip color="primary">
                                 <ion-label>{{ article?.city }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.brands">
                                 <ion-label>{{ article?.brands }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.model">
                                 <ion-label>{{ article?.model }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.year">
                                 <ion-label>{{ article?.year }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
+                            <ion-chip *ngIf="article.transmission">
                                 <ion-label>{{ article?.transmission }}</ion-label>
                             </ion-chip>
-                            <ion-chip>
-                                <ion-label>{{ article?.kilometers }}</ion-label>
+                            <ion-chip *ngIf="article.kilometers">
+                                <ion-label>{{ article?.kilometers }} km</ion-label>
                             </ion-chip>
                             <div class="my-container-label">
                                 <div class="span-container">
@@ -270,6 +301,15 @@
                                     <span *ngIf="article?.averageStar >= 5">
                             <ion-icon class="iconStar" name="star"></ion-icon>
                         </span>
+                                </div>
+                                <br/>
+                                <div>
+                                    <span>
+                                        Colors |
+                                    </span>
+                                    <span style="color: #6d6b6b; font-family: 'Britannic Bold'">
+                                        {{article.colors}}
+                                    </span>
                                 </div>
                             </div>
                         </ion-card-title>
@@ -302,8 +342,10 @@
             *ngIf="(platform.is('ios') || platform.is('android')) && article.utilisateurId !== authService.currentUser._id">
     <ion-toolbar class="ion-padding" transparent no-border>
         <!-- Add To Cart Button -->
-        <ion-button *ngIf="article.utilisateurId !== authService.currentUser._id && !contains(article.categories,['Automobile', 'Auto'])" class="add-to-cart"
-                    color="color1" expand="block" (click)="addToCart()">ADD TO CART
+        <ion-button
+                *ngIf="article.utilisateurId !== authService.currentUser._id && !contains(article.categories,['Automobile', 'Auto'])"
+                class="add-to-cart"
+                color="color1" expand="block" (click)="addToCart()">ADD TO CART
         </ion-button>
         <ion-button *ngIf="article.utilisateurId === authService.currentUser._id" class="add-to-cart"
                     color="color1" expand="block" (click)="gotoEdit()">Edit Product

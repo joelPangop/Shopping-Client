@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { CreateProductPageRoutingModule } from './create-product-routing.module';
 
 import { CreateProductPage } from './create-product.page';
-import {TopHeaderPageModule} from '../top-header/top-header.module';
+import {TopHeaderPageModule} from '../header/top-header/top-header.module';
 import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({

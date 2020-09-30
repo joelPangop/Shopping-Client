@@ -14,8 +14,16 @@ import {Router} from '@angular/router';
 import {AuthResponse} from '../models/auth-response';
 import {StorageService} from './storage.service';
 import {UserStorageUtils} from './UserStorageUtils';
+import {DeviceInfo, Plugins} from '@capacitor/core';
+import {Device} from '../models/device-interface';
+import {AngularFireAuth} from '@angular/fire/auth';
+import {SMS} from '@ionic-native/sms/ngx';
+import {MessageService} from './message.service';
+import {Mail} from '../models/mail-interface';
+import {Utils} from '../Utils';
 
 const TOKEN_KEY = 'access_token';
+const {CapacitorVideoPlayer, Device} = Plugins;
 
 @Injectable({
     providedIn: 'root'
@@ -32,9 +40,11 @@ export class AuthService {
     local;
     currency: any = {};
     currencyIcon;
+    confirmation_code: string;
 
     constructor(private http: HttpClient, public helper: JwtHelperService, private router: Router, private userStorageUtils: UserStorageUtils,
-                private plt: Platform, private alertController: AlertController, public localStorage: Storage, private storageService: StorageService) {
+                private plt: Platform, private alertController: AlertController, public localStorage: Storage,
+                private storageService: StorageService, private messageService: MessageService) {
         this.currentUser = {} as Utilisateur;
         this.plt.ready().then(() => {
             this.checkToken();
@@ -48,7 +58,7 @@ export class AuthService {
                 this.currency = res.currency;
             } else {
                 if (this.currentUser) {
-                    if(this.currentUser.currency){
+                    if (this.currentUser.currency) {
                         this.currency = this.currentUser.currency;
                     } else {
                         this.currency = {currency: 'CAD', icon: 'flag-for-flag-canada'};
@@ -107,11 +117,25 @@ export class AuthService {
     }
 
     register(credentials): Observable<AuthResponse> {
-        return this.http.post(`${environment.api_url}/api/register`, credentials).pipe(
-            tap(async (res: AuthResponse) => {
-                this.user = this.helper.decodeToken(res['access_token']);
-                this.currentUser = res.user[0];
-                this.currency = this.currentUser.currency;
+        return this.http.post<any>(`${environment.api_url1}/api/register`, credentials).pipe(
+            tap(async (res) => {
+                // this.user = this.helper.decodeToken(res['user']);
+                this.user = res;
+                // this.currentUser = res.user;
+                // this.currency = this.currentUser.currency;
+                this.confirmation_code = Utils.makeString(10);
+                let body = 'The confirmation code is ' + this.confirmation_code;
+                const content: Mail = {
+                    to: res.email,
+                    subject: 'Registration confirmation',
+                    text: body
+                };
+
+                if (res) {
+                    this.messageService.sendMail(content).subscribe(res1 => {
+                        console.log(res1);
+                    });
+                }
             }),
             catchError(e => {
                 this.showAlert(e.error.msg);
@@ -120,15 +144,38 @@ export class AuthService {
         );
     }
 
-    login(credentials): Observable<AuthResponse> {
-        console.log(this.plt.platforms());
-        return this.http.post<any>(`${environment.api_url}/login`, credentials)
+    verification_user(utilisateur): Observable<any>{
+        return this.http.put<any>(`${environment.api_url1}/update_verification`, utilisateur)
             .pipe(
-                tap(async (res: AuthResponse) => {
+                tap(async res => {
+                    console.log('res', res);
+                    // if (this.plt.is('android') || this.plt.is('ios')) {
+                    // await this.storageService.setObject(TOKEN_KEY, res['access_token']);
+                    // // await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                    // this.user = this.helper.decodeToken(res['access_token']);
+                    // this.currentUser = res.user;
+                    // await this.storageService.setObject('Utilisateur', res.user);
+                    // await this.storageService.setObject('IsLogginIn', true);
+                    // this.currency = this.currentUser.currency;
+                    // this.authenticationState.next(true);
+                }),
+                catchError(e => {
+                    this.showAlert('incorrect username or/and password');
+                    this.isPasswordForgotten = true;
+                    throw new Error(e);
+                })
+            );
+    }
+
+    login(credentials): Observable<any> {
+        console.log(this.plt.platforms());
+        return this.http.post<any>(`${environment.api_url1}/login`, credentials)
+            .pipe(
+                tap(async (res) => {
                     await this.storageService.setObject(TOKEN_KEY, res['access_token']);
                     this.user = this.helper.decodeToken(res['access_token']);
-                    this.currentUser = res.user[0];
-                    await this.storageService.setObject('Utilisateur', res.user[0]);
+                    this.currentUser = res.user;
+                    await this.storageService.setObject('Utilisateur', res.user);
                     await this.storageService.setObject('IsLogginIn', true);
                     this.currency = this.currentUser.currency;
                     this.authenticationState.next(true);
@@ -142,16 +189,16 @@ export class AuthService {
             );
     }
 
-    updateProfile(utilisateur) {
-        return this.http.put<any>(`${environment.api_url}/user`, utilisateur)
+    updateProfile(utilisateur): Observable<AuthResponse> {
+        return this.http.put<any>(`${environment.api_url1}/user`, utilisateur)
             .pipe(
                 tap(async res => {
                     // if (this.plt.is('android') || this.plt.is('ios')) {
                     await this.storageService.setObject(TOKEN_KEY, res['access_token']);
                     // await this.localStorage.set(TOKEN_KEY, res['access_token']);
                     this.user = this.helper.decodeToken(res['access_token']);
-                    this.currentUser = res.user[0];
-                    await this.storageService.setObject('Utilisateur', res.user[0]);
+                    this.currentUser = res.user;
+                    await this.storageService.setObject('Utilisateur', res.user);
                     await this.storageService.setObject('IsLogginIn', true);
                     this.currency = this.currentUser.currency;
                     this.authenticationState.next(true);
@@ -163,6 +210,29 @@ export class AuthService {
                 })
             );
     }
+
+    updateProfilePassword(utilisateur): Observable<AuthResponse> {
+        return this.http.put<any>(`${environment.api_url1}/user/password`, utilisateur)
+            .pipe(
+                tap(async res => {
+                    // if (this.plt.is('android') || this.plt.is('ios')) {
+                    await this.storageService.setObject(TOKEN_KEY, res['access_token']);
+                    // await this.localStorage.set(TOKEN_KEY, res['access_token']);
+                    this.user = this.helper.decodeToken(res['access_token']);
+                    await this.storageService.setObject('Utilisateur', res.user);
+                    await this.storageService.setObject('IsLogginIn', true);
+                    this.currency = res.user.currency;
+                    this.currentUser = res.user;
+                    this.authenticationState.next(true);
+                }),
+                catchError(e => {
+                    this.showAlert('incorrect username or/and password');
+                    this.isPasswordForgotten = true;
+                    throw new Error(e);
+                })
+            );
+    }
+
 
     //
     // changePassword(user: User) {
@@ -181,11 +251,11 @@ export class AuthService {
     //       );
     // }
 
-    logout(): boolean {
+    async logout(): Promise<boolean> {
 
         let rep: boolean = false;
 
-        this.storageService.removeItem(TOKEN_KEY).then(() => {
+        await this.storageService.removeItem(TOKEN_KEY).then(() => {
             this.authenticationState.next(false);
             rep = true;
         }).catch((err) => {
@@ -193,7 +263,7 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('page').then(() => {
+        await this.storageService.removeItem('page').then(() => {
             console.log('route page removed');
             rep = true;
         }).catch((err) => {
@@ -201,7 +271,7 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('Utilisateur').then(() => {
+        await this.storageService.removeItem('Utilisateur').then(() => {
             console.log('user removed');
             rep = true;
         }).catch((err) => {
@@ -209,7 +279,7 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('IsLogginIn').then(() => {
+        await this.storageService.removeItem('IsLogginIn').then(() => {
             console.log('logged out');
             rep = true;
         }).catch((err) => {
@@ -217,7 +287,7 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('cart').then(() => {
+        await this.storageService.removeItem('cart').then(() => {
             console.log('cart removed');
             rep = true;
         }).catch((err) => {
@@ -225,20 +295,26 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('currency').then(() => {
+        await this.storageService.removeItem('currency').then(() => {
             console.log('currency removed');
+            // const device: Device = Device.getInfo();
             this.currentUser = {
                 username: 'guest',
                 type: 'guest',
-                currency: {currency: 'CAD', icon: 'flag-for-flag-canada'}
+                currency: {currency: 'CAD', icon: 'flag-for-flag-canada'},
+                // userInfo: {
+                //     devices:[device]
+                // }
             };
+            this.currency.currency = 'CAD';
+            this.currency.icon = 'flag-for-flag-canada';
             rep = true;
         }).catch((err) => {
             console.log('error', err);
             rep = false;
         });
 
-        this.storageService.removeItem('__paypal_storage__').then(() => {
+        await this.storageService.removeItem('__paypal_storage__').then(() => {
             console.log('paypal_storage removed');
             rep = true;
         }).catch((err) => {
@@ -246,7 +322,7 @@ export class AuthService {
             rep = false;
         });
 
-        this.storageService.removeItem('SELECTED_LANGUAGE').then(() => {
+        await this.storageService.removeItem('SELECTED_LANGUAGE').then(() => {
             console.log('SELECTED_LANGUAGE removed');
             rep = true;
         }).catch((err) => {
@@ -254,6 +330,7 @@ export class AuthService {
             rep = false;
         });
         this.currentUser = {} as Utilisateur;
+
         return rep;
     }
 
@@ -304,4 +381,7 @@ export class AuthService {
         return this.currency;
     }
 
+    getUserByEmail(email: string): Observable<Utilisateur> {
+        return this.http.get<Utilisateur>(`${environment.api_url1}/user/${email}`);
+    }
 }

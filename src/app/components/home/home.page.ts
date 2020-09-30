@@ -4,14 +4,13 @@ import {Article} from '../../models/article-interface';
 import {BehaviorSubject} from 'rxjs';
 import {AlertController, ModalController, NavController, Platform, PopoverController} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
-import {Currency, Utilisateur} from '../../models/utilisateur-interface';
+import {Utilisateur} from '../../models/utilisateur-interface';
 import {ArticleService} from '../../services/article.service';
 import {CartPage} from '../cart/cart.page';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {CategoriesService} from '../../services/categories.service';
-import {Storage} from '@ionic/storage';
 import {Commande} from '../../models/commande-interface';
 import {CommandeService} from '../../services/commande.service';
 import {CartService} from '../../services/cart.service';
@@ -22,9 +21,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../../services/language.service';
 import {StorageService} from '../../services/storage.service';
 import {AuthService} from '../../services/auth.service';
-import {Currencies} from '../../models/Currencies';
-import {IonicSelectableComponent} from 'ionic-selectable';
-import {WebsocketService} from '../../services/websocket.service';
+import {Mail} from '../../models/mail-interface';
 
 declare function test1(t): any;
 
@@ -66,6 +63,8 @@ export class HomePage {
         speed: 400,
         slidesPerView: 2,
     };
+    cartItemsCount: BehaviorSubject<number>;
+    username: BehaviorSubject<string> = new BehaviorSubject<string>('');
     category: string;
     choosenCategories: string[] = [];
     params: {
@@ -77,7 +76,8 @@ export class HomePage {
                 private msgservice: MessageService, private cmdService: CommandeService, private translate: TranslateService,
                 private alertController: AlertController, private userStorageUtils: UserStorageUtils, private storageService: StorageService,
                 private router: Router, private categoryService: CategoriesService, public cartService: CartService, public authService: AuthService) {
-
+        this.username = new BehaviorSubject<string>('');
+        this.cartItemsCount = this.cartService.getCartItemCount();
     }
 
     webSocket: WebSocket;
@@ -137,14 +137,6 @@ export class HomePage {
         //     this.cartService.cartItemCount.next(data);
         // });
 
-        let data: Commande;
-        this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
-            {
-                data = res;
-                this.cartService.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
-            }
-        });
-
         this.isSearch = false;
         // this.loadAll();
         console.log(this.platform.platforms());
@@ -153,18 +145,29 @@ export class HomePage {
         });
     }
 
-    async test() {
-        const OPEN = WebSocket.OPEN;
-        const self = this;
-// const webSocket: WebSocket = new WebSocket('https://egoalservice.azurewebsites.net');
-        this.webSocket.send('test');
-        this.webSocket.onmessage = function(event) {
-            console.log(event.data);
-            new Event(event.data);
-
-            self.presentAlert(event.data);
-        };
-    }
+    // ionViewDidEnter() {
+    //     this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+    //         {
+    //             let data: Commande = res;
+    //             this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+    //
+    //             this.username.next(this.authService.currentUser.username);
+    //         }
+    //     });
+    // }
+//
+//     async test() {
+//         const OPEN = WebSocket.OPEN;
+//         const self = this;
+// // const webSocket: WebSocket = new WebSocket('https://egoalservice.azurewebsites.net');
+//         this.webSocket.send('test');
+//         this.webSocket.onmessage = function(event) {
+//             console.log(event.data);
+//             new Event(event.data);
+//
+//             self.presentAlert(event.data);
+//         };
+//     }
 
     async presentAlert(msg: any): Promise<void> {
         const alert = await this.alertController.create({
@@ -274,6 +277,18 @@ export class HomePage {
                 // }
             });
         return await popover.present();
+    }
+
+    test() {
+        const mail: Mail = {
+            to: 'egoal.ent@hotmail.com',
+            subject: 'sujet de test',
+            text: 'Simple test...'
+        };
+
+        this.msgservice.sendMail(mail).subscribe(res => {
+            console.log(res);
+        });
     }
 
 }

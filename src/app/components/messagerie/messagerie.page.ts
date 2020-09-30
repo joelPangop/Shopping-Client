@@ -30,7 +30,10 @@ export class MessageriePage implements OnInit {
         this.utilisateur = await this.userStorageUtils.getUser();
         this.loadAll().subscribe(res => {
             console.log('result', res);
-            this.messages = res [0];
+            this.messages_received = res [0].reverse().filter((thing, i, arr) => {
+                return arr.indexOf(arr.find(t => t.title === thing.title && t.picture === thing.picture
+                    && t.article._id == thing.article._id && t.messageTo === thing.messageTo)) === i;
+            });
             if (this.messages.length > 0) {
                 this.messages.sort(this.compare);
                 this.messages_received.push(this.messages[this.messages.length - 1]);
@@ -46,9 +49,20 @@ export class MessageriePage implements OnInit {
             } else {
                 this.messages_received = res[0];
             }
-
             this.messages_sent = res [1];
             this.notifications = res [2];
+        });
+    }
+
+    ionViewDidEnter() {
+        this.loadAll().subscribe((res) => {
+            console.log('result', res);
+            // const msg_rec = res [0];
+            this.messages_received = res [0].reverse().filter((thing, i, arr) => {
+                return arr.indexOf(arr.find(t => t.title === thing.title && t.picture === thing.picture && t.article._id == thing.article._id
+                    && t.messageTo === thing.messageTo)) === i;
+            });
+            console.log('messages_received', this.messages_received);
         });
     }
 
@@ -61,17 +75,21 @@ export class MessageriePage implements OnInit {
         if (event) {
             forkJoin(this.loadReceivedMessages(), this.loadSent(), this.loadReceivedNotifications()).subscribe(res => {
                 console.log('result', res);
-                const msg_rec = res [0];
-                this.messages_received = msg_rec.reverse().filter((thing, i, arr) => {
-                    return arr.indexOf(arr.find(
-                        t => t.article._id === thing.article._id && t.article.pictures[0] === thing.article.pictures[0])) === i;
+                // const msg_rec = res [0];
+                this.messages_received = res [0].reverse().filter((thing, i, arr) => {
+                    return arr.indexOf(arr.find(t => t.title === thing.title && t.picture === thing.picture
+                        && t.messageTo === thing.messageTo && t.article.pictures[0] === thing.article.pictures[0])) === i;
                 });
+                // this.messages_received = msg_rec.reverse().filter((thing, i, arr) => {
+                //     return arr.indexOf(arr.find(
+                //         t => t.article._id === thing.article._id && t.article.pictures[0] === thing.article.pictures[0])) === i;
+                // });
                 this.messages_sent = res [1];
                 this.notifications = res [2];
                 event.target.complete();
             });
         } else {
-            return forkJoin(this.loadReceivedMessages(), this.loadSent(), this.loadReceivedNotifications());
+            return forkJoin(this.loadReceivedMessages(), this.loadSent(), this.loadReceivedNotifications())
         }
     }
 
@@ -93,7 +111,7 @@ export class MessageriePage implements OnInit {
 
     messageView(msg: Message, i: number) {
         this.unread_number = 0;
-        this.navCtrl.navigateRoot(`/menu/tabs/action-message/${msg._id}/read/${msg.utilisateurId}/${msg.article._id}`);
+        this.navCtrl.navigateRoot(`/menu/tabs/action-message/${msg._id}/read/${msg.article.utilisateurId}/${msg.article._id}`);
         // this.navCtrl.navigateForward(`/action-message/${msg._id}/read/${1000}/${msg.article._id}`);
     }
 

@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header translucent>
     <ion-toolbar color="color1">
         <ion-buttons slot="start">
             <ion-back-button defaultHref="/menu/tabs/messagerie">
@@ -19,7 +19,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-header>
+<ion-header class="toolbar">
     <ion-toolbar color="dark-tint">
         <ion-buttons (click)="showDetails(article._id)">
             <div>
@@ -41,41 +41,120 @@
 </ion-header>
 
 <ion-content>
-    <ion-grid>
-        <ion-row *ngFor="let msg of msgService.messages; let i = index">
-            <ion-col size="9" offset="{{msg.title !== authSrv.currentUser.username ? 3 : 0}} "
-                     class="message {{msg.title !== authSrv.currentUser.username ? 'other-message' : 'my-message'}}">
-                <ion-buttons>
-                    <ion-label class="title" color="dark-shade">
-                        <p>{{msg.title !== authSrv.currentUser.username ? msg.title : 'Me'}}</p>
-                    </ion-label>
-                </ion-buttons>
-                <ion-label button (pressup)="handleDeleteButtonClick($event, msg, i)"><p
-                        style="text-align: justify; font-size: large">{{ msg.content }}</p>
-                </ion-label>
-                <div class="time" text-right>
-                    <ion-note [color]="msg.read === false && msg.title !== authSrv.currentUser.username ? 'secondary' : 'dark'"
-                              slot="end">
-                        {{msg.createdAt | date }}
-                    </ion-note>
-                </div>
+    <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')" class="bg-image">
+        <ion-row>
+            <ion-col size="3">
+
             </ion-col>
+            <ion-col size="6">
+                <!--                <ion-grid fixed>-->
+                <ion-row *ngFor="let msg of msgService.messages; let i = index" translucent>
+                    <ion-col size="9" offset="{{msg.title !== authSrv.currentUser.username ? 3 : 0}} "
+                             class="message {{msg.title !== authSrv.currentUser.username ? 'other-message' : 'my-message'}}">
+                        <section class="container">
+                            <div style="float: left" class="my-container-label">
+                                <div class="my-container-label">
+                                    <ion-buttons>
+                                        <ion-label class="title" color="dark-shade">
+                                            <p>{{msg.title !== authSrv.currentUser.username ? msg.title : 'Me'}}</p>
+                                        </ion-label>
+                                    </ion-buttons>
+                                    <ion-label><p
+                                            style="text-align: justify; font-size: large; margin: 10px">{{ msg.content }}</p>
+                                    </ion-label>
+                                </div>
+                                <!--                                    <div class="cart-length">-->
+                                <!--                                        <ion-icon name="trash" color="dark" size="small"-->
+                                <!--                                                  (click)="handleDeleteButtonClick($event, msg, i)"></ion-icon>-->
+                                <!--                                    </div>-->
+                                <div class="time" text-right>
+                                    <ion-note style="float: left; font-size: x-small"
+                                              [color]="msg.read === false && msg.title !== authSrv.currentUser.username ? 'secondary' : 'dark'">
+                                        {{getMomentFromNow(msg.createdAt) }}
+                                    </ion-note>
+                                    <!--                                    <ion-button (click)="handleDeleteButtonClick($event, msg, i)">-->
+                                    <ion-icon style="float: right" name="trash" slot="icon-only"
+                                              color="secondary"></ion-icon>
+                                    <!--                                    </ion-button>-->
+                                </div>
+                            </div>
+                            <div style="float: right">
+                                <ion-avatar>
+                                    <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoalservice.azurewebsites.net/image/'+ interlocutor.avatar:
+                             'https://egoalservice.azurewebsites.net/image/'+ authSrv.currentUser.avatar"
+                                    >
+                                </ion-avatar>
+                            </div>
+                        </section>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button fill="clear" (click)="handleDeleteButtonClick($event, msg, i)" *ngIf="msg.title === authSrv.currentUser.username">
+                            <ion-icon name="trash"></ion-icon>
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+                <!--                </ion-grid>-->
+            </ion-col>
+            <ion-col size="3"></ion-col>
         </ion-row>
     </ion-grid>
-    <!--    <ion-card *ngIf="uid === '1000'">-->
-    <!--        <ion-item>-->
-    <!--            <ion-avatar slot="start">-->
-    <!--                <ion-img [src]="'http://192.168.2.58:4000/image/'+message.picture"></ion-img>-->
-    <!--            </ion-avatar>-->
-    <!--            <ion-label>{{message?.title}}</ion-label>-->
-    <!--            <ion-note>{{message?.createdAt | date}}</ion-note>-->
-
-    <!--            <ion-button *ngIf="action === 'write'" fill="outline" slot="=end">.</ion-button>-->
-    <!--        </ion-item>-->
-    <!--        <ion-card-content>-->
-    <!--            {{message?.content}}-->
-    <!--        </ion-card-content>-->
-    <!--    </ion-card>-->
+    <div id="chat-parent" class="bg-image" [ngClass]="{ 'bg-image-X': phone_model=='iPhone X'}"
+         *ngIf="platform.is('ios') || platform.is('android')">
+        <div id="chat-container">
+            <ion-row *ngFor="let msg of msgService.messages; let i = index" class="full no-padding">
+                <ion-item-sliding>
+                    <ion-item lines="none" fill="clear">
+                        <ion-col class="no-padding chat-row"
+                                 [ngClass]="{ 'reverse': msg.title === authSrv.currentUser.username}">
+                            <div class="avatar-parent">
+                                <div class="avatar-border"></div>
+                                <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoalservice.azurewebsites.net/image/'+ interlocutor.avatar:
+                             'https://egoalservice.azurewebsites.net/image/'+ authSrv.currentUser.avatar"
+                                     class="avatar">
+                            </div>
+                            <div [ngClass]="{ 'name-row-parent-right': msg.title === authSrv.currentUser.username ,
+                    'name-row-parent-left': msg.title !== authSrv.currentUser.username}">
+                                <div class="no-padding"
+                                     [ngClass]="{'name-row-right': msg.title === authSrv.currentUser.username,
+                              'name-row-left': msg.title !== authSrv.currentUser.username}">
+                                    {{msg.title}}
+                                    <div style="color: #000000" [ngClass]="{'timer-right': msg.title === authSrv.currentUser.username,
+                            'timer-left': msg.title !== authSrv.currentUser.username}">
+                                        {{getMomentForMobile(msg.createdAt)}}
+                                        <!--                                        {{i + 5}}-->
+                                        <!--                                        mins ago-->
+                                        <ion-icon *ngIf="msg.title !== authSrv.currentUser.username && msg.read"
+                                                  name="checkmark"
+                                                  [color]="msg.read ? 'success': 'dark'"
+                                                  class="first-tick"></ion-icon>
+                                        <ion-icon *ngIf="msg.title !== authSrv.currentUser.username && msg.read == true"
+                                                  name="checkmark"
+                                                  [color]="msg.read ? 'success': 'dark'"
+                                                  class="second-tick"></ion-icon>
+                                    </div>
+                                    <div [ngClass]="{'reverse-arc-right': msg.title === authSrv.currentUser.username,
+                             'reverse-arc-left': msg.title !== authSrv.currentUser.username}">
+                                        <div [ngClass]="{'reverse-arc-color-right': msg.title === authSrv.currentUser.username,
+                                'reverse-arc-color-left': msg.title !== authSrv.currentUser.username}"></div>
+                                    </div>
+                                </div>
+                                <div class="no-padding"
+                                     [ngClass]="{'message-row-right':msg.title === authSrv.currentUser.username,
+                             'message-row-left': msg.title !== authSrv.currentUser.username}">
+                                    <ion-text no-margin class="text">{{msg.content}}</ion-text>
+                                </div>
+                            </div>
+                        </ion-col>
+                    </ion-item>
+                    <ion-item-options side="start" *ngIf="msg.title === authSrv.currentUser.username">
+                        <ion-item-option (click)="handleDeleteButtonClick($event, msg, i)" color="tertiary" expandable>
+                            <ion-icon name="trash" slot="icon-only"></ion-icon>
+                        </ion-item-option>
+                    </ion-item-options>
+                </ion-item-sliding>
+            </ion-row>
+        </div>
+    </div>
 </ion-content>
 <ion-footer *ngIf="action === 'write'">
     <ion-toolbar color="color1">
@@ -85,14 +164,7 @@
             <ion-button class="message-editor-button" color="light" (click)="send()">
                 <ion-icon name="send" slot="icon-only"></ion-icon>
             </ion-button>
-            <!--            <ion-button *ngIf="uid !== '1000'" class="message-editor-button" color="light" (click)="contact()">-->
-            <!--                <ion-icon name="send" slot="icon-only"></ion-icon>-->
-            <!--            </ion-button>-->
         </ion-buttons>
     </ion-toolbar>
 </ion-footer>
 
-<!--<ion-footer text-center>-->
-<!--    <p text-center>&copy; 2020 egoal-shopping.com-->
-<!--    <p>-->
-<!--</ion-footer>-->

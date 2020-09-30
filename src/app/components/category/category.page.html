@@ -90,7 +90,7 @@
                             <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
                             <!--                            <span class="previous-price"> ${{item.price}}</span>-->
                             <div class="span-container">
-                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>
+                                <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</span>
                                 <span *ngIf="item.averageStar >= 1">
                       <ion-icon class="iconStar" name="star"></ion-icon>
                 </span>

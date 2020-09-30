@@ -112,3 +112,15 @@
   font-style: inherit;
 }
 
+.previous-price {
+  text-decoration: line-through;
+  font-size: 0.8rem;
+}
+
+.blurHover{
+  border: 10px solid #ed576b !important;
+}
+
+ion-card:hover {
+  border: 1px solid #ff8080 !important;
+}

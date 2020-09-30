@@ -13,6 +13,9 @@ import {FeaturedProductsPageModule} from '../featured-products/featured-products
 import {HomePageRoutingModule} from './home-routing.module';
 import {TranslateModule} from '@ngx-translate/core';
 import {IonicSelectableModule} from 'ionic-selectable';
+import {TopHeaderPageModule} from '../header/top-header/top-header.module';
+import {HeaderComponent} from '../header/header/header.component';
+import {FooterComponent} from '../footer/footer.component';
 // import {ProductListPage} from '../product-list/product-list.page';
 
 @NgModule({
@@ -29,9 +32,13 @@ import {IonicSelectableModule} from 'ionic-selectable';
         FormsModule,
         FeaturedProductsPageModule,
         TranslateModule,
-        IonicSelectableModule
+        IonicSelectableModule,
+        TopHeaderPageModule
     ],
-    declarations: [HomePage],
+    declarations: [HomePage, HeaderComponent, FooterComponent],
+    exports: [
+        FooterComponent
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomePageModule {

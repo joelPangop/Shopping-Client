@@ -16,7 +16,6 @@
     <ion-grid *ngIf="!platform.is('ios') && !platform.is('android')">
         <ion-row>
             <ion-col size="2">
-
             </ion-col>
             <ion-col size="8">
                 <ion-list>
@@ -190,8 +189,17 @@
                             </ion-select>
                         </ion-item>
                         <ion-item>
-                            <ion-label position="floating">Prix (en Dollars Américains)</ion-label>
-                            <ion-input type="number" [(ngModel)]="articleService.article.price"
+                            <ion-label position="floating">{{"CREATE.prix" | translate}} ({{authService.currency.currency}})</ion-label>
+                            <div class="toggle_box in_stock end">
+                                <ion-input type="number" [(ngModel)]="articleService.article.price"
+                                           [ngModelOptions]="{standalone: true}"></ion-input>
+                                <span>{{"CREATE.discount" | translate}}</span>&nbsp;&nbsp;
+                                <ion-toggle checked mode="ios" [(ngModel)]="articleService.article.price_discounted"></ion-toggle>
+                            </div>
+                        </ion-item>
+                        <ion-item *ngIf="articleService.article.price_discounted">
+                            <ion-label position="floating">Discount Price ({{authService.currency.currency}})</ion-label>
+                            <ion-input type="number" [(ngModel)]="articleService.article.discountPrice"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                         </ion-item>
                         <ion-item>
@@ -420,8 +428,17 @@
             </ion-select>
         </ion-item>
         <ion-item>
-            <ion-label position="floating">Prix (en Dollars Américains)</ion-label>
-            <ion-input type="number" [(ngModel)]="articleService.article.price"
+            <ion-label position="floating">{{"CREATE.prix" | translate}} ({{authService.currency.currency}})</ion-label>
+            <div class="toggle_box in_stock end">
+                <ion-input type="number" [(ngModel)]="articleService.article.price"
+                           [ngModelOptions]="{standalone: true}"></ion-input>
+                <span>{{"CREATE.discount" | translate}}</span>&nbsp;&nbsp;
+                <ion-toggle checked mode="ios" [(ngModel)]="articleService.article.price_discounted"></ion-toggle>
+            </div>
+        </ion-item>
+        <ion-item *ngIf="articleService.article.price_discounted">
+            <ion-label position="floating">Discount Prix ({{authService.currency.currency}})</ion-label>
+            <ion-input type="number" [(ngModel)]="articleService.article.discountPrice"
                        [ngModelOptions]="{standalone: true}"></ion-input>
         </ion-item>
         <ion-item>

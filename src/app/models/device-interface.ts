@@ -1,4 +1,7 @@
-export interface Device {
+import {DeviceInfo} from '@capacitor/core';
+
+// @ts-ignore
+export interface Device extends DeviceInfo{
     _id?:string,
     appBuild: string,
     appId: string,

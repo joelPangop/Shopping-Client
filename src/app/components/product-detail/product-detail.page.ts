@@ -57,7 +57,7 @@ export class ProductDetailPage implements OnInit {
     webSocket: WebSocket;
     cartItems = [] as itemCart[];
     images: any;
-    public cartItemCount: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    public cartItemCount = new BehaviorSubject<number>(0);
     utilisateur = {} as Utilisateur;
     like: boolean = false;
     currency: any;
@@ -74,9 +74,9 @@ export class ProductDetailPage implements OnInit {
                 public modalController: ModalController, private msgService: MessageService, private cmdService: CommandeService, private websocketService: WebsocketService,
                 private userStorageUtils: UserStorageUtils, private cartService: CartService, public cuService: CurrencyService,
                 private router: Router, private loadingCtrl: LoadingController) {
+        this.cartItemCount = this.cartService.getCartItemCount();
         this.article = {} as Article;
         this.loadArticle();
-
     }
 
     async ngOnInit() {
@@ -87,7 +87,7 @@ export class ProductDetailPage implements OnInit {
         this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
             {
                 data = res;
-                this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
+                this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
             }
         });
         await this.loadArticle();

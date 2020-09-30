@@ -11,6 +11,7 @@ import {CurrencyService} from '../../services/currency.service';
 import {ArticleService} from '../../services/article.service';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {ProductViewPage} from '../product-view/product-view.page';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
     selector: 'app-category',
@@ -31,7 +32,8 @@ export class CategoryPage implements OnInit {
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private http: HttpClient,
                 private photoViewer: PhotoViewer, private navCtrl: NavController, private articleService: ArticleService,
-                private userStorageUtils: UserStorageUtils, public cuService: CurrencyService, private modalController: ModalController) {
+                private userStorageUtils: UserStorageUtils, public cuService: CurrencyService, private modalController: ModalController,
+                public authService: AuthService) {
         this.cat = [];
         this.catTitle = '';
     }
@@ -44,7 +46,7 @@ export class CategoryPage implements OnInit {
             this.cat = carParse.cats;
             this.sousTitre = this.cat.length === 3 ? this.cat[2] : this.cat[1];
         }
-        this.utilisateur = await this.userStorageUtils.getUser();
+        this.utilisateur = await this.authService.currentUser;
         await this.userStorageUtils.getCurrency().then(async res => {
             this.currency = res ? res.currency : this.utilisateur.currency.currency;
             await this.loadArticles();
@@ -117,5 +119,10 @@ export class CategoryPage implements OnInit {
 
     public isWishList(item: Article) {
         return item.likes.includes(this.utilisateur._id);
+    }
+
+    getRatedPrice(price: number, rate: number) {
+        const retour = price * rate;
+        return retour;
     }
 }

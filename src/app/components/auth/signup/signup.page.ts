@@ -10,8 +10,11 @@ import {Telephone} from '../../../models/telephone-interface';
 import {CategorieTelephone} from '../../../models/CategorieTelephone';
 import {UserInfo} from '../../../models/userInfo-interface';
 import {Address} from '../../../models/address-interface';
-import {Utilisateur} from '../../../models/utilisateur-interface';
+import {Currency, Utilisateur} from '../../../models/utilisateur-interface';
 import {UserStorageUtils} from '../../../services/UserStorageUtils';
+import {ShowOptionsPage} from '../../show-options/show-options.page';
+import {BehaviorSubject} from 'rxjs';
+import {Currencies} from '../../../models/Currencies';
 
 @Component({
     selector: 'app-signup',
@@ -30,6 +33,11 @@ export class SignupPage implements OnInit {
     options: any;
     utilisateur = {} as Utilisateur;
     genders: string[] = ['M.', 'F.', 'Other'];
+    // @ts-ignore
+    currOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    // @ts-ignore
+    currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
+    currencies: Map<string, string>;
 
     constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
@@ -48,9 +56,9 @@ export class SignupPage implements OnInit {
     }
 
     ngOnInit() {
-        this.userStorageUtils.getUser().then(res => {
-            this.utilisateur = res as Utilisateur;
-        });
+        // this.userStorageUtils.getUser().then(res => {
+        //     this.utilisateur = res as Utilisateur;
+        // });
         this.options = Object.keys(CategorieTelephone);
         this.authSrv.userInfo = {} as UserInfo;
         this.authSrv.userInfo.telephones = [] as Telephone[];
@@ -59,6 +67,16 @@ export class SignupPage implements OnInit {
             image: ['']
         });
         this.genders = ['M.', 'F.', 'Other']
+        this.utilisateur.currency = {
+            currency: 'CAD',
+            icon: 'flag-for-flag-canada'
+        } as Currency;
+        this.currencies = new Map<string, string>();
+        for (const item in Currencies) {
+            console.log('item:', item);
+            console.log('item value:', Currencies[item]);
+            this.currencies.set(item, Currencies[item]);
+        }
     }
 
     async createProfile() {
@@ -75,10 +93,11 @@ export class SignupPage implements OnInit {
           // this.navCtrl.navigateRoot('intro')
           const navigationExtras: NavigationExtras = {
             queryParams: {
-              special: JSON.stringify(res1)
+              special: this.authSrv.confirmation_code,
+              user: JSON.stringify(res1)
             }
           };
-          await this.router.navigate(['signin'], navigationExtras);
+          await this.router.navigate(['verification', ], navigationExtras);
         });
       });
     }
@@ -128,5 +147,30 @@ export class SignupPage implements OnInit {
             this.authSrv.userInfo.telephones = [];
             this.authSrv.userInfo.telephones.push({} as Telephone);
         }
+    }
+
+    public async setCurrency(ev) {
+        // @ts-ignore
+        const popover = await this.popoverController.create({
+            component: ShowOptionsPage,
+            event: ev,
+            translucent: true,
+            cssClass: 'my-custom-dialog',
+            componentProps: {
+                currOptionSubject: this.currOptionSubject,
+                currIconOptionSubject: this.currIconOptionSubject,
+                currency: this.utilisateur.currency.currency,
+                currencyIcon: this.utilisateur.currency.icon,
+                option: 'userCurrency'
+            }
+        });
+
+        popover.onDidDismiss()
+            .then((data) => {
+                console.log(data.data);
+                this.utilisateur.currency.currency = data.data.currency;
+                this.utilisateur.currency.icon = data.data.icon;
+            });
+        return await popover.present();
     }
 }

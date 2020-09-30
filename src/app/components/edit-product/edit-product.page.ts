@@ -46,7 +46,7 @@ export class EditProductPage implements OnInit {
     constructor(private activatedRoute: ActivatedRoute, private photoViewer: PhotoViewer, private navCtrl: NavController,
                 private imageService: ImageService, private formBuilder: FormBuilder, private loadingCtrl: LoadingController,
                 private toastCtrl: ToastController, public platform: Platform, public articleService: ArticleService,
-                public modalController: ModalController, private authService: AuthService, private alertController: AlertController,
+                public modalController: ModalController, public authService: AuthService, private alertController: AlertController,
                 private storage: StorageService, private router: Router) {
         this.categories = categories;
         this.cities = cities;
@@ -240,6 +240,9 @@ export class EditProductPage implements OnInit {
                         this.article.pictures.push(img);
                     }
                     this.articleService.article.utilisateurId = this.authService.currentUser._id;
+                    if(this.articleService.article.price_discounted){
+                        this.articleService.article.price_changed_date = Date.now();
+                    }
                     this.articleService.updateArticle().subscribe(res => {
                         loading.dismiss();
                         console.log(res);

@@ -55,7 +55,14 @@
     <ion-row class="ion-padding">
         <!--        <ion-text color="color1" class="price">${{discountPrice}} USD &nbsp;</ion-text>-->
         <!--        <span class="previous-price"> ${{price}}</span>-->
-        <span>
+        <ion-row class="ion-padding" *ngIf="product.price_discounted">
+            <ion-text color="color1" class="price">{{getRatedPrice(product.discountPrice, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+            </ion-text>&nbsp;&nbsp;
+            <span class="previous-price">
+                {{getRatedPrice(product.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+            </span>
+        </ion-row>
+        <span *ngIf="!product.price_discounted">
             {{getRatedPrice(product.price, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
         </span>
     </ion-row>

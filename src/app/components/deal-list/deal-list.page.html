@@ -1,0 +1,489 @@
+<ion-header>
+    <ion-toolbar color="color1">
+        <ion-buttons slot="start">
+            <ion-title>{{option}}</ion-title>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="gotoCartPage()" #cart color="clear">
+                <div class="cart-length">{{ cartItemCount.value}}</div>
+                <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content id="products" class="ion-padding">
+    <div *ngIf="platform.is('ios') || platform.is('android')">
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+            <ion-refresher-content
+                    pullingIcon="arrow-dropdown"
+                    pullingText="Pull to refresh"
+                    refreshingSpinner="circles"
+                    refreshingText="Loading...">
+            </ion-refresher-content>
+        </ion-refresher>
+
+        <!-- When Cart is Empty -->
+        <ion-grid class="ion-padding" id="empty" *ngIf="articles.length == 0" style="height: 100%">
+            <ion-row class="ion-align-items-center ion-justify-content-center"
+                     style="height: 100%; flex-direction: column">
+                <div class="ion-text-center ion-padding">
+                    <h4>No Product</h4>
+                </div>
+            </ion-row>
+        </ion-grid>
+
+        <!-- Product View Options -->
+        <div class="ion-text-end">
+
+            <!-- One Column Option -->
+            <ion-button fill="clear" [color]="oneColumn ? 'color1' : 'color2'" class="ion-no-padding"
+                        (click)="showOneColumn()">
+                <ion-icon slot="icon-only" name="square"></ion-icon>
+            </ion-button>
+
+            <!-- Grid Option -->
+            <ion-button fill="clear" [color]="grid ? 'color1' : 'color2'" class="ion-no-padding" (click)="showGrid()">
+                <ion-icon slot="icon-only" name="grid"></ion-icon>
+            </ion-button>
+
+            <!-- List View Option -->
+            <ion-button fill="clear" [color]="list ? 'color1' : 'color2'" class="ion-no-padding" (click)="showList()">
+                <ion-icon slot="icon-only" name="list"></ion-icon>
+            </ion-button>
+        </div>
+
+        <!-- End Product View Options -->
+        <!-- Grid View Contents -->
+        <ion-grid id="grid1" *ngIf="grid">
+            <ion-row>
+                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles">
+                    <ion-card class="ion-no-margin">
+
+                        <!-- Product Image -->
+                        <div class="card-img"
+                             [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                             (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                        <!-- Wish Button or Product Like/Dislike Button Option -->
+                        <ion-fab vertical="top" horizontal="end">
+                            <ion-fab-button>
+                                <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                                <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab>
+
+                        <ion-fab vertical="bottom" horizontal="end" (click)="showDetails(item._id)">
+                            <button>
+                                <ion-icon color="color1" name="eye"></ion-icon>
+                            </button>
+                        </ion-fab>
+
+                        <!-- Product Contents -->
+                        <ion-card-content>
+                            <ion-row *ngIf="item.price_discounted">
+                                <ion-text
+                                        color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                </ion-text>
+                                <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                            </ion-row>
+                            <ion-row *ngIf="!item.price_discounted">
+                                <span>{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                            </ion-row>
+                            <ion-row>
+                                <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                <div class="span-container">
+                                    <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                    <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                </div>
+                            </ion-row>
+                            <ion-row>
+                                <h5 class="product-name">{{item.title | slice:0:15}}</h5>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <!-- One Column View Contents -->
+        <ion-grid id="oneColumn1" *ngIf="oneColumn">
+            <ion-row>
+                <ion-col size="12" *ngFor="let item of articles">
+                    <ion-card class="ion-no-margin">
+
+                        <!-- Product Image -->
+                        <div class="card-img"
+                             [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                             (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                        <!-- Wish Button or Product Like/Dislike Button Option -->
+                        <ion-fab vertical="top" horizontal="end">
+                            <ion-fab-button>
+                                <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                                <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab>
+
+                        <ion-fab vertical="bottom" horizontal="end">
+                            <ion-fab-button (click)="showDetails(item._id)">
+                                <ion-icon color="color1" name="eye"></ion-icon>
+                            </ion-fab-button>
+                        </ion-fab>
+                        <!-- Product Contents -->
+                        <ion-card-content>
+                            <ion-row>
+                                <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                <div class="span-container">
+                                    <ion-row *ngIf="item.price_discounted">
+                                        <ion-text
+                                                color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                        </ion-text>
+                                        <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    </ion-row>
+                                    <span *ngIf="!item.price_discounted">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                    <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                </div>
+                            </ion-row>
+                            <ion-row>
+                                <h5 class="product-name">{{item.title | slice:0:30}}</h5>
+                            </ion-row>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <!-- List View Contents -->
+        <div id="list1" *ngIf="list">
+            <ion-card *ngFor="let item of articles">
+                <ion-list lines="none">
+                    <ion-item class="ion-no-padding">
+
+                        <!-- Product Image -->
+                        <ion-thumbnail slot="start" (click)="showImage(item.pictures[0], item.title, $event)">
+                            <img style="vertical-align: middle;"
+                                 [src]="'https://egoalservice.azurewebsites.net/image/'+item.pictures[0]">
+                        </ion-thumbnail>
+
+                        <!-- Wish Button or Product Like/Dislike Button Option -->
+                        <ion-fab vertical="top" horizontal="end">
+                            <ion-icon color="color1" name="heart-outline" *ngIf="!isWishList(item)"></ion-icon>
+                            <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                        </ion-fab>
+
+                        <ion-fab vertical="bottom" horizontal="end">
+                            <ion-icon color="color1" name="eye" (click)="showDetails(item._id)"></ion-icon>
+                        </ion-fab>
+
+                        <!-- Product Contents -->
+                        <ion-label class="ion-text-wrap">
+                            <ion-row>
+                                <h5 class="product-name">{{item.title | slice:0:30}}</h5>
+                            </ion-row>
+                            <!--                        <ion-row>-->
+                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                            <!--                        </ion-row>-->
+                            <ion-row>
+                                <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                <div class="span-container">
+                                    <ion-row *ngIf="item.price_discounted">
+                                        <ion-text
+                                                color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                        </ion-text>
+                                        <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    </ion-row>
+                                    <span *ngIf="!item.price_discounted"
+                                          class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                    <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                    <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                    <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                </div>
+                            </ion-row>
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card>
+        </div>
+    </div>
+    <div *ngIf="!platform.is('ios') && !platform.is('android')">
+        <ion-grid>
+            <ion-row>
+                <ion-col size="2">
+
+                </ion-col>
+                <ion-col size="8">
+
+                    <!-- Product View Options -->
+                    <div class="ion-text-end">
+
+                        <!-- One Column Option -->
+                        <ion-button fill="clear" [color]="oneColumn ? 'color1' : 'color2'" class="ion-no-padding"
+                                    (click)="showOneColumn()">
+                            <ion-icon slot="icon-only" name="square"></ion-icon>
+                        </ion-button>
+
+                        <!-- Grid Option -->
+                        <ion-button fill="clear" [color]="grid ? 'color1' : 'color2'" class="ion-no-padding"
+                                    (click)="showGrid()">
+                            <ion-icon slot="icon-only" name="grid"></ion-icon>
+                        </ion-button>
+
+                        <!-- List View Option -->
+                        <ion-button fill="clear" [color]="list ? 'color1' : 'color2'" class="ion-no-padding"
+                                    (click)="showList()">
+                            <ion-icon slot="icon-only" name="list"></ion-icon>
+                        </ion-button>
+                    </div>
+                    <!-- End Product View Options -->
+                    <!-- Grid View Contents -->
+                    <ion-grid id="grid" *ngIf="grid">
+                        <ion-row>
+                            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles">
+                                <ion-card class="ion-no-margin">
+
+                                    <!-- Product Image -->
+                                    <div class="card-img"
+                                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                                         (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                                    <ion-fab vertical="top" horizontal="end">
+                                        <ion-fab-button>
+                                            <ion-icon color="color1" name="heart-outline"
+                                                      *ngIf="!isWishList(item)"></ion-icon>
+                                            <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                                        </ion-fab-button>
+                                    </ion-fab>
+
+                                    <ion-fab vertical="bottom" horizontal="end" (click)="showDetails(item._id)">
+                                        <button>
+                                            <ion-icon color="color1" name="eye"></ion-icon>
+                                        </button>
+                                    </ion-fab>
+
+                                    <!-- Product Contents -->
+                                    <ion-card-content>
+                                        <ion-row *ngIf="item.price_discounted">
+                                            <ion-text
+                                                    color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                            </ion-text>
+                                            <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row *ngIf="!item.price_discounted">
+                                            <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row>
+                                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                            <div class="span-container">
+                                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                                <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                            </div>
+                                        </ion-row>
+                                        <ion-row>
+                                            <h5 class="product-name">{{item.title | slice:0:30}}</h5>
+                                        </ion-row>
+                                    </ion-card-content>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- One Column View Contents -->
+                    <ion-grid id="oneColumn" *ngIf="oneColumn">
+                        <ion-row>
+                            <ion-col size="12" *ngFor="let item of articles">
+                                <ion-card class="ion-no-margin">
+                                    <!-- Product Image -->
+                                    <div class="card-img"
+                                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                                         (click)="showImage(item.pictures[0], item.title, $event)"></div>
+
+                                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                                    <ion-fab vertical="top" horizontal="end">
+                                        <ion-fab-button>
+                                            <ion-icon color="color1" name="heart-outline"
+                                                      *ngIf="!isWishList(item)"></ion-icon>
+                                            <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                                        </ion-fab-button>
+                                    </ion-fab>
+
+                                    <ion-fab vertical="bottom" horizontal="end">
+                                        <ion-fab-button (click)="showDetails(item._id)">
+                                            <ion-icon color="color1" name="eye"></ion-icon>
+                                        </ion-fab-button>
+                                    </ion-fab>
+                                    <!-- Product Contents -->
+                                    <ion-card-content>
+                                        <ion-row *ngIf="item.price_discounted">
+                                            <ion-text
+                                                    color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                            </ion-text>
+                                            <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row *ngIf="!item.price_discounted">
+                                            <span class="price">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                        </ion-row>
+                                        <ion-row>
+                                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                            <div class="span-container">
+                                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                                <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                            </div>
+                                        </ion-row>
+                                        <ion-row>
+                                            <h5 class="product-name2">{{item.title | slice:0:50}}</h5>
+                                        </ion-row>
+                                    </ion-card-content>
+                                </ion-card>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                    <!-- List View Contents -->
+                    <div id="list" *ngIf="list">
+                        <ion-card *ngFor="let item of articles">
+                            <ion-list lines="none">
+                                <ion-item class="ion-no-padding">
+
+                                    <!-- Product Image -->
+                                    <ion-thumbnail slot="start"
+                                                   (click)="showImage(item.pictures[0], item.title, $event)">
+                                        <img style="vertical-align: middle;"
+                                             [src]="'https://egoalservice.azurewebsites.net/image/'+item.pictures[0]">
+                                    </ion-thumbnail>
+
+                                    <!-- Wish Button or Product Like/Dislike Button Option -->
+                                    <ion-fab vertical="top" horizontal="end">
+                                        <ion-icon color="color1" name="heart-outline"
+                                                  *ngIf="!isWishList(item)"></ion-icon>
+                                        <ion-icon color="color1" name="heart" *ngIf="isWishList(item)"></ion-icon>
+                                    </ion-fab>
+
+                                    <ion-fab vertical="bottom" horizontal="end">
+                                        <ion-icon color="color1" name="eye" (click)="showDetails(item._id)"></ion-icon>
+                                    </ion-fab>
+
+                                    <!-- Product Contents -->
+                                    <ion-label class="ion-text-wrap">
+                                        <ion-row>
+                                            <h5 class="product-name">{{item.title | slice:0:30}}</h5>
+                                        </ion-row>
+                                        <!--                        <ion-row>-->
+                                        <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                        <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                        <!--                        </ion-row>-->
+                                        <ion-row>
+                                            <!--                            <ion-text color="color1">${{item.discountPrice}} &nbsp;</ion-text>-->
+                                            <!--                            <span class="previous-price"> ${{item.price}}</span>-->
+                                            <div class="span-container">
+                                                <ion-row *ngIf="item.price_discounted">
+                                                    <ion-text
+                                                            color="color1">{{getRatedPrice(item.discountPrice, cuService.rate) | currency: authService.currency.currency}}&nbsp;
+                                                    </ion-text>
+                                                    <span class="previous-price ">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                                </ion-row>
+                                                <span class="price"
+                                                      *ngIf="!item.price_discounted">{{getRatedPrice(item.price, cuService.rate) | currency: authService.currency.currency}}</span>
+                                                <!--                                <span class="price">{{item.price | currency:currency:'symbol-narrow':'.2'}}</span>-->
+                                                <span *ngIf="item.averageStar >= 1">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 2">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 3">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 4">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                                <span *ngIf="item.averageStar >= 5">
+                      <ion-icon class="iconStar" name="star"></ion-icon>
+                </span>
+                                            </div>
+                                        </ion-row>
+                                    </ion-label>
+                                </ion-item>
+                            </ion-list>
+                        </ion-card>
+                    </div>
+                </ion-col>
+                <ion-col size="2">
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</ion-content>

@@ -86,8 +86,9 @@
                 </ion-button>
             </ion-item>
             <div class="ion-padding">
-                <ion-button color="color1" expand="block" (click)="sign()">
-                    {{signOption}}
+                <ion-button color="color1" expand="block" (click)="sign($event)">
+<!--                    {{signOption}}-->
+                    {{authService.currentUser._id ? 'Sign Out': 'Sign In'}}
                 </ion-button>
             </div>
         </ion-footer>

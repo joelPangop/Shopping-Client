@@ -126,6 +126,10 @@ const routes: Routes = [
             {
                 path: 'tab-souscription',
                 loadChildren: () => import('../souscription/souscription.module').then( m => m.SouscriptionPageModule)
+            },
+            {
+                path: 'deal-list/:option',
+                loadChildren: () => import('../deal-list/deal-list.module').then( m => m.DealListPageModule)
             }
         ]
     }

@@ -4,20 +4,18 @@ import {MessageService} from '../../services/message.service';
 import {Message} from '../../models/message-interface';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {environment} from '../../models/environements';
-import {AlertController, IonNav, NavController, Platform, ToastController} from '@ionic/angular';
+import {AlertController, IonContent, NavController, Platform, ToastController} from '@ionic/angular';
 import {AuthService} from '../../services/auth.service';
 import {Notification} from '../../models/notification-interface';
-import {ELocalNotificationTriggerUnit, LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 import {NotificationType} from '../../models/notificationType';
 import {Article} from '../../models/article-interface';
 import {ArticleService} from '../../services/article.service';
-import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
 import {Observable} from 'rxjs';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
-import {Socket} from 'ngx-socket-io';
-import {NotificationService} from '../../services/notification.service';
 import {WebsocketService} from '../../services/websocket.service';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-action-message',
@@ -26,6 +24,7 @@ import {WebsocketService} from '../../services/websocket.service';
 })
 export class ActionMessagePage implements OnInit {
 
+    @ViewChild('IonContent') content: IonContent;
     id;
     action;
     uid: string;
@@ -39,10 +38,11 @@ export class ActionMessagePage implements OnInit {
     article = {} as Article;
     image: any;
     article_title: string;
+    phone_model = 'iPhone';
 
     constructor(private activatedRoute: ActivatedRoute, private toastCtrl: ToastController, private alertController: AlertController,
                 public msgService: MessageService, public authSrv: AuthService,
-                private platform: Platform, private localNotification: LocalNotifications,
+                public platform: Platform, private localNotification: LocalNotifications,
                 public articleService: ArticleService, private navCtrl: NavController, public cuService: CurrencyService,
                 private userStorageUtils: UserStorageUtils, private websocketService: WebsocketService,
                 public router: Router) {
@@ -64,14 +64,15 @@ export class ActionMessagePage implements OnInit {
             await this.authSrv.getUserById(this.uid).subscribe((res) => {
                 this.interlocutor = res;
                 console.log('interlocutor:', this.interlocutor);
+                this.loadAllMessages(this.interlocutor);
             });
         }
         console.log('params:', this.id, this.action);
-        if (this.id === '1000') {
-            this.message = {} as Message;
-        } else {
-            await this.loadMessageById();
-        }
+        // if (this.id === '1000') {
+        //     this.message = {} as Message;
+        // } else {
+        //     await this.loadMessageById();
+        // }
         // this.socket.fromEvent('notify').subscribe(notification => {
         //     console.log('New:', notification);
         //     const usr = notification['user'] as Utilisateur;
@@ -106,7 +107,17 @@ export class ActionMessagePage implements OnInit {
         }
     }
 
-    ionViewDidEnter() {
+    async ionViewDidEnter() {
+        if (this.id === '1000') {
+            this.msgService.message = {} as Message;
+            this.changeMsgState();
+        } else {
+            this.loadMessageById();
+            this.changeMsgState();
+        }
+    }
+
+    changeMsgState() {
         for (let message of this.msgService.messages) {
             if (message.read === false) {
                 message.read = true;
@@ -145,7 +156,7 @@ export class ActionMessagePage implements OnInit {
     }
 
     loadMessageById() {
-        this.msgService.loadMessageById(this.id).subscribe(res => {
+        this.msgService.loadMessageById(this.id).subscribe((res) => {
             this.msgService.message = res as Message;
             this.loadInterlocutor(this.msgService.message);
         });
@@ -166,7 +177,7 @@ export class ActionMessagePage implements OnInit {
         const pictureId: string = this.message.picture;
 
         id = this.interlocutor._id;
-        const url = `${environment.api_url1}/Utilisateurs/${id}/messages`;
+        const url = `${environment.api_url}/Utilisateurs/${id}/messages`;
         const message: Message = {
             title: this.utilisateur.username,
             picture: this.utilisateur.avatar,
@@ -196,19 +207,19 @@ export class ActionMessagePage implements OnInit {
             this.msgService.addNotification(notification).subscribe(res => {
                 let not = res as Notification;
                 let res_str = JSON.stringify(not);
+
+                if (!this.websocketService.getWebSocket()) {
+                    console.log('No WebSocket connected :(');
+                    return;
+                }
                 this.websocketService.getWebSocket().send(res_str);
-                this.msgService.messages.push(message);
+                // this.userStorageUtils.getWebSocket().dispatchEvent('test')
                 // this.msgService.loadAllNotifications(this.utilisateur._id).subscribe((res) => {
                 //     console.log(res);
                 //     this.msgService.setNotificationCount(res.length);
                 // });
-                // this.localNotification.schedule({
-                //     id: 1,
-                //     title: notification.message,
-                //     text: message.content,
-                //     icon: 'assets/cart.png',
-                //     data: { notification: notification }
-                // });
+                this.msgService.messages.push(message);
+
             });
             this.presentToast('Message envoye', 1000, 'bottom');
             this.msgContent = '';
@@ -315,5 +326,13 @@ export class ActionMessagePage implements OnInit {
 
     showDetails(id: string) {
         this.navCtrl.navigateForward('/product-detail/' + id);
+    }
+
+    getMomentFromNow(date: any) {
+        return moment(date).format('LLLL');
+    }
+
+    getMomentForMobile(date: any) {
+        return moment(date).format('lll');
     }
 }

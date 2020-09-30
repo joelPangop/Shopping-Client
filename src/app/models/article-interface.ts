@@ -4,6 +4,9 @@ import {ArticleStatus} from './ArticleStatus';
 export interface Article {
     title: string;
     price: number;
+    discountPrice?: number,
+    price_changed_date: number;
+    price_discounted?: boolean;
     description: string;
     categories: string[];
     pictures: string[];
@@ -19,7 +22,6 @@ export interface Article {
     store?: Store,
     colors?: string[],
     sizes?: string[],
-    discountPrice?: number,
     availability: Availability;
     comments?: string[];
     status?: ArticleStatus;

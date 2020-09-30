@@ -10,6 +10,8 @@ import {Storage} from '@ionic/storage';
 import {CommandeService} from '../../services/commande.service';
 import {Commande} from '../../models/commande-interface';
 import {CartService} from '../../services/cart.service';
+import {AuthService} from '../../services/auth.service';
+import {CurrencyService} from '../../services/currency.service';
 
 @Component({
     selector: 'app-cart',
@@ -27,16 +29,16 @@ export class CartPage implements OnInit {
     commande = {} as Commande;
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
 
-    constructor(private storage: Storage, private toastCtrl: ToastController, public modalController: ModalController,
+    constructor(private storage: StorageService, private toastCtrl: ToastController, public modalController: ModalController,
                 private navCtrl: NavController, public platform: Platform, public storageService: StorageService,
-                private userStorageUtils: UserStorageUtils, private cartService: CartService,
-                private cmdService: CommandeService, private  loadCtrl: LoadingController) {
-
+                private userStorageUtils: UserStorageUtils, private cartService: CartService, public autSrv: AuthService,
+                private cmdService: CommandeService, private  loadCtrl: LoadingController, public cuService: CurrencyService) {
+        this.cartItemCount = this.cartService.getCartItemCount();
     }
 
     async ngOnInit() {
         // this.returnPage = await this.storage.getItem('page');
-        this.utilisateur = await this.userStorageUtils.getUser();
+        this.utilisateur = await this.autSrv.currentUser;
         this.loadCart();
     }
 
@@ -58,7 +60,9 @@ export class CartPage implements OnInit {
                 }
             });
         } else {
-            this.cartItems = await this.storage.get('cart');
+            await this.storage.getObject('cart').then((res: any) => {
+                this.cartItems = res;
+            });
             if (this.cartItems) {
                 this.cartItems.forEach(element => {
                     if (element.item.availability.type === 'En Magasin') {
@@ -68,7 +72,7 @@ export class CartPage implements OnInit {
                     // @ts-ignore
                     this.total += element.item.availability.feed + element.amount;
                 });
-            }else{
+            } else {
                 this.cartItems = [];
             }
         }
@@ -95,7 +99,7 @@ export class CartPage implements OnInit {
         this.total = this.total + product.item.price;
         product.amount = product.amount + product.item.price;
         // await this.storage.set('cart', this.cartItems);
-        this.cartItemCount.next(this.cartItemCount.value + 1);
+        this.cartService.setCartItemCount(product.qty);
 
         this.cmdService.commande.itemsCart = this.cartItems;
         let totalAmount = 0;
@@ -110,7 +114,7 @@ export class CartPage implements OnInit {
 
         this.cmdService.updateCommande().subscribe(async (res) => {
             this.cmdService.commande = res.article;
-            await this.storage.set('cart', this.cmdService.commande);
+            await this.storage.setObject('cart', this.cmdService.commande);
             console.log('result', res.result);
             if (res.result === 'successfull') {
                 await loading.dismiss();
@@ -159,7 +163,7 @@ export class CartPage implements OnInit {
             await loading.present();
             this.cmdService.updateCommande().subscribe(async (res) => {
                 this.cmdService.commande = res.article;
-                await this.storage.set('cart', this.cmdService.commande);
+                await this.storage.setObject('cart', this.cmdService.commande);
                 console.log('result', res.result);
                 if (res.result === 'successfull') {
                     await loading.dismiss();
@@ -193,7 +197,7 @@ export class CartPage implements OnInit {
                 this.cartService.setCartItemCount(this.cartItems.length);
                 this.total = this.total - (item.qty * item.amount);
                 // this.event.publish('cartItemCount', this.cartItems.length);
-                await this.storage.set('cart', this.cartItems);
+                await this.storage.setObject('cart', this.cmdService.commande);
             }
         }
         if (this.cartItems.length === 0) {
@@ -211,7 +215,7 @@ export class CartPage implements OnInit {
             this.cmdService.commande.quantity = this.cartItems.length;
             this.cmdService.updateCommande().subscribe(async (res) => {
                 this.cmdService.commande = res.article;
-                await this.storage.set('cart', this.cmdService.commande);
+                await this.storage.setObject('cart', this.cmdService.commande);
                 console.log('result', res.result);
                 if (res.result === 'successfull') {
                     await loading.dismiss();
@@ -282,5 +286,10 @@ export class CartPage implements OnInit {
         setTimeout(() => {
             loading.dismiss();
         }, 5000);
+    }
+
+    getRatedPrice(price: number, rate: number) {
+        const retour = price * rate;
+        return retour;
     }
 }

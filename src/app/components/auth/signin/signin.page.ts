@@ -4,11 +4,17 @@ import {Facebook, FacebookLoginResponse} from '@ionic-native/facebook/ngx';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../../../services/auth.service';
-import {NavController} from '@ionic/angular';
+import {LoadingController, NavController, Platform} from '@ionic/angular';
 import {Utilisateur} from '../../../models/utilisateur-interface';
 import {environment} from '../../../models/environements';
 import {UserStorageUtils} from '../../../services/UserStorageUtils';
 import {Plugins} from '@capacitor/core';
+import {PagesService} from '../../../services/pages.service';
+import {MessageService} from '../../../services/message.service';
+import {CommandeService} from '../../../services/commande.service';
+import {CartService} from '../../../services/cart.service';
+import {StorageService} from '../../../services/storage.service';
+import {catchError} from 'rxjs/operators';
 
 const {CapacitorVideoPlayer, Device} = Plugins;
 
@@ -22,32 +28,37 @@ export class SigninPage implements OnInit {
     credentialsForm: FormGroup;
     utilisateur = {} as Utilisateur;
     info: any;
+    viewPwd: boolean = false;
 
     constructor(private formBuilder: FormBuilder, private fb: Facebook, private http: HttpClient, private router: Router,
-                private authService: AuthService, private navCtrl: NavController,
-                private activatedRoute: ActivatedRoute, private userStorageUtils: UserStorageUtils) {
+                private authService: AuthService, private navCtrl: NavController, public platform: Platform,
+                private activatedRoute: ActivatedRoute, private userStorageUtils: UserStorageUtils,
+                private loadingCtrl: LoadingController, private cmdService: CommandeService, public cartService: CartService,
+                private storage: StorageService) {
 
         this.credentialsForm = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
-            email: ['', [Validators.required, Validators.minLength(6)]]
+            email: ['', [Validators.required, Validators.minLength(6), Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
         });
     }
 
     async ngOnInit() {
-        this.userStorageUtils.getUser().then(res => {
-            this.utilisateur = res as Utilisateur;
-        });
+        // this.userStorageUtils.getUser().then(res => {
+        //         //     this.utilisateur = res as Utilisateur;
+        //         // });
+
+        let email: string = "";
         this.activatedRoute.queryParams.subscribe(params => {
             if (params && params.special) {
-                this.utilisateur = JSON.parse(params.special).user;
+                email = params.special;
             }
         });
         this.info = await Device.getInfo();
         this.credentialsForm = this.formBuilder.group({
-            password: [!this.utilisateur.password ? '' : this.utilisateur.password, [Validators.required, Validators.minLength(6),
+            password: ['', [Validators.required, Validators.minLength(6),
                 Validators.maxLength(30)]],
-            email: [!this.utilisateur.email ? '' : this.utilisateur.email, [Validators.required, Validators.minLength(6)]]
+            email: [email , [Validators.required, Validators.minLength(6)]]
         });
         // this.credentialsForm.value.password = !this.utilisateur.password ? '' : this.utilisateur.password;
         // this.credentialsForm.value.email = !this.utilisateur.email ? '' : this.utilisateur.email;
@@ -86,10 +97,47 @@ export class SigninPage implements OnInit {
     }
 
     loginWithPhone(): void {
-
+        console.log('btn clicked');
+        (<any>window).AccountKitPlugin.loginWithPhoneNumber(
+            {
+                useAccessToken: true,
+                defaultCountryCode: "US",
+                facebookNotificationsEnabled: true
+            }, (success) => {
+                console.log('success', success);
+                (<any>window).AccountKitPlugin.getAccount(
+                    async account => {
+                        console.log('account', account);
+                        // on crée l'objet 'utilisateur'
+                        this.utilisateur = {
+                            contact : account.phoneNumber,
+                            type: 'phone',
+                            avatar: "",
+                            username: ""
+                        }
+                        await this.storage.setObject('isLoggedIn', true);
+                        // stocker utilisateur dans MongoDB
+                        let url : string = `${environment.api_url}/Utilisateurs`;
+                        this.http.post(url, this.utilisateur)
+                            .subscribe(async user => {
+                                await this.storage.setObject('Utilisateur', user);
+                                // naviguer vers la page d'acceuil
+                                console.log('user', user);
+                                this.navCtrl.navigateRoot('/home');
+                            })
+                    }, (fail => {
+                        console.log('fail', fail)
+                    }))
+            }, (error => {
+                console.log('error', error);
+            }))
     }
 
     async login(event) {
+        const loading = await this.loadingCtrl.create({
+            message: 'Chargement...'
+        });
+        await loading.present();
         if (event.keyCode) {
             // tslint:disable-next-line:triple-equals
             if (event.keyCode == 13 && this.credentialsForm.valid) {
@@ -105,28 +153,43 @@ export class SigninPage implements OnInit {
                             this.authService.currentUser.userInfo.devices.push(this.info);
                             this.authService.updateProfile(this.authService.currentUser).subscribe((res) => {
                                 this.navCtrl.navigateForward('/menu/tabs/tab1');
-                            })
+                            });
                         }
                     }
                 });
             }
         } else {
             await this.authService.login(this.credentialsForm.value).subscribe(res => {
-                if (res.user[0]) {
+                if (res.user) {
+                    this.authService.currentUser = res.user;
                     let deviceIDs = [];
-                    if(res.user[0].userInfo.devices) {
-                        res.user[0].userInfo.devices.forEach(div => {
+                    if (res.user.userInfo.devices) {
+                        res.user.userInfo.devices.forEach(div => {
                             deviceIDs.push(div.uuid);
                         });
                     }
                     if (deviceIDs.includes(this.info.uuid)) {
+                        // this.cmdService.loadCommande(res.user[0]).subscribe((res) => {
+                        //     {
+                        //         let data = res;
+                        //         this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+                        //     }
+                        // });
                         this.navCtrl.navigateForward('/menu/tabs/tab1');
                     } else {
-                        res.user[0].userInfo.devices.push(this.info);
-                        this.authService.updateProfile(res.user[0]).subscribe((res) => {
+                        res.user.userInfo.devices.push(this.info);
+                        this.authService.updateProfile(res.user).subscribe((res) => {
+                            // this.cmdService.loadCommande(res.user[0]).subscribe((res) => {
+                            //     {
+                            //         let data = res;
+                            //         this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+                            //     }
+                            // });
                             this.navCtrl.navigateForward('/menu/tabs/tab1');
-                        })
+                        });
                     }
+
+                    loading.dismiss();
                 }
             });
         }

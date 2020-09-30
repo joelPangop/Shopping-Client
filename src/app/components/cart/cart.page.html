@@ -37,7 +37,7 @@
         <!-- Cart Product List -->
         <ion-card *ngFor="let item of cartItems; let i = index">
             <ion-list lines="none">
-                <ion-item class="ion-no-padding">
+                <ion-item class="ion-text-wrap">
 
                     <!-- Product Image -->
                     <ion-thumbnail slot="start">
@@ -54,21 +54,38 @@
 
                         <!-- Product Price -->
                         <ion-text color="color1">
-                            <p>${{item.item.price}}</p>
+                            <p>{{getRatedPrice(item.item.price, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</p>
                         </ion-text>
+                        <ion-grid fixed *ngIf="platform.is('ios') || platform.is('android')">
+                            <!-- Quantity -->
+                            <ion-row class="ion-align-items-center">
+                                <!-- Add More Product Quantity -->
+                                <ion-col (click)="addQuantity(item, i)" size="3" class="ion-align-self-center">
+                                    <ion-icon name="add-circle-outline" color="medium"></ion-icon>
+                                </ion-col>
 
-                        <!-- Quantity -->
-                        <ion-row>
-                            <!-- Add More Product Quantity -->
-                            <ion-col (click)="addQuantity(item, i)" size="2">
+                                <!-- Total Quantity -->
+                                <ion-col class="ion-align-self-center" size="2">{{item.qty}}</ion-col>
+
+                                <!-- Minus Product Quantity -->
+                                <ion-col (click)="minusQuantity(item, i)" size="3" class="ion-align-self-center">
+                                    <ion-icon name="remove-circle-outline" color="medium"></ion-icon>
+                                </ion-col>
+                                <ion-col (click)="removeProduct(item, i)" size="3" class="ion-align-self-center">
+                                    <ion-icon name="trash" color="medium"></ion-icon>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <ion-row *ngIf="!platform.is('ios') && !platform.is('android')">
+                            <ion-col class="ion-text-center" (click)="addQuantity(item, i)" size="2">
                                 <ion-icon style="zoom:2.0;" name="add-circle-outline" color="medium"></ion-icon>
                             </ion-col>
 
                             <!-- Total Quantity -->
-                            <ion-col class="ion-text-center" size="1">{{item.qty}}</ion-col>
+                            <ion-col class="ion-text-center" size="1" style="font-size: large">{{item.qty}}</ion-col>
 
                             <!-- Minus Product Quantity -->
-                            <ion-col (click)="minusQuantity(item, i)" size="2">
+                            <ion-col class="ion-text-center" (click)="minusQuantity(item, i)" size="2">
                                 <ion-icon style="zoom:2.0;" name="remove-circle-outline" color="medium"></ion-icon>
                             </ion-col>
                             <ion-col (click)="removeProduct(item, i)">
@@ -81,22 +98,24 @@
                     <!--                    <ion-icon name="close-circle" slot="end" color="medium" (click)="removeProduct(item.item, i)"></ion-icon>-->
                 </ion-item>
             </ion-list>
-            <ion-button (click)="contact(item)" class="btn-cart" size="small" color="clear">
-                <ion-icon slot="start" name="mail" color="medium"></ion-icon>
-                <ion-label color="medium">Contactez le vendeur</ion-label>
-            </ion-button>
+<!--            <ion-button (click)="contact(item)" class="btn-cart" size="small" color="clear">-->
+<!--                <ion-icon slot="start" name="mail" color="medium"></ion-icon>-->
+<!--                <ion-label color="medium">Contactez le vendeur</ion-label>-->
+<!--            </ion-button>-->
         </ion-card>
 
         <!-- summary Of Products Price -->
         <ion-list lines="none">
             <ion-item>
                 <ion-label>Sub Total</ion-label>
-                <ion-note slot="end" color="dark">{{total | currency}}</ion-note>
+                <ion-note slot="end"
+                          color="dark">{{getRatedPrice(total, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
             </ion-item>
 
             <ion-item>
                 <ion-label>Shipping</ion-label>
-                <ion-note slot="end" color="dark">{{commande.shipmentFee | currency}}</ion-note>
+                <ion-note slot="end"
+                          color="dark">{{getRatedPrice(commande.shipmentFee ? commande.shipmentFee : 0, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
                 <!--                <ion-note slot="end" color="dark">$25</ion-note>-->
             </ion-item>
 
@@ -109,7 +128,8 @@
 
             <ion-item>
                 <ion-label>Total</ion-label>
-                <ion-note slot="end" color="dark">${{total | currency}}</ion-note>
+                <ion-note slot="end"
+                          color="dark">{{getRatedPrice(total, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
                 <!--                <ion-note slot="end" color="dark">${{total + 25 + 100}}</ion-note>-->
             </ion-item>
         </ion-list>
