@@ -5,7 +5,7 @@
         </ion-buttons>
         <ion-buttons slot="end">
             <ion-button (click)="gotoCartPage()" #cart color="clear">
-                <div class="cart-length">{{ cartItemCount.value}}</div>
+                <div class="cart-length">{{ cartItemCount | async}}</div>
                 <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
             </ion-button>
         </ion-buttons>

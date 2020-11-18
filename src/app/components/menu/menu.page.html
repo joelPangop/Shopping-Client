@@ -37,6 +37,7 @@
                             </p>
                         </ion-item>
                     </ion-menu-toggle>
+
                     <ion-item button *ngIf="p.children?.length > 0" (click)="p.open = !p.open"
                             [class.active-parent]="p.open" detail="false">
                         <ion-icon size="small" slot="start" [name]="p.icon" [src]="p.src"></ion-icon>
@@ -70,7 +71,16 @@
                         </div>
                     </ion-list>
                 </div>
-
+                <div>
+                    <ion-menu-toggle auto-hide="false" *ngIf="utilisateur._id">
+                        <ion-item [routerDirection]="'root'" [routerLink]="['/menu/tabs/tab-souscription']" [routerLinkActive]="'active'">
+                            <ion-icon size="small" slot="start" name="log-in"></ion-icon>
+                            <p>
+                                {{'MENU.Souscription' | translate}}
+                            </p>
+                        </ion-item>
+                    </ion-menu-toggle>
+                </div>
             </ion-list>
         </ion-content>
 
@@ -87,8 +97,8 @@
             </ion-item>
             <div class="ion-padding">
                 <ion-button color="color1" expand="block" (click)="sign($event)">
-<!--                    {{signOption}}-->
-                    {{authService.currentUser._id ? 'Sign Out': 'Sign In'}}
+                    <!--                    {{signOption}}-->
+                    {{authService.currentUser._id ? 'Sign Out' : 'Sign In'}}
                 </ion-button>
             </div>
         </ion-footer>

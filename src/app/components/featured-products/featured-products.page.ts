@@ -8,6 +8,7 @@ import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {ProductViewPage} from '../product-view/product-view.page';
 import {AuthService} from '../../services/auth.service';
 import {CurrencyService} from '../../services/currency.service';
+import {environment} from '../../models/environements';
 
 @Component({
     selector: 'app-featured-products',
@@ -16,7 +17,7 @@ import {CurrencyService} from '../../services/currency.service';
 })
 export class FeaturedProductsPage implements OnInit {
     products = [] as Article[];
-
+    url = environment.api_url;
     // Slider Options
     slideOpts = {
         initialSlide: 0,

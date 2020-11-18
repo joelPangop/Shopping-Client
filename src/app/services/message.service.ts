@@ -16,6 +16,7 @@ export class MessageService {
 
     messageNotifications: Notification[];
     likeNotifications: Notification[];
+    orderNotifications: Notification[];
     messages = [] as Message[];
     message = {} as Message;
     public _notificationCount = new BehaviorSubject<number>(0);
@@ -23,6 +24,7 @@ export class MessageService {
     constructor(private http: HttpClient) {
         this.messageNotifications = [] as Notification[];
         this.likeNotifications = [] as Notification[];
+        this.orderNotifications = [] as Notification[];
         // this._notificationCount = new Subject<number>();
     }
 
@@ -49,6 +51,11 @@ export class MessageService {
 
     loadReceivedLikesNotifications(id): Observable<Notification[]> {
         const url = `${environment.api_url}/Utilisateur/${id}/notifications/Like`;
+        return this.http.get<Notification[]>(url);
+    }
+
+    loadReceivedOrdersNotifications(id): Observable<Notification[]> {
+        const url = `${environment.api_url}/Utilisateur/${id}/notifications/order`;
         return this.http.get<Notification[]>(url);
     }
 
@@ -101,7 +108,7 @@ export class MessageService {
     }
 
     sendMail(content: Mail): Observable<Mail> {
-        const url = `${environment.api_url1}/mail`;
+        const url = `${environment.api_url}/mail`;
         return this.http.post<Mail>(url, content);
     }
 }

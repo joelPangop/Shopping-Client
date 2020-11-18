@@ -1,4 +1,5 @@
 export enum NotificationType {
     MESSAGE = 'Message',
-    LIKE = 'Like'
+    LIKE = 'Like',
+    RECEIVED_ORDER = 'order'
 }

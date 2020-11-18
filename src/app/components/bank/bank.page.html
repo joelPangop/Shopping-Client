@@ -1,0 +1,675 @@
+<ion-header>
+    <ion-toolbar color="color1">
+        <ion-buttons slot="start">
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>bank</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="ion-text-start">
+        <ion-button routerLink="/menu/tabs/tab-souscription" routerDirection="'root" fill="clear" color="dark">
+            <ion-icon name="arrow-back" slot="start"></ion-icon>
+        </ion-button>
+    </div>
+    <ion-item-divider *ngIf="msg_err" style=" margin-top:20px">
+        <p style="font-style: italic; font-size: x-small; color: #d33939; margin: auto;text-align:center">{{msg_err}}</p>
+        <ion-button fill="clear" (click)="close_msg()">
+            <ion-icon name="close" color="color1"></ion-icon>
+        </ion-button>
+    </ion-item-divider>
+    <ion-grid *ngIf="!platform.is('android') && !platform.is('ios')">
+        <ion-row>
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <ion-card>
+                    <form id="subscription-form" [formGroup]="bankForm" (ngSubmit)="subscribe()" novalidate>
+                        <div class="MyCardElement">
+                            <ion-label class="ion-text-center"
+                                       *ngIf="bank_plan">{{authService.currentUser.email}}</ion-label>
+                            <ion-input class="ion-text-center" type="text" placeholder="Email" formControlName="email"
+                                       required name="email" *ngIf="!bank_plan"></ion-input>
+                            <div *ngIf="!bankForm.get('email').valid && bankForm.get('email').dirty"
+                                 class="error-message">
+                                Please enter a valid email.
+                            </div>
+                            <!-- Elements will create input elements here -->
+                        </div>
+                        <br/>
+                        <div id="status" *ngIf="steps[0].isSelected === true">
+                            <ion-card>
+                                <ion-grid class="ion-padding" style="height: 100%">
+                                    <ion-row class="ion-align-items-center ion-justify-content-center">
+                                        <ion-col>
+                                            <ion-label color="dark" class="ion-text-center ion-padding"><h2>Banks</h2>
+                                            </ion-label>
+                                        </ion-col>
+                                    </ion-row>
+                                    <ion-row class="ion-align-items-center ion-justify-content-center">
+                                        <div class="ion-text-center ion-padding"
+                                             *ngIf="!bank_plan || bank_plan.length === 0">
+                                            <ion-icon name="alert" style="zoom:10.0;"
+                                                      color="medium"></ion-icon>
+                                            <h2>No bank account</h2>
+                                        </div>
+                                        <div *ngIf="bank_plan && bank_plan.length > 0">
+                                            <ion-item *ngFor="let bank of bank_plan; let i = index">
+                                                <ion-icon src="assets/bank.svg" size="large"></ion-icon>
+                                                &nbsp; &nbsp; &nbsp;
+                                                <div (click)="viewBank($event, bank)">
+                                                    <ion-label
+                                                            style="font-size: small; vertical-align: baseline;">{{bank.bank_name}}</ion-label>
+                                                    <ion-label style="font-size: small; vertical-align: super;">
+                                                        ...{{bank.last4}}</ion-label>
+                                                </div>
+                                                &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;
+                                                <ion-button color="color1" (click)="removeBank(bank, i)">Delete
+                                                </ion-button>
+                                            </ion-item>
+                                        </div>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-card>
+                        </div>
+                        <div id="infosId" *ngIf="steps[1].isSelected === true">
+                            <div style="margin: auto; width: 70%;" class="ion-padding">
+                                <div class="toggle_box in_stock end">
+                                    <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                                    <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                                (ionChange)="use_information_toggle()"
+                                                [ngModelOptions]="{standalone: true}"></ion-toggle>
+                                </div>
+                            </div>
+                            <div class="ion-padding">
+                                <!-- account_holder_type -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Account holder name"
+                                               formControlName="account_holder_name"
+                                               name="account_holder_name"></ion-input>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.account_holder_name">
+                                            <div class="error-message"
+                                                 *ngIf="bankForm.get('account_holder_name').hasError(validation.type) && (bankForm.get('account_holder_name').dirty || bankForm.get('account_holder_name').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-item>
+                                <!-- account_holder_type -->
+                                <ion-item class="ion-padding-top" lines="none">
+                                    <ion-select formControlName="account_holder_type" placeholder="Account holder type">
+                                        <ion-select-option value="individual">
+                                            <ion-label
+                                                    style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                                        </ion-select-option>
+                                        <ion-select-option value="company">
+                                            <ion-label
+                                                    style="font-size: x-small">{{"Souscription.company"|translate}}</ion-label>
+                                        </ion-select-option>
+                                    </ion-select>
+                                    <ng-container *ngFor="let validation of validation_messages.account_holder_type">
+                                        <div class="error-message"
+                                             *ngIf="bankForm.get('account_holder_type').hasError(validation.type) && (bankForm.get('account_holder_type').dirty || bankForm.get('account_holder_type').touched)">
+                                            {{ validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </ion-item>
+                                <!-- account_holder_type -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input placeholder="Routing Number" formControlName="routing_number"
+                                               name="routing_number"></ion-input>
+
+                                </ion-item>
+                                <ng-container *ngFor="let validation of validation_messages.routing_number">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('routing_number').hasError(validation.type) && (bankForm.get('routing_number').dirty || bankForm.get('routing_number').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                                <!-- account_holder_type -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Account Number" formControlName="account_number"
+                                               name="account_number"></ion-input>
+
+                                </ion-item>
+                                <ng-container *ngFor="let validation of validation_messages.account_number">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('account_number').hasError(validation.type) && (bankForm.get('account_number').dirty || bankForm.get('account_number').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                                <ion-item>
+                                    <ion-input color="medium" type="date" id="birthday" formControlName="birthday"
+                                               name="birthday"></ion-input>
+                                </ion-item>
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.birthday">
+                                        <div class="error-message"
+                                             *ngIf="bankForm.get('birthday').hasError(validation.type) && (bankForm.get('birthday').dirty || bankForm.get('birthday').touched)">
+                                            {{ validation.message }}
+                                        </div>
+                                        <!--                                        <div *ngIf="bankForm.errors.birthdayValidator">-->
+                                        <!--                                            Birthday must be previous than the present date-->
+                                        <!--                                        </div>-->
+                                    </ng-container>
+                                </div>
+                                <ion-item>
+                                    <ion-label color="medium">
+                                        Currency
+                                    </ion-label>
+                                    <ion-button (click)="setCurrency($event)" color="secondary">
+                                        <ion-icon src="{{'assets/' + authService.currency.icon + '.svg'}}"></ion-icon>
+                                        <span>{{authService.currency.currency}}</span>
+                                    </ion-button>
+                                </ion-item>
+                            </div>
+                        </div>
+                        <div id="addressId" *ngIf="steps[2].isSelected === true">
+                            <div style="margin: auto; width: 70%;" class="ion-padding">
+                                <div class="toggle_box in_stock end">
+                                    <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                                    <ion-toggle mode="ios" [(ngModel)]="user_addr_informations"
+                                                (ionChange)="use_information_addr_toggle()"
+                                                [ngModelOptions]="{standalone: true}"></ion-toggle>
+                                </div>
+                            </div>
+                            <div class="ion-padding">
+                                <!-- Full Name -->
+                                <ion-item>
+                                    <ion-input type="text" placeholder="Full Name" formControlName="full_name"
+                                               required name="full_name"></ion-input>
+                                </ion-item>
+                                <div class="validation-errors">
+                                    <ng-container *ngFor="let validation of validation_messages.full_name">
+                                        <div class="error-message"
+                                             *ngIf="bankForm.get('full_name').hasError(validation.type) && (bankForm.get('full_name').dirty || bankForm.get('full_name').touched)">
+                                            {{ validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                                <!-- Address 1 -->
+                                <ion-row>
+                                    <ion-col size="9">
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="Address 1" formControlName="addr_1"
+                                                       style="font-size: small" required="true"
+                                                       name="address1"></ion-input>
+                                        </ion-item>
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.addr_1">
+                                                <div class="error-message"
+                                                     *ngIf="bankForm.get('addr_1').hasError(validation.type) && (bankForm.get('addr_1').dirty || bankForm.get('addr_1').touched)">
+                                                    {{ validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ion-col>
+                                    <ion-col size="3">
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="App" formControlName="appNumber"
+                                                       style="font-size: small"
+                                                       name="appNumber"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                </ion-row>
+
+                                <!-- Address 2 -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Address 2" formControlName="addr_2"
+                                               name="address2"></ion-input>
+                                </ion-item>
+
+                                <ion-row>
+                                    <ion-col>
+                                        <!-- City -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="City" formControlName="city"
+                                                       name="city"></ion-input>
+                                        </ion-item>
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.city_val">
+                                                <div class="error-message"
+                                                     *ngIf="bankForm.get('city').hasError(validation.type) && (bankForm.get('city').dirty || bankForm.get('city').touched)">
+                                                    {{ validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ion-col>
+                                    <ion-col>
+                                        <!-- State -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="state" formControlName="state"
+                                                       required="true"
+                                                       name="state"></ion-input>
+                                        </ion-item>
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.state_val">
+                                                <div class="error-message"
+                                                     *ngIf="bankForm.get('state').hasError(validation.type) && (bankForm.get('state').dirty || bankForm.get('state').touched)">
+                                                    {{ validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+
+                                <ion-row>
+                                    <ion-col>
+                                        <!-- Zip Code -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="Country" formControlName="country"
+                                                       required="true"
+                                                       name="country"></ion-input>
+                                        </ion-item>
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.country_val">
+                                                <div class="error-message"
+                                                     *ngIf="bankForm.get('country').hasError(validation.type) && (bankForm.get('country').dirty || bankForm.get('country').touched)">
+                                                    {{ validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ion-col>
+                                    <ion-col>
+                                        <!-- Zip Code -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="Zip Code" formControlName="zipcode"
+                                                       required="true"
+                                                       name="zipcode"></ion-input>
+                                        </ion-item>
+                                        <div class="validation-errors">
+                                            <ng-container *ngFor="let validation of validation_messages.zipcode">
+                                                <div class="error-message"
+                                                     *ngIf="bankForm.get('zipcode').hasError(validation.type) && (bankForm.get('zipcode').dirty || bankForm.get('zipcode').touched)">
+                                                    {{ validation.message }}
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                                <!-- Full Name -->
+                                <ion-item>
+                                    <ion-input type="text" placeholder="Phone" formControlName="phone"
+                                               name="phone"></ion-input>
+                                </ion-item>
+                            </div>
+                        </div>
+                        <div *ngIf="steps[3].isSelected" style="height: 70%">
+                            <ion-grid class="ion-padding" style="height: 100%">
+                                <ion-row class="ion-align-items-center ion-justify-content-center"
+                                         style="height: 100%; flex-direction: column">
+                                    <div class="ion-text-center ion-padding">
+                                        <ion-icon name="checkmark-circle-outline" style="zoom:10.0;"
+                                                  color="success"></ion-icon>
+                                        <h2>GREAT!!!</h2>
+                                        <p>Your Bank has been placed successfully</p>
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
+                        </div>
+                        <ion-button
+                                *ngIf="steps[0].isSelected && !steps[1].isSelected && !steps[2].isSelected"
+                                color="color1" expand="block"
+                                (click)="next()">Next
+                        </ion-button>
+                        <ion-row *ngIf="!steps[0].isSelected && steps[1].isSelected && !steps[2].isSelected">
+                            <ion-col>
+                                <ion-button color="color1" (click)="back()" expand="block">Back
+                                </ion-button>
+                            </ion-col>
+                            <ion-col>
+                                <ion-button type="submit" color="color1" expand="block" (click)="next()">
+                                    next
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="!steps[0].isSelected && !steps[1].isSelected && steps[2].isSelected">
+                            <ion-col>
+                                <ion-button color="color1" (click)="back()" expand="block">Back
+                                </ion-button>
+                            </ion-col>
+                            <ion-col>
+                                <ion-button type="submit" color="color1" expand="block" [disabled]="!bankForm.valid">
+                                    Confirm
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                        <!-- Go To Order Page Button Option  -->
+                        <!-- This Option will be visible on Step 3 -->
+                        <ion-button *ngIf="steps[3].isSelected" color="color1" fill="outline" expand="block"
+                                    (click)="gotoStatus()">Go to Bank list
+                        </ion-button>
+                    </form>
+                </ion-card>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </ion-grid>
+    <div *ngIf="platform.is('android') || platform.is('ios')">
+        <form id="subscription-form" [formGroup]="bankForm" (ngSubmit)="subscribe()" novalidate>
+            <div class="MyCardElement">
+                <ion-label class="ion-text-center"
+                           *ngIf="bank_plan">{{authService.currentUser.email}}</ion-label>
+                <ion-input class="ion-text-center" type="text" placeholder="Email" formControlName="email"
+                           required name="email" *ngIf="!bank_plan"></ion-input>
+                <div *ngIf="!bankForm.get('email').valid && bankForm.get('email').dirty"
+                     class="error-message">
+                    Please enter a valid email.
+                </div>
+                <!-- Elements will create input elements here -->
+            </div>
+            <br/>
+            <div id="status" *ngIf="steps[0].isSelected === true">
+                <ion-card>
+                    <ion-grid class="ion-padding" style="height: 100%">
+                        <ion-row class="ion-align-items-center ion-justify-content-center">
+                            <ion-col>
+                                <ion-label color="dark" class="ion-text-center ion-padding"><h2>Banks</h2>
+                                </ion-label>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center ion-justify-content-center">
+                            <div class="ion-text-center ion-padding"
+                                 *ngIf="!bank_plan || bank_plan.length === 0">
+                                <ion-icon name="alert" style="zoom:10.0;"
+                                          color="medium"></ion-icon>
+                                <h2>No bank account</h2>
+                            </div>
+                            <div *ngIf="bank_plan && bank_plan.length > 0">
+                                <ion-item *ngFor="let bank of bank_plan; let i = index"
+                                          (click)="viewBank($event, bank)">
+                                    <ion-icon src="assets/bank.svg" size="large"></ion-icon>
+                                    &nbsp; &nbsp; &nbsp;
+                                    <div>
+                                        <ion-label
+                                                style="font-size: small; vertical-align: baseline;">{{bank.bank_name}}</ion-label>
+                                        <ion-label style="font-size: small; vertical-align: super;">
+                                            ...{{bank.last4}}</ion-label>
+                                    </div>
+                                    &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;
+                                    <ion-button color="color1" (click)="removeBank(bank, i)">Delete
+                                    </ion-button>
+                                </ion-item>
+                            </div>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card>
+            </div>
+            <div id="infosId" *ngIf="steps[1].isSelected === true">
+                <div style="margin: auto; width: 70%;" class="ion-padding">
+                    <div class="toggle_box in_stock end">
+                        <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                        <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                    (ionChange)="use_information_toggle()"
+                                    [ngModelOptions]="{standalone: true}"></ion-toggle>
+                    </div>
+                </div>
+                <div class="ion-padding">
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Account holder name"
+                                   formControlName="account_holder_name"
+                                   name="account_holder_name"></ion-input>
+                        <div class="validation-errors">
+                            <ng-container
+                                    *ngFor="let validation of validation_messages.account_holder_name">
+                                <div class="error-message"
+                                     *ngIf="bankForm.get('account_holder_name').hasError(validation.type) && (bankForm.get('account_holder_name').dirty || bankForm.get('account_holder_name').touched)">
+                                    {{ validation.message }}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ion-item>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top" lines="none">
+                        <ion-select formControlName="account_holder_type" placeholder="Account holder type">
+                            <ion-select-option value="individual">
+                                <ion-label
+                                        style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                            </ion-select-option>
+                            <ion-select-option value="company">
+                                <ion-label
+                                        style="font-size: x-small">{{"Souscription.company"|translate}}</ion-label>
+                            </ion-select-option>
+                        </ion-select>
+                        <ng-container *ngFor="let validation of validation_messages.account_holder_type">
+                            <div class="error-message"
+                                 *ngIf="bankForm.get('account_holder_type').hasError(validation.type) && (bankForm.get('account_holder_type').dirty || bankForm.get('account_holder_type').touched)">
+                                {{ validation.message }}
+                            </div>
+                        </ng-container>
+                    </ion-item>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input placeholder="Routing Number" formControlName="routing_number"
+                                   name="routing_number"></ion-input>
+
+                    </ion-item>
+                    <ng-container *ngFor="let validation of validation_messages.routing_number">
+                        <div class="error-message"
+                             *ngIf="bankForm.get('routing_number').hasError(validation.type) && (bankForm.get('routing_number').dirty || bankForm.get('routing_number').touched)">
+                            {{ validation.message }}
+                        </div>
+                    </ng-container>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Account Number" formControlName="account_number"
+                                   name="account_number"></ion-input>
+
+                    </ion-item>
+                    <ng-container *ngFor="let validation of validation_messages.account_number">
+                        <div class="error-message"
+                             *ngIf="bankForm.get('account_number').hasError(validation.type) && (bankForm.get('account_number').dirty || bankForm.get('account_number').touched)">
+                            {{ validation.message }}
+                        </div>
+                    </ng-container>
+                    <ion-item>
+                        <ion-input color="medium" type="date" id="birthday" formControlName="birthday"
+                                   name="birthday"></ion-input>
+                    </ion-item>
+                    <div class="validation-errors">
+                        <ng-container *ngFor="let validation of validation_messages.birthday">
+                            <div class="error-message"
+                                 *ngIf="bankForm.get('birthday').hasError(validation.type) && (bankForm.get('birthday').dirty || bankForm.get('birthday').touched)">
+                                {{ validation.message }}
+                            </div>
+                            <!--                                        <div *ngIf="bankForm.errors.birthdayValidator">-->
+                            <!--                                            Birthday must be previous than the present date-->
+                            <!--                                        </div>-->
+                        </ng-container>
+                    </div>
+                    <ion-item>
+                        <ion-label color="medium">
+                            Currency
+                        </ion-label>
+                        <ion-button (click)="setCurrency($event)" color="secondary">
+                            <ion-icon src="{{'assets/' + authService.currency.icon + '.svg'}}"></ion-icon>
+                            <span>{{authService.currency.currency}}</span>
+                        </ion-button>
+                    </ion-item>
+                </div>
+            </div>
+            <div id="addressId" *ngIf="steps[2].isSelected === true">
+                <div style="margin: auto; width: 70%;" class="ion-padding">
+                    <div class="toggle_box in_stock end">
+                        <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                        <ion-toggle mode="ios" [(ngModel)]="user_addr_informations"
+                                    (ionChange)="use_information_addr_toggle()"
+                                    [ngModelOptions]="{standalone: true}"></ion-toggle>
+                    </div>
+                </div>
+                <div class="ion-padding">
+                    <!-- Full Name -->
+                    <ion-item>
+                        <ion-input type="text" placeholder="Full Name" formControlName="full_name"
+                                   required name="full_name"></ion-input>
+                    </ion-item>
+                    <div class="validation-errors">
+                        <ng-container *ngFor="let validation of validation_messages.full_name">
+                            <div class="error-message"
+                                 *ngIf="bankForm.get('full_name').hasError(validation.type) && (bankForm.get('full_name').dirty || bankForm.get('full_name').touched)">
+                                {{ validation.message }}
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- Address 1 -->
+                    <ion-row>
+                        <ion-col size="9">
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Address 1" formControlName="addr_1"
+                                           style="font-size: small" required="true"
+                                           name="address1"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.addr_1">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('addr_1').hasError(validation.type) && (bankForm.get('addr_1').dirty || bankForm.get('addr_1').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="App" formControlName="appNumber"
+                                           style="font-size: small"
+                                           name="appNumber"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+
+                    <!-- Address 2 -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Address 2" formControlName="addr_2"
+                                   name="address2"></ion-input>
+                    </ion-item>
+
+                    <ion-row>
+                        <ion-col>
+                            <!-- City -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="City" formControlName="city"
+                                           name="city"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.city_val">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('city').hasError(validation.type) && (bankForm.get('city').dirty || bankForm.get('city').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col>
+                            <!-- State -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="state" formControlName="state"
+                                           required="true"
+                                           name="state"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.state_val">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('state').hasError(validation.type) && (bankForm.get('state').dirty || bankForm.get('state').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                        <ion-col>
+                            <!-- Zip Code -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Country" formControlName="country"
+                                           required="true"
+                                           name="country"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.country_val">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('country').hasError(validation.type) && (bankForm.get('country').dirty || bankForm.get('country').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col>
+                            <!-- Zip Code -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Zip Code" formControlName="zipcode"
+                                           required="true"
+                                           name="zipcode"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.zipcode">
+                                    <div class="error-message"
+                                         *ngIf="bankForm.get('zipcode').hasError(validation.type) && (bankForm.get('zipcode').dirty || bankForm.get('zipcode').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <!-- Full Name -->
+                    <ion-item>
+                        <ion-input type="text" placeholder="Phone" formControlName="phone"
+                                   name="phone"></ion-input>
+                    </ion-item>
+                </div>
+            </div>
+            <div *ngIf="steps[3].isSelected" style="height: 70%">
+                <ion-grid class="ion-padding" style="height: 100%">
+                    <ion-row class="ion-align-items-center ion-justify-content-center"
+                             style="height: 100%; flex-direction: column">
+                        <div class="ion-text-center ion-padding">
+                            <ion-icon name="checkmark-circle-outline" style="zoom:10.0;"
+                                      color="success"></ion-icon>
+                            <h2>GREAT!!!</h2>
+                            <p>Your Bank has been placed successfully</p>
+                        </div>
+                    </ion-row>
+                </ion-grid>
+            </div>
+            <ion-button
+                    *ngIf="steps[0].isSelected && !steps[1].isSelected && !steps[2].isSelected"
+                    color="color1" expand="block"
+                    (click)="next()">Next
+            </ion-button>
+            <ion-row *ngIf="!steps[0].isSelected && steps[1].isSelected && !steps[2].isSelected">
+                <ion-col>
+                    <ion-button color="color1" (click)="back()" expand="block">Back
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button type="submit" color="color1" expand="block" (click)="next()">
+                        next
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+            <ion-row *ngIf="!steps[0].isSelected && !steps[1].isSelected && steps[2].isSelected">
+                <ion-col>
+                    <ion-button color="color1" (click)="back()" expand="block">Back
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button type="submit" color="color1" expand="block" [disabled]="!bankForm.valid">
+                        Confirm
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+            <!-- Go To Order Page Button Option  -->
+            <!-- This Option will be visible on Step 3 -->
+            <ion-button *ngIf="steps[3].isSelected" color="color1" fill="outline" expand="block"
+                        (click)="gotoStatus()">Go to Bank list
+            </ion-button>
+        </form>
+    </div>
+</ion-content>

@@ -6,11 +6,14 @@
 -->
 
 <!-- Header -->
-<ion-header no-border>
-<app-header></app-header>
+<ion-header #header>
+    <ion-toolbar #toolbar no-padding>
+        <app-header></app-header>
+    </ion-toolbar>
 </ion-header>
 <!-- Contents -->
-<ion-content [fullscreen] padding class="background-image">
+<ion-content [fullscreen]="true" class="background-image" [appHideHeader]="header">
+
     <!-- Search bar -->
     <div *ngIf="platform.is('ios') || platform.is('android')">
         <app-searchbar></app-searchbar>

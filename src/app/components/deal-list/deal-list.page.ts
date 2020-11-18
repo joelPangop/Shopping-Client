@@ -10,6 +10,7 @@ import {Article} from '../../models/article-interface';
 import {ActivatedRoute} from '@angular/router';
 import {CartPage} from '../cart/cart.page';
 import {BehaviorSubject} from 'rxjs';
+import {StorageService} from '../../services/storage.service';
 
 @Component({
     selector: 'app-deal-list',
@@ -28,13 +29,42 @@ export class DealListPage implements OnInit {
 
     constructor(private cmdService: CommandeService, private activatedRoute: ActivatedRoute, public authService: AuthService,
                 public articleService: ArticleService, public cuService: CurrencyService, private modalController: ModalController,
-                private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService,) {
+                private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService, private storage: StorageService) {
         this.cartItemCount = this.cartService.getCartItemCount();
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.option = this.activatedRoute.snapshot.paramMap.get('option');
         this.loadArticles();
+        if (this.authService.currentUser._id) {
+            await this.cmdService.loadCheckoutCommande(this.authService.currentUser).subscribe((res) => {
+                {
+                    let data = res;
+                    this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+                }
+            });
+        } else {
+            this.storage.getObject('cart').then((res: any) => {
+                let data = res;
+                this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+            });
+        }
+    }
+
+    public async ionViewDidEnter() {
+        if (this.authService.currentUser._id) {
+            this.cmdService.loadCheckoutCommande(this.authService.currentUser).subscribe((res) => {
+                {
+                    let data = res;
+                    this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+                }
+            });
+        } else {
+            this.storage.getObject('cart').then((res: any) => {
+                let data = res;
+                this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
+            });
+        }
     }
 
     loadArticles() {

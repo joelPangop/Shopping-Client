@@ -5,6 +5,7 @@ import {Article} from '../../models/article-interface';
 import {Commande} from '../../models/commande-interface';
 import {CartPage} from '../cart/cart.page';
 import {CheckoutPage} from '../checkout/checkout.page';
+import {environment} from '../../models/environements';
 
 @Component({
     selector: 'app-order-view',
@@ -14,6 +15,7 @@ import {CheckoutPage} from '../checkout/checkout.page';
 export class OrderViewPage implements OnInit {
     cartItems: itemCart[] = [];
     commande: Commande;
+    url = environment.api_url;
 
     constructor(private navParams: NavParams, private modalController: ModalController) {
         this.commande = this.navParams.data as Commande;

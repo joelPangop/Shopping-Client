@@ -98,11 +98,11 @@ export class PagesService {
                 url: '/menu/tabs/orders',
                 icon: 'checkmark-circle-outline'
             },
-            {
-                title: 'MENU.Souscription',
-                url: '/menu/tabs/tab-souscription',
-                icon: 'log-in'
-            }
+            // {
+            //     title: 'MENU.Souscription',
+            //     url: '/menu/tabs/tab-souscription',
+            //     icon: 'log-in'
+            // }
         ];
     }
 

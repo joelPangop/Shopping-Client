@@ -7,6 +7,7 @@ export interface UserInfo {
     firstName?: string;
     gender?: string;
     telephones?: Telephone[];
-    devices?: Device[],
+    devices?: Device[];
     address?: Address;
+    subscription: any;
 }

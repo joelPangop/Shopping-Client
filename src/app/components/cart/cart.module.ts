@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -8,6 +8,7 @@ import { CartPageRoutingModule } from './cart-routing.module';
 
 import { CartPage } from './cart.page';
 import {TopHeaderPageModule} from '../header/top-header/top-header.module';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
@@ -15,7 +16,9 @@ import {TopHeaderPageModule} from '../header/top-header/top-header.module';
         FormsModule,
         IonicModule,
         CartPageRoutingModule,
-        TopHeaderPageModule
+        TopHeaderPageModule,
+        ReactiveFormsModule,
+        TranslateModule
     ],
   declarations: [CartPage]
 })

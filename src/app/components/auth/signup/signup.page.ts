@@ -15,6 +15,7 @@ import {UserStorageUtils} from '../../../services/UserStorageUtils';
 import {ShowOptionsPage} from '../../show-options/show-options.page';
 import {BehaviorSubject} from 'rxjs';
 import {Currencies} from '../../../models/Currencies';
+import {FileInfo, File} from '../../../models/file-interface';
 
 @Component({
     selector: 'app-signup',
@@ -38,11 +39,12 @@ export class SignupPage implements OnInit {
     // @ts-ignore
     currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
     currencies: Map<string, string>;
+    uploadedFile = {} as File;
 
     constructor(public formBuilder: FormBuilder, private articleService: ArticleService,
-                public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController,
+                public authSrv: AuthService, public imgSrv: ImageService, private toastCtrl: ToastController,
                 private loadingCtrl: LoadingController, private navCtrl: NavController, public localStorage: Storage,
-                private platform: Platform, private popoverController: PopoverController, private router: Router,
+                public platform: Platform, private popoverController: PopoverController, private router: Router,
                 private userStorageUtils: UserStorageUtils) {
         this.userForm = this.formBuilder.group({
             password: ['', [Validators.required, Validators.minLength(6),
@@ -66,7 +68,7 @@ export class SignupPage implements OnInit {
         this.uploadForm = this.formBuilder.group({
             image: ['']
         });
-        this.genders = ['M.', 'F.', 'Other']
+        this.genders = ['M.', 'F.', 'Other'];
         this.utilisateur.currency = {
             currency: 'CAD',
             icon: 'flag-for-flag-canada'
@@ -80,26 +82,27 @@ export class SignupPage implements OnInit {
     }
 
     async createProfile() {
-      this.utilisateur.userInfo = this.authSrv.userInfo;
-      this.utilisateur.userInfo.address = this.authSrv.address;
-      this.utilisateur.userInfo.telephones = this.authSrv.userInfo.telephones;
-      this.utilisateur.password = this.userForm.value.password;
-      this.uploadForm.get('image').setValue(this.newImg);
-      await this.imgSrv.uploadImage(this.uploadForm).subscribe(async res => {
-        this.utilisateur.avatar = res.filename;
-        await this.authSrv.register(this.utilisateur).subscribe(async res1 => {
-          const rep = res1 as object;
+        this.utilisateur.userInfo = this.authSrv.userInfo;
+        this.utilisateur.userInfo.address = this.authSrv.address;
+        this.utilisateur.userInfo.telephones = this.authSrv.userInfo.telephones;
+        this.utilisateur.password = this.userForm.value.password;
+        this.uploadForm.get('image').setValue(this.newImg);
+        await this.imgSrv.uploadImage(this.uploadForm).subscribe(async res => {
+            this.uploadedFile.path = res.filename;
+            this.utilisateur.avatar = this.uploadedFile;
+            await this.authSrv.register(this.utilisateur).subscribe(async res1 => {
+                const rep = res1 as object;
 
-          // this.navCtrl.navigateRoot('intro')
-          const navigationExtras: NavigationExtras = {
-            queryParams: {
-              special: this.authSrv.confirmation_code,
-              user: JSON.stringify(res1)
-            }
-          };
-          await this.router.navigate(['verification', ], navigationExtras);
+                // this.navCtrl.navigateRoot('intro')
+                const navigationExtras: NavigationExtras = {
+                    queryParams: {
+                        special: this.authSrv.confirmation_code,
+                        user: JSON.stringify(res1)
+                    }
+                };
+                await this.router.navigate(['verification',], navigationExtras);
+            });
         });
-      });
     }
 
     password(formGroup: FormGroup): { [err: string]: any } {
@@ -113,6 +116,12 @@ export class SignupPage implements OnInit {
         if (event.target.files.length > 0) {
             const file = event.target.files[0];
             this.newImg = event.target.files[0];
+            // console.log(this.uploadedFile.fileInfo);
+            this.uploadedFile.fileInfo = new FileInfo();
+            this.uploadedFile.fileInfo.name = this.newImg.name;
+            this.uploadedFile.fileInfo.size = this.newImg.size;
+            this.uploadedFile.fileInfo.file_type = this.newImg.type;
+            this.uploadedFile.fileInfo.ownerId = this.utilisateur._id;
             this.preview(file);
         }
     }

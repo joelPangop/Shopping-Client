@@ -145,7 +145,7 @@ export class AuthService {
     }
 
     verification_user(utilisateur): Observable<any>{
-        return this.http.put<any>(`${environment.api_url1}/update_verification`, utilisateur)
+        return this.http.put<any>(`${environment.api_url}/update_verification`, utilisateur)
             .pipe(
                 tap(async res => {
                     console.log('res', res);
@@ -169,7 +169,7 @@ export class AuthService {
 
     login(credentials): Observable<any> {
         console.log(this.plt.platforms());
-        return this.http.post<any>(`${environment.api_url1}/login`, credentials)
+        return this.http.post<any>(`${environment.api_url}/login`, credentials)
             .pipe(
                 tap(async (res) => {
                     await this.storageService.setObject(TOKEN_KEY, res['access_token']);
@@ -212,7 +212,7 @@ export class AuthService {
     }
 
     updateProfilePassword(utilisateur): Observable<AuthResponse> {
-        return this.http.put<any>(`${environment.api_url1}/user/password`, utilisateur)
+        return this.http.put<any>(`${environment.api_url}/user/password`, utilisateur)
             .pipe(
                 tap(async res => {
                     // if (this.plt.is('android') || this.plt.is('ios')) {
@@ -382,6 +382,6 @@ export class AuthService {
     }
 
     getUserByEmail(email: string): Observable<Utilisateur> {
-        return this.http.get<Utilisateur>(`${environment.api_url1}/user/${email}`);
+        return this.http.get<Utilisateur>(`${environment.api_url}/user/${email}`);
     }
 }

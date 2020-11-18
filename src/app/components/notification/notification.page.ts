@@ -4,10 +4,14 @@ import {Notification} from '../../models/notification-interface';
 import {Utilisateur} from '../../models/utilisateur-interface';
 import {forkJoin} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
-import {NavController} from '@ionic/angular';
+import {ModalController, NavController} from '@ionic/angular';
 import * as moment from 'moment';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {Message} from '../../models/message-interface';
+import {Commande} from '../../models/commande-interface';
+import {OrderViewPage} from '../order-view/order-view.page';
+import {CommandeViewPage} from '../commande-view/commande-view.page';
+import {itemCart} from '../../models/itemCart-interface';
 
 @Component({
     selector: 'app-notification',
@@ -19,12 +23,15 @@ export class NotificationPage implements OnInit {
     notifType;
     likeNotifications: Notification[] = [];
     messageNotifications: Notification[] = [];
+    ordersNotifications: Notification[] = [];
     utilisateur = {} as Utilisateur;
 
     constructor(private messageService: MessageService, private activatedRoute: ActivatedRoute,
-                private navCtrl: NavController, private userStorageUtils: UserStorageUtils) {
+                private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
+                private modalController: ModalController) {
         this.likeNotifications = [] as Notification[];
         this.messageNotifications = [] as Notification[];
+        this.ordersNotifications = [] as Notification[];
     }
 
     async ngOnInit() {
@@ -89,13 +96,13 @@ export class NotificationPage implements OnInit {
     loadAll(event?) {
         if (event) {
             // @ts-ignore
-            forkJoin(this.loadMessageNotifications(), this.loadLikeNotifications());
+            forkJoin(this.loadMessageNotifications(), this.loadLikeNotifications(), this.loadOrdersNotifications());
             setTimeout(() => {
                 event.target.complete();
             }, 5000);
         } else {
             // @ts-ignore
-            return forkJoin(this.loadMessageNotifications(), this.loadLikeNotifications());
+            return forkJoin(this.loadMessageNotifications(), this.loadLikeNotifications(), this.loadOrdersNotifications());
         }
     }
 
@@ -148,22 +155,16 @@ export class NotificationPage implements OnInit {
             });
             console.log('Elements distincts', this.likeNotifications);
         });
+    }
 
-        // this.likeNotifications = Array.from(new Set(this.messageService.likeNotifications.reverse().map(m => m.sender)))
-        //     .map(sender => {
-        //         return {
-        //             sender: sender,
-        //             _id: this.messageService.likeNotifications.find(m => m.sender === sender)._id,
-        //             title: this.messageService.likeNotifications.find(m => m.sender === sender).type,
-        //             message: this.messageService.likeNotifications.find(m => m.sender === sender).message,
-        //             message_id: this.messageService.messageNotifications.find(m => m.sender === sender).message_id,
-        //             utilisateurId: this.messageService.likeNotifications.find(m => m.sender === sender).utilisateurId,
-        //             avatar: this.messageService.likeNotifications.find(m => m.sender === sender).avatar,
-        //             createdAt: this.messageService.likeNotifications.find(m => m.sender === sender).createdAt,
-        //             read: this.messageService.likeNotifications.find(m => m.sender === sender).read,
-        //             type: this.messageService.likeNotifications.find(m => m.sender === sender).type
-        //         };
-        //     });
+    loadOrdersNotifications(){
+        this.messageService.loadReceivedOrdersNotifications(this.utilisateur._id).subscribe((res) => {
+            this.messageService.likeNotifications = res;
+            this.ordersNotifications = this.messageService.likeNotifications.reverse().filter((thing, i, arr) => {
+                return arr.indexOf(arr.find(t => t.sender === thing.sender && t.avatar === thing.avatar)) === i;
+            });
+            console.log('Elements distincts', this.likeNotifications);
+        });
     }
 
     getMomentDate(date: number) {
@@ -200,5 +201,14 @@ export class NotificationPage implements OnInit {
         }
         // this.event.publish("nbNotif", i);
         this.navCtrl.navigateForward(`/menu/tabs/action-message/${msgNotif.message_id}/read/${1000}/${msgNotif.article._id}`);
+    }
+
+    async showDetails(item: itemCart) {
+        const modal = await this.modalController.create({
+            component: CommandeViewPage,
+            componentProps: item,
+            cssClass: 'cart-modal'
+        });
+        return await modal.present();
     }
 }

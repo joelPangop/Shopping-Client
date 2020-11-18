@@ -50,10 +50,23 @@ const routes: Routes = [
     {
         path: 'preview-search',
         loadChildren: () => import('./components/preview-search/preview-search.module').then(m => m.PreviewSearchPageModule)
+    },
+    {
+        path: 'footer-view',
+        loadChildren: () => import('./components/footer-view/footer-view.module').then(m => m.FooterViewPageModule)
+    },
+    {
+        path: 'bank',
+        loadChildren: () => import('./components/bank/bank.module').then(m => m.BankPageModule)
     },  {
-    path: 'footer-view',
-    loadChildren: () => import('./components/footer-view/footer-view.module').then( m => m.FooterViewPageModule)
+    path: 'bank-view',
+    loadChildren: () => import('./components/bank-view/bank-view.module').then( m => m.BankViewPageModule)
   },
+  {
+    path: 'commande-view',
+    loadChildren: () => import('./components/commande-view/commande-view.module').then( m => m.CommandeViewPageModule)
+  },
+
 
 
     // {

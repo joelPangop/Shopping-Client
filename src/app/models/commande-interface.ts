@@ -15,5 +15,8 @@ export interface Commande {
     shipmentFee: number;
     createdAt: Date;
     updatedAt: Date;
+    checkout_infos: any;
     userInfo: UserInfo;
+    paymentIntent:any;
+    orders:any[];
 }

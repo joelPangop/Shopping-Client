@@ -16,6 +16,7 @@ import {IonicSelectableModule} from 'ionic-selectable';
 import {TopHeaderPageModule} from '../header/top-header/top-header.module';
 import {HeaderComponent} from '../header/header/header.component';
 import {FooterComponent} from '../footer/footer.component';
+import {SharedDirectivesModule} from '../../directives/shared-directives.module';
 // import {ProductListPage} from '../product-list/product-list.page';
 
 @NgModule({
@@ -33,7 +34,8 @@ import {FooterComponent} from '../footer/footer.component';
         FeaturedProductsPageModule,
         TranslateModule,
         IonicSelectableModule,
-        TopHeaderPageModule
+        TopHeaderPageModule,
+        SharedDirectivesModule
     ],
     declarations: [HomePage, HeaderComponent, FooterComponent],
     exports: [

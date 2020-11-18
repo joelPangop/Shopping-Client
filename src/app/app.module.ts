@@ -1,5 +1,5 @@
 // @ts-ignore
-import {Compiler, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID, NgModule} from '@angular/core';
 import {BrowserModule, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 
 import {RouteReuseStrategy} from '@angular/router';
@@ -76,20 +76,23 @@ import {SearchCategoriesPage} from './components/search-categories/search-catego
 import {SearchCategoriesPageModule} from './components/search-categories/search-categories.module';
 import {PreviewSearchPage} from './components/preview-search/preview-search.page';
 import {PreviewSearchPageModule} from './components/preview-search/preview-search.module';
-import {IonicSelectableComponent, IonicSelectableModule} from 'ionic-selectable';
+import {IonicSelectableModule} from 'ionic-selectable';
 import {CreateProductPageModule} from './components/create-product/create-product.module';
 import {CreateProductPage} from './components/create-product/create-product.page';
 import {PreviewVideoPage} from './components/preview-video/preview-video.page';
 import {PreviewVideoPageModule} from './components/preview-video/preview-video.module';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {Globalization} from '@ionic-native/globalization/ngx';
 import localeFr from '@angular/common/locales/fr';
-import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {StreamingMedia} from '@ionic-native/streaming-media/ngx';
 import {EmailComposer} from '@ionic-native/email-composer/ngx';
 import {SMS} from '@ionic-native/sms/ngx';
-import {AngularFireModule} from '@angular/fire';
+import {BankPageModule} from './components/bank/bank.module';
+import {BankViewPage} from './components/bank-view/bank-view.page';
+import {BankViewPageModule} from './components/bank-view/bank-view.module';
+import {CommandeViewPage} from './components/commande-view/commande-view.page';
+import {CommandeViewPageModule} from './components/commande-view/commande-view.module';
 
 export function jwtOptionsFactory(storage) {
     return {
@@ -117,7 +120,8 @@ let CREDENTIALS = {
     declarations: [AppComponent],
     entryComponents: [ShowOptionsPage, CartPage, ShowNotificationPage, ViewProfilePage, StoreListPage, ProductDetailPage, SearchPage,
         FilterPage, HomeTopSliderPage, FeaturedProductsPage, CategoriesPage, HotDealsPage, ShowCatOptionPage, ProductViewPage, CheckoutPage,
-        OrderViewPage, LandingPagePage, SearchCategoriesPage, PreviewSearchPage, CreateProductPage, PreviewVideoPage],
+        OrderViewPage, LandingPagePage, SearchCategoriesPage, PreviewSearchPage, CreateProductPage, PreviewVideoPage, BankViewPage,
+        CommandeViewPage],
     imports: [BrowserModule,
         IonicModule.forRoot(),
         AppRoutingModule,
@@ -142,6 +146,9 @@ let CREDENTIALS = {
         PreviewSearchPageModule,
         CreateProductPageModule,
         PreviewVideoPageModule,
+        BankViewPageModule,
+        CommandeViewPageModule,
+        // BsDatepickerModule.forRoot(),
         // SocketIoModule.forRoot(config),
         TranslateModule.forRoot({
             loader: {
@@ -191,6 +198,7 @@ let CREDENTIALS = {
         StreamingMedia,
         EmailComposer,
         SMS,
+        PayPal,
         {provide: LOCALE_ID, useValue: 'fr'},
         {
             provide: HAMMER_GESTURE_CONFIG,

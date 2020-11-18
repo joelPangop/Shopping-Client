@@ -180,7 +180,7 @@ export class ActionMessagePage implements OnInit {
         const url = `${environment.api_url}/Utilisateurs/${id}/messages`;
         const message: Message = {
             title: this.utilisateur.username,
-            picture: this.utilisateur.avatar,
+            picture: this.utilisateur.avatar.path,
             content: this.msgContent,
             createdAt: new Date().getTime(),
             article: this.articleService.article,
@@ -198,7 +198,7 @@ export class ActionMessagePage implements OnInit {
                 message: 'Vous avez un nouveau message de ' + this.utilisateur.username,
                 message_id: msg._id,
                 utilisateurId: this.interlocutor._id,
-                avatar: this.utilisateur.avatar,
+                avatar: this.utilisateur.avatar.path,
                 article: msg.article,
                 read: false,
                 type: NotificationType.MESSAGE,
@@ -244,7 +244,7 @@ export class ActionMessagePage implements OnInit {
             const url = `${environment.api_url}/Utilisateurs/${id}/messages`;
             const message: Message = {
                 title: this.utilisateur.username,
-                picture: this.utilisateur.avatar,
+                picture: this.utilisateur.avatar.path,
                 content: this.msgContent,
                 article: this.articleService.article,
                 createdAt: new Date().getTime(),
@@ -262,7 +262,7 @@ export class ActionMessagePage implements OnInit {
                     message_id: msg._id,
                     utilisateurId: this.interlocutor._id,
                     article: msg.article,
-                    avatar: this.utilisateur.avatar,
+                    avatar: this.utilisateur.avatar.path,
                     read: false,
                     type: NotificationType.MESSAGE,
                     sender: this.utilisateur._id

@@ -31,6 +31,8 @@ export interface Article {
     model?: string;
     year?: number;
     quantity?: number;
+    stripe_info?: any;
+    price_info?: any;
 }
 
 export interface Availability {

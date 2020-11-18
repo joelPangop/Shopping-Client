@@ -188,7 +188,7 @@
                     <ion-item>
                         <ion-thumbnail slot="start">
                             <ion-img
-                                    src="https://egoalservice.azurewebsites.net/image/{{article.pictures[0]}}"></ion-img>
+                                    src="{{url}}/image/{{article.pictures[0]}}"></ion-img>
                         </ion-thumbnail>
                         <ion-label>
                             <h2>{{article.title}}</h2>
@@ -230,7 +230,7 @@
                 <ion-item *ngFor="let article of articles; let i = index">
                     <ion-thumbnail slot="start">
                         <ion-img
-                                src="https://egoalservice.azurewebsites.net/image/{{article.pictures[0]}}"></ion-img>
+                                src="{{url}}/image/{{article.pictures[0]}}"></ion-img>
                     </ion-thumbnail>
                     <ion-label>
                         <h2>{{article.title}}</h2>

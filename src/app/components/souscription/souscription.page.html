@@ -12,111 +12,1597 @@
 </ion-header>
 
 <ion-content>
-    <ion-grid>
+    <ion-item-divider *ngIf="msg_err" style=" margin-top:20px">
+        <p style="font-style: italic; font-size: x-small; color: #d33939; margin: auto;text-align:center">{{msg_err}}</p>
+        <ion-button fill="clear" (click)="close_msg()">
+            <ion-icon name="close" color="color1"></ion-icon>
+        </ion-button>
+    </ion-item-divider>
+
+    <ion-grid *ngIf="!platform.is('android') && !platform.is('ios')">
         <ion-row>
             <ion-col size="3"></ion-col>
             <ion-col size="6">
-                <form id="subscription-form" [formGroup]="subscriptionForm">
-                    <div id="card-element" class="MyCardElement">
-                        <ion-label>{{authService.currentUser.email}}</ion-label>
-                        <!-- Elements will create input elements here -->
-                    </div>
-                    <p class="title">Select Payment</p>
-
-                    <!-- Payment Card Options -->
-                    <ion-radio-group>
-                        <ion-row>
-                            <ion-col *ngFor="let item of cards | keyvalue">
-                                <ion-item lines="none">
-                                    <ion-radio color="color1" mode="ios" [value]="item.key"
-                                               (click)="showPaymentOption(item.key)"></ion-radio>
-                                    <img [src]="item.value">
-                                </ion-item>
-                            </ion-col>
-                        </ion-row>
-                    </ion-radio-group>
-                    <div *ngIf="cc">
-                        <!-- Card Information Form -->
-                        <!--                        <form class="ion-padding">-->
-                        <!-- Cardholder Name -->
-                        <ion-card>
-                            <ion-item>
-                                <ion-input placeholder="Cardholder Name" [(ngModel)]="cardName"
-                                           [ngModelOptions]="{standalone: true}"></ion-input>
-                            </ion-item>
-
-                            <!-- Card Number -->
-                            <ion-item class="ion-padding-top">
-                                <ion-input type="text" placeholder="Card Number" [(ngModel)]="cardNumber" [ngModelOptions]="{standalone: true}"></ion-input>
-                            </ion-item>
-
-                            <ion-row>
-                                <ion-col>
-                                    <!-- MM -->
-                                    <ion-item class="ion-padding-top">
-                                        <ion-input type="text" placeholder="MM" [(ngModel)]="mm"
-                                                   [ngModelOptions]="{standalone: true}"></ion-input>
+                <form id="subscription-form" [formGroup]="subscriptionForm" (ngSubmit)="subscribe()" novalidate>
+                    <!--                    <ion-item class="ion-text-center" lines="none">-->
+                    <!--                        <ion-label>{{"Souscription.option" | translate}}</ion-label>-->
+                    <!--                    </ion-item>-->
+                    <ion-item lines="none" class="ion-align-items-center ion-justify-content-center">
+                        <ion-radio-group formControlName="option" (ionChange)="chooseOption()"
+                                         *ngIf="subscription_plan">
+                            <ion-list-header class="ion-text-center">
+                                <ion-label>{{"Souscription.option" | translate}}</ion-label>
+                            </ion-list-header>
+                            <ion-row class="ion-align-items-center">
+                                <ion-col class="ion-text-center ion-align-items-center" size="4">
+                                    <ion-item lines="none" class="ion-align-items-center">
+                                        <ion-radio color="color1" value="Professionnel">
+                                        </ion-radio>
+                                        &nbsp;
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.professionnel"|translate}}</ion-label>
                                     </ion-item>
                                 </ion-col>
-                                <ion-col>
-                                    <!-- YY -->
+                                <ion-col class="ion-align-items-center" size="4">
+                                    <ion-item lines="none">
+                                        <ion-radio color="color1" value="Individuel">
+                                        </ion-radio>
+                                        &nbsp;
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                                    </ion-item>
+                                </ion-col>
+                                <ion-col class="ion-align-items-center" size="4">
+                                    <ion-button color="color1" (click)="handleUnSubscription($event)">
+                                        {{"Souscription.unsubscribtion" | translate}}
+                                    </ion-button>
+                                </ion-col>
+                            </ion-row>
+                        </ion-radio-group>
+
+                        <ion-radio-group formControlName="option" (ionChange)="chooseOption()" *ngIf="!subscription_plan || subscription_plan.length === 0">
+                            <ion-list-header class="ion-text-center">
+                                <ion-label>{{"Souscription.option" | translate}}</ion-label>
+                            </ion-list-header>
+                            <ion-row class="ion-align-items-center">
+                                <ion-col size="2"></ion-col>
+                                <ion-col class="ion-text-center ion-align-items-center" size="4">
+                                    <ion-item lines="none" class="ion-align-items-center">
+                                        <ion-radio color="color1" value="Professionnel">
+                                        </ion-radio>
+                                        &nbsp;
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.professionnel"|translate}}</ion-label>
+                                    </ion-item>
+                                </ion-col>
+                                <ion-col class="ion-align-items-center" size="4">
+                                    <ion-item lines="none">
+                                        <ion-radio color="color1" value="Individuel">
+                                        </ion-radio>
+                                        &nbsp;
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                                    </ion-item>
+                                </ion-col>
+                                <ion-col size="2"></ion-col>
+                            </ion-row>
+                        </ion-radio-group>
+
+                    </ion-item>
+                    <ion-card *ngIf="subscriptionForm.value.option === 'Individuel'">
+                        <ion-card-header>
+                            <ion-label color="color2">
+                                <h2>Description</h2>
+                            </ion-label>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <h3>{{"Souscription.condition1"|translate}}</h3>
+                            <h3>{{"Souscription.condition2"|translate}}</h3>
+                            <h3>{{"Souscription.condition3"|translate}}</h3>
+                            <h3>{{"Souscription.condition4"|translate}}</h3>
+                        </ion-card-content>
+                    </ion-card>
+                    <ion-card *ngIf="subscriptionForm.value.option === 'Professionnel'">
+                        <ion-card-header>
+                            <ion-label color="color2">
+                                <h2>Description</h2>
+                            </ion-label>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <h3>{{"Souscription.condition1_1"|translate}}</h3>
+                            <h3>{{"Souscription.condition2_1"|translate}}</h3>
+                            <h3>{{"Souscription.condition3"|translate}}</h3>
+                            <h3>{{"Souscription.condition4"|translate}}</h3>
+                        </ion-card-content>
+                    </ion-card>
+                    <div class="MyCardElement">
+                        <ion-label class="ion-text-center"
+                                   *ngIf="subscription_plan">{{authService.currentUser.email}}</ion-label>
+                        <ion-input class="ion-text-center" type="text" placeholder="Email" formControlName="email"
+                                   required name="email" *ngIf="!subscription_plan"></ion-input>
+                        <div *ngIf="!subscriptionForm.get('email').valid && subscriptionForm.get('email').dirty"
+                             class="error-message">
+                            Please enter a valid email.
+                        </div>
+                        <!-- Elements will create input elements here -->
+                    </div>
+                    <br/>
+                    <div id="status" *ngIf="steps[0].isSelected">
+                        <ion-card>
+                            <ion-grid class="ion-padding" style="height: 100%">
+                                <ion-row class="ion-align-items-center ion-justify-content-center">
+                                    <ion-col>
+                                        <ion-label color="dark" class="ion-text-center ion-padding"><h2>Subscription
+                                            Status</h2></ion-label>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row class="ion-align-items-center ion-justify-content-center"
+                                         style="height: 100%; flex-direction: column">
+                                    <div class="ion-text-center ion-padding" *ngIf="!subscription_plan">
+                                        <ion-icon name="alert" style="zoom:10.0;"
+                                                  color="medium"></ion-icon>
+                                        <h2>No subscription plan</h2>
+                                    </div>
+                                    <div *ngIf="subscription_plan">
+                                        <ion-row class="ion-align-items-center ion-justify-content-center">
+                                            <ion-col class="ion-text-center">
+                                                Status &nbsp;
+                                                <ion-text class="ion-text-center"
+                                                          style="font-size: small; font-family: 'Bauhaus 93'"
+                                                          color="success">{{subscription_plan.status}}</ion-text>
+                                            </ion-col>
+                                        </ion-row>
+                                        <ion-row>
+                                            <ion-col size="3" class="ion-text-center">
+                                                Creation
+                                            </ion-col>
+                                            <ion-col size="3" class="ion-text-center">
+                                                Beginning
+                                            </ion-col>
+                                            <ion-col size="3" class="ion-text-center">
+                                                End
+                                            </ion-col>
+                                            <ion-col size="3" class="ion-text-center">
+                                                Recurring
+                                            </ion-col>
+                                        </ion-row>
+                                        <ion-row>
+                                            <ion-col size="3" style="font-size: x-small"
+                                                     class="ion-text-center">
+                                                <ion-label
+                                                        color="color1">{{getMomentForMobile(subscription_plan.created * 1000)}}</ion-label>
+                                            </ion-col>
+                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                     class="ion-text-center">
+                                                <ion-label
+                                                        color="color1">{{getMomentForMobile(subscription_plan.current_period_start * 1000)}}</ion-label>
+                                            </ion-col>
+                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                     class="ion-text-center">
+                                                <ion-label
+                                                        color="color1">{{getMomentForMobile(subscription_plan.current_period_end * 1000)}}</ion-label>
+                                            </ion-col>
+                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                     class="ion-text-center">
+                                                <ion-label
+                                                        color="color1">{{subscription_plan.plan.interval}}</ion-label>
+                                            </ion-col>
+                                        </ion-row>
+                                    </div>
+                                </ion-row>
+                            </ion-grid>
+                        </ion-card>
+                    </div>
+                    <!-- Billing Section -->
+                    <div id="billing" *ngIf="steps[1].isSelected">
+                        <div class="ion-padding">
+                            <div style="margin: auto; width: 70%;">
+                                <div class="toggle_box in_stock end">
+                                    <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                                    <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                                (ionChange)="use_information_toggle()"
+                                                [ngModelOptions]="{standalone: true}"></ion-toggle>
+                                </div>
+                            </div>
+                            <br/>
+                            <ion-avatar slot="start" (change)="onFileSelect($event)">
+                                <ion-img [src]="imgURL"></ion-img>
+                            </ion-avatar>
+
+                            <ion-buttons slot="end">
+                                <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
+                                       formControlName="image"
+                                       class="inputfile"/>
+                                <label color="secondary" class="custom-file-upload" for="fileId">
+                                    <ion-icon name="camera" slot="icon-only"></ion-icon>
+                                </label>
+                            </ion-buttons>
+                            <br/>
+                            <ion-row>
+                                <ion-col size="6">
+                                    <!-- First Name -->
+                                    <ion-item>
+                                        <ion-input type="text" placeholder="First Name" formControlName="first_name"
+                                                   style="font-size: small"
+                                                   name="first_name"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.first_name">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('first_name').hasError(validation.type) && (subscriptionForm.get('first_name').dirty || subscriptionForm.get('first_name').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col size="6">
+                                    <!-- Last Name -->
+                                    <ion-item>
+                                        <ion-input type="text" placeholder="Last Name" formControlName="last_name"
+                                                   style="font-size: small"
+                                                   name="last_name"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.last_name">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('last_name').hasError(validation.type) && (subscriptionForm.get('last_name').dirty || subscriptionForm.get('last_name').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                            <!-- Address 1 -->
+                            <ion-row>
+                                <ion-col size="9">
                                     <ion-item class="ion-padding-top">
-                                        <ion-input type="text" placeholder="YY" [(ngModel)]="yy"
-                                                   [ngModelOptions]="{standalone: true}"></ion-input>
+                                        <ion-input type="text" placeholder="Address 1" formControlName="addr_1"
+                                                   style="font-size: small" required="true"
+                                                   name="address1"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.addr_1">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('addr_1').hasError(validation.type) && (subscriptionForm.get('addr_1').dirty || subscriptionForm.get('addr_1').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="App" formControlName="appNumber"
+                                                   style="font-size: small"
+                                                   name="appNumber"></ion-input>
                                     </ion-item>
                                 </ion-col>
                             </ion-row>
 
-                            <!-- CVV -->
+                            <!-- Address 2 -->
                             <ion-item class="ion-padding-top">
-                                <ion-input type="text" placeholder="CVV" [(ngModel)]="cvc"
-                                           [ngModelOptions]="{standalone: true}"></ion-input>
+                                <ion-input type="text" placeholder="Address 2" formControlName="addr_2"
+                                           name="address2"></ion-input>
                             </ion-item>
-                            <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>
-                            <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
-                            <!--                        </form>-->
-                        </ion-card>
-                    </div>
-                    <div *ngIf="paypal">
-                        <form class="ion-padding" id="paypalFormId">
-                            <ion-grid>
-                                <ion-row>
-                                    <ion-col>
-                                        Use this Pay button in your app's payment page with the attached logic.
-                                    </ion-col>
-                                </ion-row>
-                            </ion-grid>
-                            <ion-card class="welcome-card">
-                                <ion-img src="/assets/paypal.jpg"></ion-img>
-                                <ion-card-header>
-                                    <ion-card-subtitle>Get Started</ion-card-subtitle>
-                                    <ion-card-title>PayPal Sample</ion-card-title>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- City -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="City" formControlName="city"
+                                                   name="city"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.city_val">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('city').hasError(validation.type) && (subscriptionForm.get('city').dirty || subscriptionForm.get('city').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- State -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="state" formControlName="state"
+                                                   required="true"
+                                                   name="state"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.state_val">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('state').hasError(validation.type) && (subscriptionForm.get('state').dirty || subscriptionForm.get('state').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- Zip Code -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Country" formControlName="country"
+                                                   required="true"
+                                                   name="country"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.country_val">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('country').hasError(validation.type) && (subscriptionForm.get('country').dirty || subscriptionForm.get('country').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- Zip Code -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Zip Code" formControlName="zipcode"
+                                                   required="true"
+                                                   name="zipcode"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.zipcode">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('zipcode').hasError(validation.type) && (subscriptionForm.get('zipcode').dirty || subscriptionForm.get('zipcode').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                            <br/>
+                            <ion-item>
+                                <ion-input color="medium" type="date" id="birthday" formControlName="birthday"
+                                           name="birthday"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.birthday">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('birthday').hasError(validation.type) && (subscriptionForm.get('birthday').dirty || subscriptionForm.get('birthday').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                    <!--                                        <div *ngIf="bankForm.errors.birthdayValidator">-->
+                                    <!--                                            Birthday must be previous than the present date-->
+                                    <!--                                        </div>-->
+                                </ng-container>
+                            </div>
+                            <br/>
+                            <!-- Full Name -->
+                            <ion-item>
+                                <ion-input type="text" placeholder="Phone" formControlName="phone"
+                                           name="phone"></ion-input>
+                            </ion-item>
+                        </div>
+                        <div *ngIf="subscriptionForm.value.option === 'Professionnel'">
+                            <ion-card>
+                                <ion-card-header>Company informations</ion-card-header>
+                                <ion-card-title>
+                                    <div style="margin: auto; width: 70%;">
+                                        <div class="toggle_box in_stock end">
+                                            <ion-label
+                                                    style="font-size: small">{{"Souscription.user_info_request" | translate}}
+                                                ?
+                                            </ion-label>&nbsp;
+                                            <ion-toggle mode="ios" [(ngModel)]="company_informations"
+                                                        (ionChange)="company_information_toggle()"
+                                                        [ngModelOptions]="{standalone: true}"></ion-toggle>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                </ion-card-title>
+                                <ion-card-content>
+                                    <br/>
+                                    <ion-avatar slot="start" (change)="onCompanyFileSelect($event)">
+                                        <ion-img [src]="company_image"></ion-img>
+                                    </ion-avatar>
+
+                                    <ion-buttons slot="end">
+                                        <input type="file" name="file" id="comp_file_id" (change)="onCompanyFileSelect($event)"
+                                               formControlName="comp_image"
+                                               class="inputfile"/>
+                                        <label color="secondary" class="custom-file-upload" for="comp_file_id">
+                                            <ion-icon name="camera" slot="icon-only"></ion-icon>
+                                        </label>
+                                    </ion-buttons>
+                                    <br/>
+                                    <!-- Company name -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Company name" formControlName="company_name"
+                                                   name="company_name"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.company_name">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_name').hasError(validation.type) && (subscriptionForm.get('company_name').dirty || subscriptionForm.get('company_name').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Email"
+                                                   formControlName="company_email"
+                                                   name="company_email"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.company_email">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_email').hasError(validation.type) && (subscriptionForm.get('company_email').dirty || subscriptionForm.get('company_email').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- Business number -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Business number"
+                                                   formControlName="business_number"
+                                                   name="business_number"></ion-input>
+                                    </ion-item>
+
+                                    <!-- Business website -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Business website"
+                                                   formControlName="business_website"
+                                                   name="business_website"></ion-input>
+                                    </ion-item>
+
+                                    <!-- VAT number -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="VAT number" formControlName="vat_number"
+                                                   name="vat_number"></ion-input>
+                                    </ion-item>
+
                                     <ion-row>
-                                        <ion-col>
-                                            Total Payment
+                                        <ion-col size="9">
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="Address 1"
+                                                           formControlName="company_addr_1"
+                                                           style="font-size: small" required="true"
+                                                           name="company_address1"></ion-input>
+                                            </ion-item>
+                                            <div class="validation-errors">
+                                                <ng-container
+                                                        *ngFor="let validation of validation_messages.company_addr_1">
+                                                    <div class="error-message"
+                                                         *ngIf="subscriptionForm.get('company_addr_1').hasError(validation.type) && (subscriptionForm.get('company_addr_1').dirty || subscriptionForm.get('company_addr_1').touched)">
+                                                        {{ validation.message }}
+                                                    </div>
+                                                </ng-container>
+                                            </div>
                                         </ion-col>
-                                        <ion-col>
-                                            {{currencyIcon}}{{paymentAmount}}
+                                        <ion-col size="3">
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="App"
+                                                           formControlName="company_appNumber"
+                                                           style="font-size: small"
+                                                           name="appNumber"></ion-input>
+                                            </ion-item>
                                         </ion-col>
                                     </ion-row>
-                                </ion-card-header>
-                                <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">
-                                    <ion-button expand="full" color="success"
-                                                (click)="payWithPaypal()">Pay with PayPal
-                                    </ion-button>
+
+                                    <!-- Address 2 -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Address 2" formControlName="company_addr_2"
+                                                   name="address2"></ion-input>
+                                    </ion-item>
+
+                                    <ion-row>
+                                        <ion-col>
+                                            <!-- City -->
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="City" formControlName="company_city"
+                                                           name="company_city"></ion-input>
+                                            </ion-item>
+                                            <div class="validation-errors">
+                                                <ng-container
+                                                        *ngFor="let validation of validation_messages.company_city">
+                                                    <div class="error-message"
+                                                         *ngIf="subscriptionForm.get('company_city').hasError(validation.type) && (subscriptionForm.get('company_city').dirty || subscriptionForm.get('company_city').touched)">
+                                                        {{ validation.message }}
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col>
+                                            <!-- State -->
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="state"
+                                                           formControlName="company_state"
+                                                           required="true"
+                                                           name="company_state"></ion-input>
+                                            </ion-item>
+                                            <div class="validation-errors">
+                                                <ng-container
+                                                        *ngFor="let validation of validation_messages.company_state">
+                                                    <div class="error-message"
+                                                         *ngIf="subscriptionForm.get('company_state').hasError(validation.type) && (subscriptionForm.get('company_state').dirty || subscriptionForm.get('company_state').touched)">
+                                                        {{ validation.message }}
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+
+                                    <ion-row>
+                                        <ion-col>
+                                            <!-- Zip Code -->
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="Country"
+                                                           formControlName="company_country"
+                                                           required="true"
+                                                           name="company_country"></ion-input>
+                                            </ion-item>
+                                            <div class="validation-errors">
+                                                <ng-container
+                                                        *ngFor="let validation of validation_messages.company_country">
+                                                    <div class="error-message"
+                                                         *ngIf="subscriptionForm.get('company_country').hasError(validation.type) && (subscriptionForm.get('company_country').dirty || subscriptionForm.get('company_country').touched)">
+                                                        {{ validation.message }}
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ion-col>
+                                        <ion-col>
+                                            <!-- Zip Code -->
+                                            <ion-item class="ion-padding-top">
+                                                <ion-input type="text" placeholder="Zip Code"
+                                                           formControlName="company_zipcode"
+                                                           required="true"
+                                                           name="company_zipcode"></ion-input>
+                                            </ion-item>
+                                            <div class="validation-errors">
+                                                <ng-container
+                                                        *ngFor="let validation of validation_messages.company_zipcode">
+                                                    <div class="error-message"
+                                                         *ngIf="subscriptionForm.get('company_zipcode').hasError(validation.type) && (subscriptionForm.get('company_zipcode').dirty || subscriptionForm.get('company_zipcode').touched)">
+                                                        {{ validation.message }}
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ion-col>
+                                    </ion-row>
+                                    <br/>
+                                    <!-- Full Name -->
+                                    <ion-item>
+                                        <ion-input type="text" placeholder="Phone" formControlName="company_phone"
+                                                   name="phone"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container *ngFor="let validation of validation_messages.company_phone">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_phone').hasError(validation.type) && (subscriptionForm.get('company_phone').dirty || subscriptionForm.get('company_phone').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
                                 </ion-card-content>
-                                <div *ngIf="!platform.is('ios') && !platform.is('android')"
-                                     id="paypal-button-container"></div>
                             </ion-card>
-                        </form>
+                        </div>
                     </div>
-                    <!-- We'll put the error messages in this element -->
-                    <div id="card-errors" role="alert"></div>
-                    <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>
+                    <div id="payment" *ngIf="steps[2].isSelected">
+                        <p class="title">Select Payment</p>
+
+                        <!-- Payment Card Options -->
+                        <ion-radio-group>
+                            <ion-row>
+                                <ion-col *ngFor="let item of cards | keyvalue">
+                                    <ion-item lines="none">
+                                        <!--                                        <ion-radio color="color1" mode="ios" [value]="item.key"-->
+                                        <!--                                                   (click)="showPaymentOption(item.key)"></ion-radio>-->
+                                        <ion-img (click)="showPaymentOption(item.key)" [src]="item.value"></ion-img>
+                                    </ion-item>
+                                </ion-col>
+                            </ion-row>
+                        </ion-radio-group>
+                        <div *ngIf="cc">
+                            <!-- Card Information Form -->
+                            <!--                        <form class="ion-padding">-->
+                            <!-- Cardholder Name -->
+                            <ion-card>
+                                <ion-item>
+                                    <ion-input placeholder="Cardholder Name" formControlName="cardName"></ion-input>
+                                </ion-item>
+
+                                <!-- Card Number -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Card Number"
+                                               formControlName="cardNumber"></ion-input>
+                                </ion-item>
+
+                                <ion-row>
+                                    <ion-col>
+                                        <!-- MM -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="MM"
+                                                       formControlName="exp_month"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col>
+                                        <!-- YY -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="YY"
+                                                       formControlName="exp_year"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                </ion-row>
+
+                                <!-- CVV -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="CVV" formControlName="cvv"
+                                               (ionInput)="test($event)"></ion-input>
+                                </ion-item>
+                                <!--                                <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>-->
+                                <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
+                                <!--                        </form>-->
+                            </ion-card>
+                        </div>
+                        <div *ngIf="paypal">
+                            <form class="ion-padding" id="paypalFormId">
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-col>
+                                            Use this Pay button in your app's payment page with the attached logic.
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                                <ion-card class="welcome-card">
+                                    <ion-img src="/assets/paypal.jpg"></ion-img>
+                                    <ion-card-header>
+                                        <ion-card-subtitle>Get Started</ion-card-subtitle>
+                                        <ion-card-title>PayPal Sample</ion-card-title>
+                                        <ion-row>
+                                            <ion-col>
+                                                Total Payment
+                                            </ion-col>
+                                            <ion-col>
+                                                {{currencyIcon}}{{paymentAmount}}
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-card-header>
+                                    <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">
+                                        <ion-button expand="full" color="success"
+                                                    (click)="payWithPaypal()">Pay with PayPal
+                                        </ion-button>
+                                    </ion-card-content>
+                                    <div *ngIf="!platform.is('ios') && !platform.is('android')"
+                                         id="paypal-button-container"></div>
+                                </ion-card>
+                            </form>
+                        </div>
+                        <!-- We'll put the error messages in this element -->
+                        <div id="card-errors" role="alert"></div>
+                        <!--                        <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>-->
+                    </div>
+                    <div id="complete-section" *ngIf="steps[3].isSelected">
+                        <div style="margin: auto; width: 70%;" class="ion-padding">
+                            <div class="toggle_box in_stock end">
+                                <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                                <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                            (ionChange)="use_information_toggle()"
+                                            [ngModelOptions]="{standalone: true}"></ion-toggle>
+                            </div>
+                        </div>
+                        <div class="ion-padding">
+                            <!-- account_holder_type -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Account holder name"
+                                           formControlName="account_holder_name"
+                                           name="account_holder_name"></ion-input>
+                                <div class="validation-errors">
+                                    <ng-container
+                                            *ngFor="let validation of validation_messages.account_holder_name">
+                                        <div class="error-message"
+                                             *ngIf="subscriptionForm.get('account_holder_name').hasError(validation.type) && (subscriptionForm.get('account_holder_name').dirty || subscriptionForm.get('account_holder_name').touched)">
+                                            {{ validation.message }}
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ion-item>
+                            <!-- account_holder_type -->
+                            <ion-item class="ion-padding-top" lines="none">
+                                <ion-select formControlName="account_holder_type" placeholder="Account holder type">
+                                    <ion-select-option value="individual">
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                                    </ion-select-option>
+                                    <ion-select-option value="company">
+                                        <ion-label
+                                                style="font-size: x-small">{{"Souscription.company"|translate}}</ion-label>
+                                    </ion-select-option>
+                                </ion-select>
+                                <ng-container *ngFor="let validation of validation_messages.account_holder_type">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('account_holder_type').hasError(validation.type) && (subscriptionForm.get('account_holder_type').dirty || subscriptionForm.get('account_holder_type').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </ion-item>
+                            <!-- account_holder_type -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input placeholder="Routing Number" formControlName="routing_number"
+                                           name="routing_number"></ion-input>
+
+                            </ion-item>
+                            <ng-container *ngFor="let validation of validation_messages.routing_number">
+                                <div class="error-message"
+                                     *ngIf="subscriptionForm.get('routing_number').hasError(validation.type) && (subscriptionForm.get('routing_number').dirty || subscriptionForm.get('routing_number').touched)">
+                                    {{ validation.message }}
+                                </div>
+                            </ng-container>
+                            <!-- account_holder_type -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Account Number" formControlName="account_number"
+                                           name="account_number"></ion-input>
+
+                            </ion-item>
+                            <ng-container *ngFor="let validation of validation_messages.account_number">
+                                <div class="error-message"
+                                     *ngIf="subscriptionForm.get('account_number').hasError(validation.type) && (subscriptionForm.get('account_number').dirty || subscriptionForm.get('account_number').touched)">
+                                    {{ validation.message }}
+                                </div>
+                            </ng-container>
+                            <ion-item>
+                                <ion-label color="medium">
+                                    Currency
+                                </ion-label>
+                                <ion-button (click)="setCurrency($event)" color="secondary">
+                                    <ion-icon src="{{'assets/' + authService.currency.icon + '.svg'}}"></ion-icon>
+                                    <span>{{authService.currency.currency}}</span>
+                                </ion-button>
+                            </ion-item>
+                        </div>
+                    </div>
+                    <!-- Payment Complete Section -->
+                    <!-- Confirm Screen -->
+                    <div id="complete-section" *ngIf="steps[4].isSelected" style="height: 70%">
+                        <ion-grid class="ion-padding" style="height: 100%">
+                            <ion-row class="ion-align-items-center ion-justify-content-center"
+                                     style="height: 100%; flex-direction: column">
+                                <div class="ion-text-center ion-padding">
+                                    <ion-icon name="checkmark-circle-outline" style="zoom:10.0;"
+                                              color="success"></ion-icon>
+                                    <h2>Order Success</h2>
+                                    <p>Your order has been placed successfully</p>
+                                </div>
+                            </ion-row>
+                        </ion-grid>
+                    </div>
+                    <!-- Go To Next Section Button Option  -->
+                    <!-- This button only visible Step 1 & 2 -->
+                    <ion-button
+                            *ngIf="!steps[2].isSelected && !steps[1].isSelected && !steps[3].isSelected && !subscription_plan"
+                            color="color1" expand="block"
+                            (click)="next()">Next
+                    </ion-button>
+
+                    <ion-row *ngIf="!steps[3].isSelected && (steps[1].isSelected || steps[2].isSelected) && !subscription_plan">
+                        <ion-col>
+                            <ion-button color="color1" (click)="back()" expand="block">Back
+                            </ion-button>
+                        </ion-col>
+                        <ion-col>
+                            <ion-button color="color1" expand="block"
+                                        (click)="next()">Next
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+
+                    <ion-row *ngIf="!steps[4].isSelected && steps[3].isSelected && !subscription_plan">
+                        <ion-col>
+                            <ion-button color="color1" (click)="back()" expand="block">Back
+                            </ion-button>
+                        </ion-col>
+                        <ion-col>
+                            <ion-button type="submit" color="color1"
+                                        (click)="chooseOption()" expand="block">Pay
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+
+                    <!-- Go To Order Page Button Option  -->
+                    <!-- This Option will be visible on Step 3 -->
+                    <ion-button *ngIf="steps[4].isSelected" color="color1" fill="outline" expand="block"
+                                (click)="gotoStatus()">Go to Status
+                    </ion-button>
+
+                    <!--                    &lt;!&ndash; Go To Products Page Button Option  &ndash;&gt;-->
+                    <!--                    &lt;!&ndash; This Option will be visible on Step 3 &ndash;&gt;-->
+                    <!--                    <ion-button *ngIf="steps[2].isSelected" color="color1" expand="block" (click)="gotoProductsPage()">-->
+                    <!--                        Continue-->
+                    <!--                        Shopping-->
+                    <!--                    </ion-button>-->
                 </form>
             </ion-col>
             <ion-col size="3"></ion-col>
         </ion-row>
+        <ion-row class="ion-align-items-center ion-justify-content-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <div class="ion-text-center ion-padding">
+                    <ion-router-link class="underline" routerDirection="root" (click)="goToBank()" class="underline">
+                        Bank Account
+                    </ion-router-link>
+                </div>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
     </ion-grid>
+    <div *ngIf="platform.is('android') || platform.is('ios')">
+        <form id="subscription-form" [formGroup]="subscriptionForm" (ngSubmit)="subscribe()">
+            <!--                    <ion-item class="ion-text-center" lines="none">-->
+            <!--                        <ion-label>{{"Souscription.option" | translate}}</ion-label>-->
+            <!--                    </ion-item>-->
+            <ion-item lines="none" class="ion-align-items-center ion-justify-content-center">
+                <ion-radio-group formControlName="option" (ionChange)="chooseOption()">
+                    <ion-list-header class="ion-text-center">
+                        <ion-label>{{"Souscription.option" | translate}}</ion-label>
+                    </ion-list-header>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col class="ion-text-center ion-align-items-center">
+                            <ion-item lines="none" class="ion-align-items-center">
+                                <ion-radio color="color1" value="Professionnel">
+                                </ion-radio>
+                                &nbsp;
+                                <ion-label
+                                        style="font-size: small">{{"Souscription.professionnel"|translate}}</ion-label>
+                            </ion-item>
+                        </ion-col>
+                        <ion-col class="ion-align-items-center">
+                            <ion-item lines="none">
+                                <ion-radio color="color1" value="Individuel">
+                                </ion-radio>
+                                &nbsp;
+                                <ion-label
+                                        style="font-size: small">{{"Souscription.individuel"|translate}}</ion-label>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="ion-align-items-center ion-justify-content-center">
+                        <ion-col class="ion-align-items-center" size="4" *ngIf="subscription_plan">
+                            <ion-button color="color1" (click)="handleUnSubscription($event)">
+                                {{"Souscription.unsubscribtion" | translate}}
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-radio-group>
+            </ion-item>
+            <ion-card *ngIf="subscriptionForm.value.option === 'Individuel'">
+                <ion-card-header>
+                    <ion-label color="color2">
+                        <h2>Description</h2>
+                    </ion-label>
+                </ion-card-header>
+                <ion-card-content>
+                    <h3>{{"Souscription.condition1"|translate}}</h3>
+                    <h3>{{"Souscription.condition2"|translate}}</h3>
+                    <h3>{{"Souscription.condition3"|translate}}</h3>
+                    <h3>{{"Souscription.condition4"|translate}}</h3>
+                </ion-card-content>
+            </ion-card>
+            <ion-card *ngIf="subscriptionForm.value.option === 'Professionnel'">
+                <ion-card-header>
+                    <ion-label color="color2">
+                        <h2>Description</h2>
+                    </ion-label>
+                </ion-card-header>
+                <ion-card-content>
+                    <h3>{{"Souscription.condition1_1"|translate}}</h3>
+                    <h3>{{"Souscription.condition2_1"|translate}}</h3>
+                    <h3>{{"Souscription.condition3"|translate}}</h3>
+                    <h3>{{"Souscription.condition4"|translate}}</h3>
+                </ion-card-content>
+            </ion-card>
+            <div class="MyCardElement">
+                <ion-label class="ion-text-center"
+                           *ngIf="subscription_plan">{{authService.currentUser.email}}</ion-label>
+                <ion-input class="ion-text-center" type="text" placeholder="Email" formControlName="email"
+                           required name="email" *ngIf="!subscription_plan"></ion-input>
+                <div *ngIf="!subscriptionForm.get('email').valid && subscriptionForm.get('email').dirty"
+                     class="error-message">
+                    Please enter a valid email.
+                </div>
+                <!-- Elements will create input elements here -->
+            </div>
+            <br/>
+            <div id="status" *ngIf="steps[0].isSelected" style="height: 70%">
+                <ion-card>
+                    <ion-grid class="ion-padding" style="height: 100%">
+                        <ion-row class="ion-align-items-center ion-justify-content-center">
+                            <ion-col>
+                                <ion-label color="dark" class="ion-text-center ion-padding"><h2>Subscription
+                                    Status</h2></ion-label>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="ion-align-items-center ion-justify-content-center"
+                                 style="height: 100%; flex-direction: column">
+                            <div class="ion-text-center ion-padding" *ngIf="!subscription_plan">
+                                <ion-icon name="alert" style="zoom:10.0;"
+                                          color="medium"></ion-icon>
+                                <h2>No subscription plan</h2>
+                            </div>
+                            <div *ngIf="subscription_plan">
+                                <ion-row class="ion-align-items-center ion-justify-content-center">
+                                    <ion-col class="ion-text-center">
+                                        Status &nbsp;
+                                        <ion-text class="ion-text-center"
+                                                  style="font-size: small; font-family: 'Bauhaus 93'"
+                                                  color="success">{{subscription_plan.status}}</ion-text>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="3" class="ion-text-center">
+                                        Creation
+                                    </ion-col>
+                                    <ion-col size="3" class="ion-text-center">
+                                        Beginning
+                                    </ion-col>
+                                    <ion-col size="3" class="ion-text-center">
+                                        End
+                                    </ion-col>
+                                    <ion-col size="3" class="ion-text-center">
+                                        Recurring
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="3" style="font-size: x-small" class="ion-text-center">
+                                        <ion-label
+                                                color="color1">{{getMomentForMobile(subscription_plan.created * 1000)}}</ion-label>
+                                    </ion-col>
+                                    <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                             class="ion-text-center">
+                                        <ion-label
+                                                color="color1"> {{getMomentForMobile(subscription_plan.current_period_start * 1000)}}</ion-label>
+                                    </ion-col>
+                                    <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                             class="ion-text-center">
+                                        <ion-label
+                                                color="color1">{{getMomentForMobile(subscription_plan.current_period_end * 1000)}}</ion-label>
+                                    </ion-col>
+                                    <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                             class="ion-text-center">
+                                        <ion-label color="color1"> {{subscription_plan.plan.interval}}</ion-label>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card>
+            </div>
+            <!-- Billing Section -->
+            <div id="billing" *ngIf="steps[1].isSelected">
+                <div class="ion-padding">
+                    <div style="margin: auto; width: 70%;">
+                        <div class="toggle_box in_stock end">
+                            <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                            <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                        (ionChange)="use_information_toggle()"
+                                        [ngModelOptions]="{standalone: true}"></ion-toggle>
+                        </div>
+                    </div>
+                    <br/>
+                    <ion-avatar slot="start" (change)="onFileSelect($event)">
+                        <ion-img [src]="imgURL"></ion-img>
+                    </ion-avatar>
 
+                    <ion-buttons slot="end">
+                        <input type="file" name="file" id="fileId" (change)="onFileSelect($event)"
+                               formControlName="image"
+                               class="inputfile"/>
+                        <label color="secondary" class="custom-file-upload" for="fileId">
+                            <ion-icon name="camera" slot="icon-only"></ion-icon>
+                        </label>
+                    </ion-buttons>
+                    <br/>
+                    <ion-row>
+                        <ion-col size="6">
+                            <!-- First Name -->
+                            <ion-item>
+                                <ion-input type="text" placeholder="First Name" formControlName="first_name"
+                                           style="font-size: small"
+                                           name="first_name"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.first_name">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('first_name').hasError(validation.type) && (subscriptionForm.get('first_name').dirty || subscriptionForm.get('first_name').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col size="6">
+                            <!-- Last Name -->
+                            <ion-item>
+                                <ion-input type="text" placeholder="Last Name" formControlName="last_name"
+                                           style="font-size: small"
+                                           name="last_name"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.last_name">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('last_name').hasError(validation.type) && (subscriptionForm.get('last_name').dirty || subscriptionForm.get('last_name').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <!-- Address 1 -->
+                    <ion-row>
+                        <ion-col size="9">
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Address 1" formControlName="addr_1"
+                                           style="font-size: small" required="true"
+                                           name="address1"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.addr_1">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('addr_1').hasError(validation.type) && (subscriptionForm.get('addr_1').dirty || subscriptionForm.get('addr_1').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col size="3">
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="App" formControlName="appNumber"
+                                           style="font-size: small"
+                                           name="appNumber"></ion-input>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+
+                    <!-- Address 2 -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Address 2" formControlName="addr_2"
+                                   name="address2"></ion-input>
+                    </ion-item>
+
+                    <ion-row>
+                        <ion-col>
+                            <!-- City -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="City" formControlName="city"
+                                           name="city"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.city_val">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('city').hasError(validation.type) && (subscriptionForm.get('city').dirty || subscriptionForm.get('city').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col>
+                            <!-- State -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="state" formControlName="state"
+                                           required="true"
+                                           name="state"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.state_val">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('state').hasError(validation.type) && (subscriptionForm.get('state').dirty || subscriptionForm.get('state').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                        <ion-col>
+                            <!-- Zip Code -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Country" formControlName="country"
+                                           required="true"
+                                           name="country"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.country_val">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('country').hasError(validation.type) && (subscriptionForm.get('country').dirty || subscriptionForm.get('country').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                        <ion-col>
+                            <!-- Zip Code -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Zip Code" formControlName="zipcode"
+                                           required="true"
+                                           name="zipcode"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.zipcode">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('zipcode').hasError(validation.type) && (subscriptionForm.get('zipcode').dirty || subscriptionForm.get('zipcode').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-col>
+                    </ion-row>
+                    <br/>
+                    <ion-item>
+<!--                        <ion-input color="medium" type="date" id="birthday" formControlName="birthday"-->
+<!--                                   name="birthday"></ion-input>-->
+                        <ion-datetime displayFormat="DD/MMMM/YYYY" min="1870" max="2300-10-31" pickerFormat="YYYY-MM-DD"
+                                      style="font-family: 'Franklin Gothic Heavy'" placeholder-color=brown size=4 placeholder="Birthday"
+                                      formControlName="birthday">
+                        </ion-datetime>
+                    </ion-item>
+                    <div class="validation-errors">
+                        <ng-container *ngFor="let validation of validation_messages.birthday">
+                            <div class="error-message"
+                                 *ngIf="subscriptionForm.get('birthday').hasError(validation.type) && (subscriptionForm.get('birthday').dirty || subscriptionForm.get('birthday').touched)">
+                                {{ validation.message }}
+                            </div>
+                            <!--                                        <div *ngIf="bankForm.errors.birthdayValidator">-->
+                            <!--                                            Birthday must be previous than the present date-->
+                            <!--                                        </div>-->
+                        </ng-container>
+                    </div>
+                    <br/>
+                    <!-- Full Name -->
+                    <ion-item>
+                        <ion-input type="text" placeholder="Phone" formControlName="phone"
+                                   name="phone"></ion-input>
+                    </ion-item>
+                </div>
+                <div *ngIf="subscriptionForm.value.option === 'Professionnel'">
+                    <ion-card>
+                        <ion-card-header>Company informations</ion-card-header>
+                        <ion-card-title>
+                            <div style="margin: auto; width: 70%;">
+                                <div class="toggle_box in_stock end">
+                                    <ion-label
+                                            style="font-size: small">{{"Souscription.user_info_request" | translate}}
+                                        ?
+                                    </ion-label>&nbsp;
+                                    <ion-toggle mode="ios" [(ngModel)]="company_informations"
+                                                (ionChange)="company_information_toggle()"
+                                                [ngModelOptions]="{standalone: true}"></ion-toggle>
+                                </div>
+                            </div>
+                            <br/>
+                        </ion-card-title>
+                        <ion-card-content>
+                            <br/>
+                            <ion-avatar slot="start" (change)="onCompanyFileSelect($event)">
+                                <ion-img [src]="company_image"></ion-img>
+                            </ion-avatar>
+
+                            <ion-buttons slot="end">
+                                <input type="file" name="file" id="comp_file_id" (change)="onCompanyFileSelect($event)"
+                                       formControlName="comp_image"
+                                       class="inputfile"/>
+                                <label color="secondary" class="custom-file-upload" for="comp_file_id">
+                                    <ion-icon name="camera" slot="icon-only"></ion-icon>
+                                </label>
+                            </ion-buttons>
+                            <br/>
+                            <!-- Company name -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Company name" formControlName="company_name"
+                                           name="company_name"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.company_name">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('company_name').hasError(validation.type) && (subscriptionForm.get('company_name').dirty || subscriptionForm.get('company_name').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                            <!-- Email -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Email"
+                                           formControlName="company_email"
+                                           name="company_email"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.company_email">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('company_email').hasError(validation.type) && (subscriptionForm.get('company_email').dirty || subscriptionForm.get('company_email').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                            <!-- Business number -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Business number"
+                                           formControlName="business_number"
+                                           name="business_number"></ion-input>
+                            </ion-item>
+
+                            <!-- Business website -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Business website"
+                                           formControlName="business_website"
+                                           name="business_website"></ion-input>
+                            </ion-item>
+
+                            <!-- VAT number -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="VAT number" formControlName="vat_number"
+                                           name="vat_number"></ion-input>
+                            </ion-item>
+
+                            <ion-row>
+                                <ion-col size="9">
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Address 1"
+                                                   formControlName="company_addr_1"
+                                                   style="font-size: small" required="true"
+                                                   name="company_address1"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.company_addr_1">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_addr_1').hasError(validation.type) && (subscriptionForm.get('company_addr_1').dirty || subscriptionForm.get('company_addr_1').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col size="3">
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="App"
+                                                   formControlName="company_appNumber"
+                                                   style="font-size: small"
+                                                   name="appNumber"></ion-input>
+                                    </ion-item>
+                                </ion-col>
+                            </ion-row>
+
+                            <!-- Address 2 -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Address 2" formControlName="company_addr_2"
+                                           name="address2"></ion-input>
+                            </ion-item>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- City -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="City" formControlName="company_city"
+                                                   name="company_city"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.company_city">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_city').hasError(validation.type) && (subscriptionForm.get('company_city').dirty || subscriptionForm.get('company_city').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- State -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="state"
+                                                   formControlName="company_state"
+                                                   required="true"
+                                                   name="company_state"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.company_state">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_state').hasError(validation.type) && (subscriptionForm.get('company_state').dirty || subscriptionForm.get('company_state').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- Zip Code -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Country"
+                                                   formControlName="company_country"
+                                                   required="true"
+                                                   name="company_country"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.company_country">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_country').hasError(validation.type) && (subscriptionForm.get('company_country').dirty || subscriptionForm.get('company_country').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- Zip Code -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="Zip Code"
+                                                   formControlName="company_zipcode"
+                                                   required="true"
+                                                   name="company_zipcode"></ion-input>
+                                    </ion-item>
+                                    <div class="validation-errors">
+                                        <ng-container
+                                                *ngFor="let validation of validation_messages.company_zipcode">
+                                            <div class="error-message"
+                                                 *ngIf="subscriptionForm.get('company_zipcode').hasError(validation.type) && (subscriptionForm.get('company_zipcode').dirty || subscriptionForm.get('company_zipcode').touched)">
+                                                {{ validation.message }}
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ion-col>
+                            </ion-row>
+                            <br/>
+                            <!-- Full Name -->
+                            <ion-item>
+                                <ion-input type="text" placeholder="Phone" formControlName="company_phone"
+                                           name="phone"></ion-input>
+                            </ion-item>
+                            <div class="validation-errors">
+                                <ng-container *ngFor="let validation of validation_messages.company_phone">
+                                    <div class="error-message"
+                                         *ngIf="subscriptionForm.get('company_phone').hasError(validation.type) && (subscriptionForm.get('company_phone').dirty || subscriptionForm.get('company_phone').touched)">
+                                        {{ validation.message }}
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </div>
+            </div>
+            <div id="payment" *ngIf="steps[2].isSelected">
+                <p class="title">Select Payment</p>
+
+                <!-- Payment Card Options -->
+                <ion-radio-group>
+                    <ion-row>
+                        <ion-col *ngFor="let item of cards | keyvalue">
+                            <ion-item lines="none">
+                                <!--                                        <ion-radio color="color1" mode="ios" [value]="item.key"-->
+                                <!--                                                   (click)="showPaymentOption(item.key)"></ion-radio>-->
+                                <ion-img (click)="showPaymentOption(item.key)" [src]="item.value"></ion-img>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </ion-radio-group>
+                <div *ngIf="cc">
+                    <!-- Card Information Form -->
+                    <!--                        <form class="ion-padding">-->
+                    <!-- Cardholder Name -->
+                    <ion-card>
+                        <ion-item>
+                            <ion-input placeholder="Cardholder Name" formControlName="cardName"></ion-input>
+                        </ion-item>
+
+                        <!-- Card Number -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="Card Number"
+                                       formControlName="cardNumber"></ion-input>
+                        </ion-item>
+
+                        <ion-row>
+                            <ion-col>
+                                <!-- MM -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="MM"
+                                               formControlName="exp_month"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col>
+                                <!-- YY -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="YY"
+                                               formControlName="exp_year"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+
+                        <!-- CVV -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="CVV" formControlName="cvv"
+                                       (ionInput)="test($event)"></ion-input>
+                        </ion-item>
+                        <!--                                <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>-->
+                        <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
+                        <!--                        </form>-->
+                    </ion-card>
+                </div>
+                <div *ngIf="paypal">
+                    <form class="ion-padding" id="paypalFormId">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col>
+                                    Use this Pay button in your app's payment page with the attached logic.
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                        <ion-card class="welcome-card">
+                            <ion-img src="/assets/paypal.jpg"></ion-img>
+                            <ion-card-header>
+                                <ion-card-subtitle>Get Started</ion-card-subtitle>
+                                <ion-card-title>PayPal Sample</ion-card-title>
+                                <ion-row>
+                                    <ion-col>
+                                        Total Payment
+                                    </ion-col>
+                                    <ion-col>
+                                        {{currencyIcon}}{{paymentAmount}}
+                                    </ion-col>
+                                </ion-row>
+                            </ion-card-header>
+                            <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">
+                                <ion-button expand="full" color="success"
+                                            (click)="payWithPaypal()">Pay with PayPal
+                                </ion-button>
+                            </ion-card-content>
+                            <div *ngIf="!platform.is('ios') && !platform.is('android')"
+                                 id="paypal-button-container"></div>
+                        </ion-card>
+                    </form>
+                </div>
+                <!-- We'll put the error messages in this element -->
+                <div id="card-errors" role="alert"></div>
+                <!--                        <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>-->
+            </div>
+            <div id="complete-section" *ngIf="steps[3].isSelected">
+                <div style="margin: auto; width: 70%;" class="ion-padding">
+                    <div class="toggle_box in_stock end">
+                        <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                        <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                    (ionChange)="use_information_toggle()"
+                                    [ngModelOptions]="{standalone: true}"></ion-toggle>
+                    </div>
+                </div>
+                <div class="ion-padding">
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Account holder name"
+                                   formControlName="account_holder_name"
+                                   name="account_holder_name"></ion-input>
+                        <div class="validation-errors">
+                            <ng-container
+                                    *ngFor="let validation of validation_messages.account_holder_name">
+                                <div class="error-message"
+                                     *ngIf="subscriptionForm.get('account_holder_name').hasError(validation.type) && (subscriptionForm.get('account_holder_name').dirty || subscriptionForm.get('account_holder_name').touched)">
+                                    {{ validation.message }}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ion-item>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top" lines="none">
+                        <ion-select formControlName="account_holder_type" placeholder="Account holder type">
+                            <ion-select-option value="individual">
+                                <ion-label
+                                        style="font-size: x-small">{{"Souscription.individuel"|translate}}</ion-label>
+                            </ion-select-option>
+                            <ion-select-option value="company">
+                                <ion-label
+                                        style="font-size: x-small">{{"Souscription.company"|translate}}</ion-label>
+                            </ion-select-option>
+                        </ion-select>
+                        <ng-container *ngFor="let validation of validation_messages.account_holder_type">
+                            <div class="error-message"
+                                 *ngIf="subscriptionForm.get('account_holder_type').hasError(validation.type) && (subscriptionForm.get('account_holder_type').dirty || subscriptionForm.get('account_holder_type').touched)">
+                                {{ validation.message }}
+                            </div>
+                        </ng-container>
+                    </ion-item>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input placeholder="Routing Number" formControlName="routing_number"
+                                   name="routing_number"></ion-input>
+
+                    </ion-item>
+                    <ng-container *ngFor="let validation of validation_messages.routing_number">
+                        <div class="error-message"
+                             *ngIf="subscriptionForm.get('routing_number').hasError(validation.type) && (subscriptionForm.get('routing_number').dirty || subscriptionForm.get('routing_number').touched)">
+                            {{ validation.message }}
+                        </div>
+                    </ng-container>
+                    <!-- account_holder_type -->
+                    <ion-item class="ion-padding-top">
+                        <ion-input type="text" placeholder="Account Number" formControlName="account_number"
+                                   name="account_number"></ion-input>
+
+                    </ion-item>
+                    <ng-container *ngFor="let validation of validation_messages.account_number">
+                        <div class="error-message"
+                             *ngIf="subscriptionForm.get('account_number').hasError(validation.type) && (subscriptionForm.get('account_number').dirty || subscriptionForm.get('account_number').touched)">
+                            {{ validation.message }}
+                        </div>
+                    </ng-container>
+                    <ion-item>
+                        <ion-label color="medium">
+                            Currency
+                        </ion-label>
+                        <ion-button (click)="setCurrency($event)" color="secondary">
+                            <ion-icon src="{{'assets/' + authService.currency.icon + '.svg'}}"></ion-icon>
+                            <span>{{authService.currency.currency}}</span>
+                        </ion-button>
+                    </ion-item>
+                </div>
+            </div>
+            <!-- Payment Complete Section -->
+            <!-- Confirm Screen -->
+            <div id="complete-section" *ngIf="steps[4].isSelected" style="height: 70%">
+                <ion-grid class="ion-padding" style="height: 100%">
+                    <ion-row class="ion-align-items-center ion-justify-content-center"
+                             style="height: 100%; flex-direction: column">
+                        <div class="ion-text-center ion-padding">
+                            <ion-icon name="checkmark-circle-outline" style="zoom:10.0;"
+                                      color="success"></ion-icon>
+                            <h2>Order Success</h2>
+                            <p>Your order has been placed successfully</p>
+                        </div>
+                    </ion-row>
+                </ion-grid>
+            </div>
+            <!-- Go To Next Section Button Option  -->
+            <!-- This button only visible Step 1 & 2 -->
+            <ion-button
+                    *ngIf="!steps[2].isSelected && !steps[1].isSelected && !steps[3].isSelected && !subscription_plan"
+                    color="color1" expand="block"
+                    (click)="next()">Next
+            </ion-button>
+
+            <ion-row *ngIf="!steps[3].isSelected && (steps[1].isSelected || steps[2].isSelected) && !subscription_plan">
+                <ion-col>
+                    <ion-button color="color1" (click)="back()" expand="block">Back
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button color="color1" expand="block"
+                                (click)="next()">Next
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="!steps[4].isSelected && steps[3].isSelected && !subscription_plan">
+                <ion-col>
+                    <ion-button color="color1" (click)="back()" expand="block">Back
+                    </ion-button>
+                </ion-col>
+                <ion-col>
+                    <ion-button type="submit" color="color1"
+                                (click)="chooseOption()" expand="block">Pay
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+
+            <!-- Go To Order Page Button Option  -->
+            <!-- This Option will be visible on Step 3 -->
+            <ion-button *ngIf="steps[4].isSelected" color="color1" fill="outline" expand="block"
+                        (click)="gotoStatus()">Go to Status
+            </ion-button>
+        </form>
+        <ion-row *ngIf="subscription_plan" class="ion-align-items-center ion-justify-content-center">
+            <ion-col size="3"></ion-col>
+            <ion-col size="6">
+                <div class="ion-text-center ion-padding">
+                    <ion-router-link class="underline" routerDirection="root" (click)="goToBank()" class="underline">
+                        Bank Account
+                    </ion-router-link>
+                </div>
+            </ion-col>
+            <ion-col size="3"></ion-col>
+        </ion-row>
+    </div>
+    <app-footer></app-footer>
 </ion-content>

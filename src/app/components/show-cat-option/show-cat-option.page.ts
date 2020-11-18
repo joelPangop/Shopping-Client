@@ -22,7 +22,6 @@ export class ShowCatOptionPage implements OnInit {
     this.categoryOption = this.navParams.get('categoryOption');
   }
 
-
   setCategory(l: any) {
     const popover = this.navParams.get('popover');
     popover.dismiss({

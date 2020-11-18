@@ -22,15 +22,6 @@ export class ArticleService {
 
     // @ts-ignore
     loadArticles():Observable<Article[]> {
-        // // @ts-ignore
-        // this.ipAddressService.networkinterface.getWiFiIPAddress((ip) => {
-        //     const url = `http://${ip}:4000/article`;
-        //     this.http.get<Article[]>(url).subscribe(res=>{
-        //         this.articles = res;
-        //         console.log(res);
-        //     });
-        // })
-
         const url = `${environment.api_url}/article`;
         return this.http.get<Article[]>(url);
     }

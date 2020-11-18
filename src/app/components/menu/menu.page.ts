@@ -59,6 +59,7 @@ export class MenuPage implements OnInit {
                 private pagesService: PagesService, private loadingCtrl: LoadingController, private storage: StorageService,
                 private userStorageUtils: UserStorageUtils, private popoverController: PopoverController,
                 private alertController: AlertController) {
+        this.utilisateur = this.authService.currentUser;
 
         // if (this.authService.currentUser._id) {
         //     this.signOption = 'Signout';
@@ -70,6 +71,7 @@ export class MenuPage implements OnInit {
     ngOnInit() {
         // this.userStorageUtils.getUser().then(res => {
         this.utilisateur = this.authService.currentUser;
+        console.log('currency', this.authService.currency);
         // });
         // if (this.authService.currentUser._id) {
         //     this.signOption = 'Signout';

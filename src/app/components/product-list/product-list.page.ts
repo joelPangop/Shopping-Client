@@ -5,7 +5,7 @@ import {Utilisateur} from '../../models/utilisateur-interface';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
-import {ModalController, NavController, Platform} from '@ionic/angular';
+import {AlertController, ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {MessageService} from '../../services/message.service';
 import {Network} from '@ionic-native/network/ngx';
 import {Dialogs} from '@ionic-native/dialogs/ngx';
@@ -45,6 +45,7 @@ export class ProductListPage implements OnInit {
     utilisateur = {} as Utilisateur;
     notifications = [];
     ip;
+    url = environment.api_url;
     slideOpts = {
         speed: 1000,
         cubeEffect: {
@@ -69,12 +70,12 @@ export class ProductListPage implements OnInit {
     itemPerPage = 3;
     indexPage = 1;
 
-    constructor(private http: HttpClient, private router: Router, private storage: StorageService,
+    constructor(private http: HttpClient, private router: Router, private storage: StorageService, private toastCtrl: ToastController,
                 private photoViewer: PhotoViewer, private navCtrl: NavController, private translateService: TranslateService,
                 private msgService: MessageService, public network: Network, public dialog: Dialogs, private cmdService: CommandeService,
                 public articleService: ArticleService, public cuService: CurrencyService, private modalController: ModalController,
                 private userStorageUtils: UserStorageUtils, public platform: Platform, public cartService: CartService,
-                public authService: AuthService) {
+                public authService: AuthService, private alertController: AlertController) {
         this.cartItemCount = this.cartService.getCartItemCount();
 
         this.filterObject = new BehaviorSubject({});
@@ -87,8 +88,8 @@ export class ProductListPage implements OnInit {
     }
 
     async ionViewDidEnter() {
-        if (this.authService.currentUser) {
-            await this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+        if (this.authService.currentUser._id) {
+            await this.cmdService.loadCheckoutCommande(this.authService.currentUser).subscribe((res) => {
                 {
                     let data = res;
                     this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);
@@ -458,7 +459,56 @@ export class ProductListPage implements OnInit {
         }
     }
 
-    setFirstPage() {
-
+    async addToCartHandler(article: Article) {
+        const alert = await this.alertController.create({
+            message: 'Add to cart ?',
+            cssClass:'my-custom-class',
+                // '<br/>' +
+                // '<div no-margin><img src="../../../assets/images/cart_egoal1.png" alt="cart img"></div>',
+            buttons: [
+                {
+                    text: 'No',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('No');
+                    }
+                },
+                {
+                    text: 'Yes',
+                    role: 'OK',
+                    handler: () => {
+                        console.log('Yes');
+                        this.addToCart(article);
+                    }
+                }]
+        });
+        return alert.present().then(r => {
+            console.log('res:', r);
+        });
     }
+
+    dismiss() {
+        this.alertController.dismiss({
+            'dismissed': true
+        });
+    }
+
+    private addToCart(article: Article) {
+        this.dismiss();
+        if (this.utilisateur._id && this.utilisateur._id === article.utilisateurId) {
+            this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
+        } else {
+            this.cartService.addArticle(article).then((res) => {console.log(res)});
+        }
+    }
+
+    //  on affiche un message toast grace à cette methode
+    async presentToast(message: string, duration: number) {
+        const toast = await this.toastCtrl.create({
+            message,
+            duration
+        });
+        await toast.present();
+    }
+
 }

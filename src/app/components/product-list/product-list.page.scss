@@ -124,3 +124,10 @@
 ion-card:hover {
   border: 1px solid #ff8080 !important;
 }
+.cart-img {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 20px;
+  background-image:url("../../../assets/images/cart_egoal.png")
+}

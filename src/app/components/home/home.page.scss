@@ -91,3 +91,12 @@ ion-select {
   width: 100%;
 }
 
+ion-toolbar {
+  --background: transparent;
+  border-color: transparent;
+}
+
+//ion-content {
+//  --offset-top: 0px;
+//  position: absolute;
+//}

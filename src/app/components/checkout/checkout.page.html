@@ -8,13 +8,18 @@
 <!-- Header -->
 <ion-header no-border>
     <ion-toolbar color="color1">
-
         <!-- Back to previous page option button -->
+        <!--        <ion-buttons slot="start">-->
+        <!--            <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="arrow-round-back">-->
+        <!--            </ion-back-button>-->
+        <!--        </ion-buttons>-->
         <ion-buttons slot="start">
-            <ion-back-button color="white" default-href="" (click)="dismiss()" text="" icon="arrow-round-back">
-            </ion-back-button>
+            <ion-menu-toggle menu="pages">
+                <ion-button color="white">
+                    <ion-icon name="reorder-four-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </ion-menu-toggle>
         </ion-buttons>
-
         <!-- Page title -->
         <ion-title>Checkout</ion-title>
     </ion-toolbar>
@@ -23,192 +28,378 @@
 <!-- Contents -->
 <ion-content id="checkout">
 
-    <!-- Steps of Checkout, steps are - (Billing, Payment, Confirm) -->
-    <ion-grid class="ion-padding">
-        <ion-row class="ion-text-center">
-            <ion-col *ngFor="let item of steps" [ngClass]="{selected: item.isSelected}">
-                <ion-icon name="radio-button-on" style="zoom:1.5;" [hidden]="!item.isSelected"></ion-icon>
-                <ion-icon name="radio-button-off" style="zoom:1.5;" [hidden]="item.isSelected"></ion-icon>
-                <br/>
-                <ion-text>{{item.step}}</ion-text>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="3">
+
             </ion-col>
-        </ion-row>
-    </ion-grid>
-
-    <!-- Content of Checkout Steps -->
-
-    <!-- Billing Section -->
-    <div id="billing" *ngIf="steps[0].isSelected">
-
-        <form class="ion-padding">
-            <!-- Full Name -->
-            <ion-item>
-                <ion-input type="text" placeholder="Full Name" name="name"></ion-input>
-            </ion-item>
-
-            <!-- Address 1 -->
-            <ion-item class="ion-padding-top">
-                <ion-input type="text" placeholder="Address 1" name="address1"></ion-input>
-            </ion-item>
-
-            <!-- Address 2 -->
-            <ion-item class="ion-padding-top">
-                <ion-input type="text" placeholder="Address 2" name="address2"></ion-input>
-            </ion-item>
-
-            <ion-row>
-                <ion-col>
-                    <!-- City -->
-                    <ion-item class="ion-padding-top">
-                        <ion-input type="text" placeholder="City" name="city"></ion-input>
-                    </ion-item>
-                </ion-col>
-                <ion-col>
-                    <!-- State -->
-                    <ion-item class="ion-padding-top">
-                        <ion-input type="text" placeholder="state" name="state"></ion-input>
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-
-            <!-- Zip Code -->
-            <ion-item class="ion-padding-top">
-                <ion-input type="text" placeholder="Zip Code" name="zipcode"></ion-input>
-            </ion-item>
-        </form>
-    </div>
-    <!-- End billing section -->
-
-    <!-- Payment Section -->
-    <div id="payment" *ngIf="steps[1].isSelected">
-
-        <p class="title">Select Payment</p>
-
-        <!-- Payment Card Options -->
-        <ion-radio-group>
-            <ion-row>
-                <ion-col *ngFor="let item of cards | keyvalue">
-                    <ion-item lines="none">
-                        <ion-radio color="color1" mode="ios" [value]="item.key"
-                                   (click)="showPaymentOption(item.key)"></ion-radio>
-                        <img [src]="item.value">
-                    </ion-item>
-                </ion-col>
-            </ion-row>
-        </ion-radio-group>
-
-        <div *ngIf="cc">
-            <!-- Card Information Form -->
-            <form class="ion-padding">
-                <!-- Cardholder Name -->
-                <ion-item>
-                    <ion-input type="text" placeholder="Cardholder Name" name="name"></ion-input>
-                </ion-item>
-
-                <!-- Card Number -->
-                <ion-item class="ion-padding-top">
-                    <ion-input type="text" placeholder="Card Number" name="cardnumber"></ion-input>
-                </ion-item>
-
-                <ion-row>
-                    <ion-col>
-                        <!-- MM -->
-                        <ion-item class="ion-padding-top">
-                            <ion-input type="text" placeholder="MM" name="mm"></ion-input>
-                        </ion-item>
-                    </ion-col>
-                    <ion-col>
-                        <!-- YY -->
-                        <ion-item class="ion-padding-top">
-                            <ion-input type="text" placeholder="YY" name="yy"></ion-input>
-                        </ion-item>
-                    </ion-col>
-                </ion-row>
-
-                <!-- CVV -->
-                <ion-item class="ion-padding-top">
-                    <ion-input type="text" placeholder="CVV" name="cvv"></ion-input>
-                </ion-item>
-                <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>
-
-            </form>
-            <!--            <ion-grid text-center>-->
-            <!--                <ion-row>-->
-            <!--                    <ion-col>-->
-            <!--                        Use this Pay button in your PWA's payment page with the attached logic.-->
-            <!--                    </ion-col>-->
-            <!--                </ion-row>-->
-            <!--            </ion-grid>-->
-            <!--            <ion-card class="welcome-card">-->
-            <!--                <ion-img src="/assets/stripe.png"></ion-img>-->
-            <!--                <ion-card-header>-->
-            <!--                    <ion-card-subtitle>Get Started</ion-card-subtitle>-->
-            <!--                    <ion-card-title>Stripe Sample</ion-card-title>-->
-            <!--                    <ion-row>-->
-            <!--                        <ion-col>Total Payment</ion-col>-->
-            <!--                        <ion-col> {{currencyIcon}}{{paymentAmount}} </ion-col>-->
-            <!--                    </ion-row>-->
-            <!--                </ion-card-header>-->
-            <!--                <ion-card-content>-->
-            <!--                    <form action="/" method="post" id="payment-form">-->
-            <!--                        <div class="form-row">-->
-            <!--                            <div id="card-element"> &lt;!&ndash; a Stripe Element will be inserted here. &ndash;&gt; </div>-->
-            <!--                            &lt;!&ndash; Used to display Element errors &ndash;&gt;-->
-            <!--                            <div id="card-errors" role="alert"></div>-->
-            <!--                        </div>-->
-            <!--                        <ion-button type="submit" color="success" expand="full">Make Payment</ion-button>-->
-            <!--                    </form>-->
-            <!--                </ion-card-content>-->
-            <!--            </ion-card>-->
-        </div>
-        <div *ngIf="paypal">
-            <form class="ion-padding" id="paypalFormId">
-                <ion-grid>
-                    <ion-row>
-                        <ion-col>
-                            Use this Pay button in your app's payment page with the attached logic.
+            <ion-col size="5">
+                <!-- Steps of Checkout, steps are - (Billing, Payment, Confirm) -->
+                <ion-grid class="ion-padding">
+                    <ion-row class="ion-text-center">
+                        <ion-col *ngFor="let item of steps" [ngClass]="{selected: item.isSelected}">
+                            <ion-icon name="radio-button-on" style="zoom:1.5;" [hidden]="!item.isSelected"></ion-icon>
+                            <ion-icon name="radio-button-off" style="zoom:1.5;" [hidden]="item.isSelected"></ion-icon>
+                            <br/>
+                            <ion-text>{{item.step}}</ion-text>
                         </ion-col>
                     </ion-row>
                 </ion-grid>
-                <ion-card class="welcome-card">
-                    <ion-img src="/assets/paypal.jpg"></ion-img>
-                    <ion-card-header>
-                        <ion-card-subtitle>Get Started</ion-card-subtitle>
-                        <ion-card-title>PayPal Sample</ion-card-title>
+
+                <!-- Content of Checkout Steps -->
+
+                <!-- Billing Section -->
+                <div id="billing" *ngIf="steps[0].isSelected">
+                    <div style="margin: auto; width: 70%;">
+                        <div class="toggle_box in_stock end">
+                            <ion-label>{{"Souscription.user_info_request" | translate}} ?</ion-label>&nbsp;
+                            <ion-toggle mode="ios" [(ngModel)]="user_informations"
+                                        (ionChange)="use_information_toggle()"
+                                        [ngModelOptions]="{standalone: true}"></ion-toggle>
+                        </div>
+                    </div>
+                    <form class="ion-padding" [formGroup]="addrForm">
+
+                        <!-- Email -->
+                        <ion-item>
+                            <ion-input type="text" placeholder="Email" name="email" [(ngModel)]="addrDetails.email"
+                                       formControlName="email"></ion-input>
+                        </ion-item>
+
+                        <!-- Full Name -->
+                        <ion-item>
+                            <ion-input type="text" placeholder="Full Name" name="name" [(ngModel)]="addrDetails.name"
+                                       formControlName="name"></ion-input>
+                        </ion-item>
+
                         <ion-row>
-                            <ion-col>
-                                Total Payment
+                            <ion-col size="9">
+                                <!-- Address 1 -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Address 1" style="font-size: small"
+                                               [(ngModel)]="addrDetails.addr_1"
+                                               name="address1" formControlName="addr_1"></ion-input>
+                                </ion-item>
                             </ion-col>
-                            <ion-col>
-                                {{currencyIcon}}{{paymentAmount}}
+                            <ion-col size="3">
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="App" style="font-size: small" name="app"
+                                               [(ngModel)]="addrDetails.app"
+                                               formControlName="app"></ion-input>
+                                </ion-item>
                             </ion-col>
                         </ion-row>
-                    </ion-card-header>
-                    <ion-card-content  *ngIf="platform.is('ios') || platform.is('android')" >
-                        <ion-button expand="full" color="success"
-                                    (click)="payWithPaypal()">Pay with PayPal
-                        </ion-button>
-                    </ion-card-content>
-                    <div *ngIf="!platform.is('ios') && !platform.is('android')" id="paypal-button-container"></div>
-                </ion-card>
-            </form>
-        </div>
-    </div>
 
-    <!-- Payment Complete Section -->
-    <!-- Confirm Screen -->
-    <div id="complete-section" *ngIf="steps[2].isSelected" style="height: 70%">
-        <ion-grid class="ion-padding" style="height: 100%">
-            <ion-row class="ion-align-items-center ion-justify-content-center"
-                     style="height: 100%; flex-direction: column">
-                <div class="ion-text-center ion-padding">
-                    <ion-icon name="md-checkmark-circle-outline" style="zoom:10.0;" color="medium"></ion-icon>
-                    <h2>Order Success</h2>
-                    <p>Your order has been placed successfully</p>
+                        <!-- Address 2 -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="Address 2" name="address2"
+                                       [(ngModel)]="addrDetails.addr_2"
+                                       formControlName="addr_2"></ion-input>
+                        </ion-item>
+
+                        <ion-row>
+                            <ion-col>
+                                <!-- City -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="City" name="city" [(ngModel)]="addrDetails.city"
+                                               formControlName="city"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col>
+                                <!-- State -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="state" name="state"
+                                               [(ngModel)]="addrDetails.state"
+                                               formControlName="state"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+
+                        <ion-row>
+                            <ion-col>
+                                <!-- Zip Code -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Zip Code" name="zipcode"
+                                               [(ngModel)]="addrDetails.zipcode"
+                                               formControlName="zipcode"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                            <ion-col>
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Country" name="country"
+                                               [(ngModel)]="addrDetails.country"
+                                               formControlName="country"></ion-input>
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+                        <!-- Phone -->
+                        <ion-item class="ion-padding-top">
+                            <ion-input type="text" placeholder="Phone" name="phone" [(ngModel)]="addrDetails.phone"
+                                       formControlName="phone"></ion-input>
+                        </ion-item>
+
+                    </form>
                 </div>
-            </ion-row>
-        </ion-grid>
-    </div>
+                <!-- End billing section -->
+
+                <!-- Payment Section -->
+                <div id="payment" *ngIf="steps[1].isSelected">
+
+                    <p class="title">Select Payment</p>
+
+                    <!-- Payment Card Options -->
+                    <ion-radio-group>
+                        <ion-row>
+                            <ion-col *ngFor="let item of cards | keyvalue">
+                                <ion-item lines="none">
+                                    <ion-radio color="color1" mode="ios" [value]="item.key"
+                                               (click)="showPaymentOption(item.key)"></ion-radio>
+                                    <img [src]="item.value">
+                                </ion-item>
+                            </ion-col>
+                        </ion-row>
+                    </ion-radio-group>
+
+                    <div *ngIf="cc">
+                        <!-- Card Information Form -->
+                        <form class="ion-padding" [formGroup]="cardForm">
+                            <!-- Cardholder Name -->
+                            <ion-item>
+                                <ion-input type="text" placeholder="Cardholder Name" name="name"
+                                           formControlName="cardName"></ion-input>
+                            </ion-item>
+
+                            <!-- Card Number -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="Card Number" name="cardnumber"
+                                           formControlName="cardNumber"></ion-input>
+                            </ion-item>
+
+                            <ion-row>
+                                <ion-col>
+                                    <!-- MM -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="MM" name="mm"
+                                                   formControlName="exp_month"></ion-input>
+                                    </ion-item>
+                                </ion-col>
+                                <ion-col>
+                                    <!-- YY -->
+                                    <ion-item class="ion-padding-top">
+                                        <ion-input type="text" placeholder="YY" name="yy"
+                                                   formControlName="exp_year"></ion-input>
+                                    </ion-item>
+                                </ion-col>
+                            </ion-row>
+
+                            <!-- CVV -->
+                            <ion-item class="ion-padding-top">
+                                <ion-input type="text" placeholder="CVV" name="cvv"
+                                           formControlName="cvv"></ion-input>
+                            </ion-item>
+                        </form>
+                        <!--            <ion-grid text-center>-->
+                        <!--                <ion-row>-->
+                        <!--                    <ion-col>-->
+                        <!--                        Use this Pay button in your PWA's payment page with the attached logic.-->
+                        <!--                    </ion-col>-->
+                        <!--                </ion-row>-->
+                        <!--            </ion-grid>-->
+                        <!--            <ion-card class="welcome-card">-->
+                        <!--                <ion-img src="/assets/stripe.png"></ion-img>-->
+                        <!--                <ion-card-header>-->
+                        <!--                    <ion-card-subtitle>Get Started</ion-card-subtitle>-->
+                        <!--                    <ion-card-title>Stripe Sample</ion-card-title>-->
+                        <!--                    <ion-row>-->
+                        <!--                        <ion-col>Total Payment</ion-col>-->
+                        <!--                        <ion-col> {{currencyIcon}}{{paymentAmount}} </ion-col>-->
+                        <!--                    </ion-row>-->
+                        <!--                </ion-card-header>-->
+                        <!--                <ion-card-content>-->
+                        <!--                    <form action="/" method="post" id="payment-form">-->
+                        <!--                        <div class="form-row">-->
+                        <!--                            <div id="card-element"> &lt;!&ndash; a Stripe Element will be inserted here. &ndash;&gt; </div>-->
+                        <!--                            &lt;!&ndash; Used to display Element errors &ndash;&gt;-->
+                        <!--                            <div id="card-errors" role="alert"></div>-->
+                        <!--                        </div>-->
+                        <!--                        <ion-button type="submit" color="success" expand="full">Make Payment</ion-button>-->
+                        <!--                    </form>-->
+                        <!--                </ion-card-content>-->
+                        <!--            </ion-card>-->
+                    </div>
+                    <div *ngIf="paypal">
+                        <form class="ion-padding" id="paypalFormId">
+                            <ion-grid>
+                                <ion-row>
+                                    <ion-col>
+                                        Use this Pay button in your app's payment page with the attached logic.
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
+                            <ion-card class="welcome-card">
+                                <ion-img src="/assets/paypal.jpg"></ion-img>
+                                <ion-card-header>
+                                    <ion-card-subtitle>Get Started</ion-card-subtitle>
+                                    <ion-card-title>PayPal Sample</ion-card-title>
+                                    <ion-row>
+                                        <ion-col>
+                                            Total Payment
+                                        </ion-col>
+                                        <ion-col>
+                                            {{currencyIcon}}{{paymentAmount}}
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-card-header>
+                                <!--                                <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">-->
+                                <!--                                    <ion-button expand="full" color="success"-->
+                                <!--                                                (click)="payWithPaypal()">Pay with PayPal-->
+                                <!--                                    </ion-button>-->
+                                <!--                                </ion-card-content>-->
+                                <div *ngIf="!platform.is('ios') && !platform.is('android')"
+                                     id="paypal-button-container"></div>
+                            </ion-card>
+                        </form>
+                    </div>
+                </div>
+
+                <div *ngIf="steps[2].isSelected" style="height: 70%">
+                    <ion-item-divider><h3>Expédition</h3></ion-item-divider>
+                    <ion-card>
+                        <ion-list>
+                            <ion-item lines="none">
+                                {{addrForm.value.name}}
+                            </ion-item>
+                            <ion-item lines="none" style="font-size: small;">
+                                <ion-label>
+                                    {{addrForm.value.addr_1}}, {{addrForm.value.app}},
+                                    {{addrForm.value.city}},
+                                    {{addrForm.value.state}}, {{addrForm.value.country}},
+                                    {{addrForm.value.zipcode}}
+                                </ion-label>
+                                <ion-router-link (click)="goToInfo('address')">Change</ion-router-link>
+                            </ion-item>
+                        </ion-list>
+                    </ion-card>
+                    <ion-item-divider><h3>Paiement</h3></ion-item-divider>
+                    <ion-card>
+                        <ion-item style="font-size: small;" lines="none">
+                            <img width="60" height="40" slot="start" [src]="cards.get(choosenOption)" alt="card image">
+                            <ion-label>
+                                <ion-text>****{{getLast4Digits(cardForm.value.cardNumber)}}</ion-text> &nbsp;&nbsp;
+                                <ion-text color="medium">{{cardForm.value.cardName}}</ion-text> &nbsp;&nbsp;
+                                <ion-text color="medium">Expire le {{cardForm.value.exp_year}}
+                                    /{{cardForm.value.exp_month}}</ion-text>
+                            </ion-label>
+                            <ion-router-link (click)="goToInfo('paiement')">Change</ion-router-link>
+                        </ion-item>
+                    </ion-card>
+                    <!-- Cart Product List -->
+                    <ion-item-divider><h3>Articles dans le panier</h3></ion-item-divider>
+                    <ion-card *ngFor="let item of cartService.cartItems; let i = index">
+                        <ion-list lines="none">
+                            <ion-item class="ion-text-wrap">
+                                <!-- Product Image -->
+                                <ion-thumbnail slot="start">
+                                    <img style="vertical-align: middle;"
+                                         [src]="url+'/image/'+item.item.pictures[0]">
+                                </ion-thumbnail>
+                                <ion-label class="ion-text-wrap">
+                                    <!-- Product Name -->
+                                    <ion-text color="dark" style="font-size: small;">
+                                        <h2> {{ item.item.title }}</h2>
+                                    </ion-text>
+                                    <ion-text color="medium" style="font-size: small;">
+                                        {{ item.item.description }}
+                                    </ion-text>
+                                    <br>
+                                    <ion-text *ngIf="item.qty > 0" style="font-size: x-small; color: #00c06d">
+                                        In stock
+                                    </ion-text>
+                                    <ion-text color="color1">
+                                        <p>{{getRatedPrice((item.item.price * item.qty), cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</p>
+                                    </ion-text>
+                                    <ion-row *ngIf="!platform.is('ios') && !platform.is('android')"
+                                             style="font-size: small;">
+                                        <!-- Product Price -->
+                                        <ion-col>
+                                            <ion-select [(ngModel)]="item.qty" [ngModelOptions]="{standalone: true}" (ionChange)="updatePanier(item)"
+                                                        interface="popover">
+                                                <ion-select-option *ngFor="let qty of getQuantities(item.item)"
+                                                                   [value]="qty">{{qty}}</ion-select-option>
+                                            </ion-select>
+                                        </ion-col>
+                                        <ion-col>
+                                            <ion-button (click)="removeProduct(item, i)" color="color1">
+                                                Retirer
+                                            </ion-button>
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-label>
+                            </ion-item>
+                        </ion-list>
+                    </ion-card>
+                </div>
+                <!-- Payment Complete Section -->
+                <!-- Confirm Screen -->
+                <div id="complete-section" *ngIf="steps[3].isSelected" style="height: 70%">
+                    <ion-grid class="ion-padding" style="height: 100%">
+                        <ion-row class="ion-align-items-center ion-justify-content-center"
+                                 style="height: 100%; flex-direction: column">
+                            <div class="ion-text-center ion-padding">
+                                <ion-icon name="md-checkmark-circle-outline" style="zoom:10.0;"
+                                          color="medium"></ion-icon>
+                                <h2>Order Success</h2>
+                                <p>Your order has been placed successfully</p>
+                            </div>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+            </ion-col>
+            <ion-col size="3">
+                <ion-grid class="ion-padding">
+                    <ion-row class="ion-text-center">
+                        <ion-col *ngFor="let item of steps">
+
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+
+                <ion-list lines="none" *ngIf="steps[2].isSelected && !platform.is('ios') && !platform.is('android')">
+                    <ion-item-divider>Résumé de la commande</ion-item-divider>
+                    <ion-item lines="none">
+                        <ion-label>Sub Total</ion-label>
+                        <ion-note slot="end"
+                                  color="dark">{{getRatedPrice(cartService.total, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label>Shipping</ion-label>
+                        <ion-note slot="end"
+                                  color="dark">{{getRatedPrice(cmdService.commande.shipmentFee ? cmdService.commande.shipmentFee : 0, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                        <!--                <ion-note slot="end" color="dark">$25</ion-note>-->
+                    </ion-item>
+
+                    <ion-item lines="none">
+                        <ion-label>Tax(10%)</ion-label>
+                        <ion-note slot="end"
+                                  color="dark">{{getRatedPrice(cartService.taxAmount, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                    </ion-item>
+
+                    <ion-item>
+                        <ion-label>Total</ion-label>
+                        <ion-note slot="end"
+                                  color="dark">{{getRatedPrice(cartService.total + cartService.taxAmount, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                        <!--                <ion-note slot="end" color="dark">${{total + 25 + 100}}</ion-note>-->
+                    </ion-item>
+                    <ion-button expand="full" color="color1" (click)="payWithStripe()"
+                                *ngIf="steps[2].isSelected && cc">Pay
+                    </ion-button>
+                </ion-list>
+            </ion-col>
+            <ion-col size="1">
+            </ion-col>
+        </ion-row>
+    </ion-grid>
 </ion-content>
 
 <!-- Footer -->
@@ -217,19 +408,26 @@
 
         <!-- Go To Next Section Button Option  -->
         <!-- This button only visible Step 1 & 2 -->
-        <ion-button *ngIf="!steps[2].isSelected" color="color1" expand="block" (click)="next()">Next
+        <ion-button *ngIf="steps[0].isSelected; let i= index" color="color1" expand="block"
+                    (click)="next()">Next
         </ion-button>
-
+        <ion-button *ngIf="steps[0].isSelected || steps[1].isSelected; let i= index" color="color1" expand="block"
+                    (click)="back()">Back
+        </ion-button>
+        <!--        <ion-button expand="full" color="color1" (click)="payWithStripe()" *ngIf="!steps[3].isSelected && paypal">Pay</ion-button>-->
+        <ion-button expand="full" color="success" *ngIf="steps[2].isSelected && paypal"
+                    (click)="payWithPaypal()">Pay with PayPal
+        </ion-button>
         <!-- Go To Order Page Button Option  -->
         <!-- This Option will be visible on Step 3 -->
-        <ion-button *ngIf="steps[2].isSelected" color="color1" fill="outline" expand="block" (click)="gotoOrderPage()">
-            My
-            Orders
+        <ion-button *ngIf="steps[1].isSelected" color="color1" fill="outline" expand="block" (click)="createOrder()">
+            Checkout My
+            Order
         </ion-button>
 
         <!-- Go To Products Page Button Option  -->
         <!-- This Option will be visible on Step 3 -->
-        <ion-button *ngIf="steps[2].isSelected" color="color1" expand="block" (click)="gotoProductsPage()">Continue
+        <ion-button *ngIf="steps[3].isSelected" color="color1" expand="block" (click)="gotoProductsPage()">Continue
             Shopping
         </ion-button>
     </ion-toolbar>

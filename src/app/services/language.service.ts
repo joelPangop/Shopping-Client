@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Storage} from '@ionic/storage';
+import {StorageService} from './storage.service';
 
 const LNG_KEY = 'SELECTED_LANGUAGE';
 
@@ -10,7 +11,7 @@ const LNG_KEY = 'SELECTED_LANGUAGE';
 export class LanguageService {
     selected = '';
 
-    constructor(private translate: TranslateService, private storage: Storage) {
+    constructor(private translate: TranslateService, private storage: StorageService) {
         translate.addLangs(['en', 'fr']);
     }
 
@@ -18,7 +19,7 @@ export class LanguageService {
         // let language = this.translate.getBrowserLang();
         this.translate.setDefaultLang('en');
 
-        this.storage.get(LNG_KEY).then(value => {
+        this.storage.getObject(LNG_KEY).then((value: any) => {
             if (value) {
                 this.setLanguage(value);
                 this.selected = value;
@@ -37,6 +38,7 @@ export class LanguageService {
         this.translate.setDefaultLang(value);
         this.translate.use(value);
         this.selected = value;
-        this.storage.set(LNG_KEY, value);
+        this.storage.setObject(LNG_KEY, value);
     }
+
 }

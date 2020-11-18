@@ -112,7 +112,7 @@ export class SigninPage implements OnInit {
                         this.utilisateur = {
                             contact : account.phoneNumber,
                             type: 'phone',
-                            avatar: "",
+                            avatar: null,
                             username: ""
                         }
                         await this.storage.setObject('isLoggedIn', true);

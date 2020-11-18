@@ -89,6 +89,13 @@ export class WebsocketService {
                         count++;
                         self.msgService.setNotificationCount(count);
                     }
+                    if (result.type === NotificationType.RECEIVED_ORDER) {
+                        msg = 'Nouvelle commande de ' + user.username;
+                        self.notificationService.scheduleNotification(msg, event.data);
+                        let count = self.msgService._notificationCount.value;
+                        count++;
+                        self.msgService.setNotificationCount(count);
+                    }
                     self.presentToast(msg);
                 });
             }

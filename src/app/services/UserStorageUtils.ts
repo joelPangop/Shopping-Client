@@ -1,15 +1,8 @@
-import {AlertController, Platform, ToastController} from '@ionic/angular';
+import {Platform} from '@ionic/angular';
 import {Storage} from '@ionic/storage';
 import {Currency, Utilisateur} from '../models/utilisateur-interface';
 import {Injectable} from '@angular/core';
 import {StorageService} from './storage.service';
-import {Observable} from 'rxjs';
-import {AuthService} from './auth.service';
-import {Notification} from '../models/notification-interface';
-import {NotificationType} from '../models/notificationType';
-import {NotificationService} from './notification.service';
-import {MessageService} from './message.service';
-import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'

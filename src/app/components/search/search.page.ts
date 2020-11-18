@@ -33,7 +33,7 @@ export class SearchPage implements OnInit {
     this.getProductList();
     let data: Commande;
 
-    this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
+    this.cmdService.loadCheckoutCommande(this.utilisateur).subscribe((res) => {
       {
         data = res;
         this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);

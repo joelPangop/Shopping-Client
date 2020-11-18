@@ -22,7 +22,7 @@
     </div>
 
     <!-- When Cart is Empty -->
-    <ion-grid class="ion-padding" id="empty" *ngIf="cartItems.length == 0" style="height: 100%">
+    <ion-grid class="ion-padding" id="empty" *ngIf="cartService.cartItems.length == 0" style="height: 100%">
         <ion-row class="ion-align-items-center ion-justify-content-center"
                  style="height: 100%; flex-direction: column">
             <div class="ion-text-center ion-padding">
@@ -33,25 +33,28 @@
         </ion-row>
     </ion-grid>
     <!-- Cart Contents -->
-    <div *ngIf="cartItems.length != 0" class="ion-padding">
+    <div *ngIf="cartService.cartItems.length != 0" class="ion-padding">
+<!--        <div class="ion-align-items-center ion-justify-content-center"><h2>{{steps[0].step}}</h2></div>-->
+
         <!-- Cart Product List -->
-        <ion-card *ngFor="let item of cartItems; let i = index">
+        <ion-card *ngFor="let item of cartService.cartItems; let i = index">
             <ion-list lines="none">
                 <ion-item class="ion-text-wrap">
 
                     <!-- Product Image -->
                     <ion-thumbnail slot="start">
                         <img style="vertical-align: middle;"
-                             [src]="'https://egoalservice.azurewebsites.net/image/'+item.item.pictures[0]">
+                             [src]="url+'/image/'+item.item.pictures[0]">
                     </ion-thumbnail>
 
                     <ion-label class="ion-text-wrap">
-
                         <!-- Product Name -->
-                        <ion-text color="dark">
+                        <ion-text color="dark" style="font-size: small;">
                             <h2> {{ item.item.title }}</h2>
                         </ion-text>
-
+                        <ion-text *ngIf="item.qty > 0" style="font-size: x-small; color: #00c06d">
+                            In stock
+                        </ion-text>
                         <!-- Product Price -->
                         <ion-text color="color1">
                             <p>{{getRatedPrice(item.item.price, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</p>
@@ -76,7 +79,7 @@
                                 </ion-col>
                             </ion-row>
                         </ion-grid>
-                        <ion-row *ngIf="!platform.is('ios') && !platform.is('android')">
+                        <ion-row *ngIf="!platform.is('ios') && !platform.is('android')" style="font-size: small;">
                             <ion-col class="ion-text-center" (click)="addQuantity(item, i)" size="2">
                                 <ion-icon style="zoom:2.0;" name="add-circle-outline" color="medium"></ion-icon>
                             </ion-col>
@@ -98,10 +101,10 @@
                     <!--                    <ion-icon name="close-circle" slot="end" color="medium" (click)="removeProduct(item.item, i)"></ion-icon>-->
                 </ion-item>
             </ion-list>
-<!--            <ion-button (click)="contact(item)" class="btn-cart" size="small" color="clear">-->
-<!--                <ion-icon slot="start" name="mail" color="medium"></ion-icon>-->
-<!--                <ion-label color="medium">Contactez le vendeur</ion-label>-->
-<!--            </ion-button>-->
+            <!--            <ion-button (click)="contact(item)" class="btn-cart" size="small" color="clear">-->
+            <!--                <ion-icon slot="start" name="mail" color="medium"></ion-icon>-->
+            <!--                <ion-label color="medium">Contactez le vendeur</ion-label>-->
+            <!--            </ion-button>-->
         </ion-card>
 
         <!-- summary Of Products Price -->
@@ -109,19 +112,20 @@
             <ion-item>
                 <ion-label>Sub Total</ion-label>
                 <ion-note slot="end"
-                          color="dark">{{getRatedPrice(total, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                          color="dark">{{getRatedPrice(cartService.total, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
             </ion-item>
 
             <ion-item>
                 <ion-label>Shipping</ion-label>
                 <ion-note slot="end"
-                          color="dark">{{getRatedPrice(commande.shipmentFee ? commande.shipmentFee : 0, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                          color="dark">{{getRatedPrice(cmdService.commande.shipmentFee ? cmdService.commande.shipmentFee : 0, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
                 <!--                <ion-note slot="end" color="dark">$25</ion-note>-->
             </ion-item>
 
             <ion-item>
                 <ion-label>Tax(10%)</ion-label>
-                <ion-note slot="end" color="dark">$0</ion-note>
+                <ion-note slot="end"
+                          color="dark">{{getRatedPrice(cartService.taxAmount, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
             </ion-item>
 
             <ion-item-divider></ion-item-divider>
@@ -129,7 +133,7 @@
             <ion-item>
                 <ion-label>Total</ion-label>
                 <ion-note slot="end"
-                          color="dark">{{getRatedPrice(total, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
+                          color="dark">{{getRatedPrice(cartService.total + cartService.taxAmount, cuService.rate) | currency: autSrv.currency.currency: 'symbol-narrow':'.2'}}</ion-note>
                 <!--                <ion-note slot="end" color="dark">${{total + 25 + 100}}</ion-note>-->
             </ion-item>
         </ion-list>
@@ -139,9 +143,15 @@
 <ion-footer no-border>
     <ion-toolbar class="ion-padding" transparent>
         <!-- Checkout Button Option -->
-        <ion-button color="color1" expand="block" (click)="goToCheckout()" *ngIf="cartItems.length != 0">PROCEED TO
+<!--        <ion-button color="color1" expand="block" (click)="back()" *ngIf="cartItems.length != 0 && steps[1].isSelected">-->
+<!--            BACK-->
+<!--        </ion-button>-->
+        <ion-button color="color1" expand="block"  (click)="goToCheckout()" *ngIf="cartService.cartItems.length != 0">PROCEED TO
             CHECKOUT
         </ion-button>
+<!--        <ion-button color="color1" expand="block" (click)="next()" *ngIf="cartItems.length != 0 && steps[0].isSelected">-->
+<!--            NEXT-->
+<!--        </ion-button>-->
     </ion-toolbar>
 </ion-footer>
 <!--<ion-footer>-->

@@ -41,7 +41,7 @@
                         <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
                             <ion-slide (click)="showImage(image, article.title)" *ngFor="let image of images">
                                 <img *ngIf="isImage(image)"
-                                     src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
+                                     src="{{url}}/image/{{image}}" height="400"
                                      width="400"/>
                                 <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
                                 <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->

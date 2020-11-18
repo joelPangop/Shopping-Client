@@ -21,6 +21,7 @@ import {StorageService} from '../../services/storage.service';
 })
 export class EditProductPage implements OnInit {
     id;
+    url = environment.api_url;
     article = {} as Article;
     myPictures: any[] = [];
     uploadForm: FormGroup;
@@ -237,7 +238,7 @@ export class EditProductPage implements OnInit {
             await (await this.imageService.uploadImages(this.uploadForm)).subscribe(
                 async (res) => {
                     for (let img of res.filename as []) {
-                        this.article.pictures.push(img);
+                        this.articleService.article.pictures.push(img);
                     }
                     this.articleService.article.utilisateurId = this.authService.currentUser._id;
                     if(this.articleService.article.price_discounted){
@@ -304,7 +305,7 @@ export class EditProductPage implements OnInit {
     removeArticleImage(file, index) {
         this.imageService.deleteImage(file).subscribe((res: any) => {
             if (res.res === 'success') {
-                this.article.pictures.splice(index, 1);
+                this.articleService.article.pictures.splice(index, 1);
                 // this.articleService.article = this.article;
                 this.articleService.updateArticle().subscribe((res) => {
                     console.log(res);

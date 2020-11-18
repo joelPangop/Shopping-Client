@@ -11,7 +11,7 @@
         <ion-row>
           <ion-col>
             <ion-card class="ion-no-margin" (click)="goToProductDetailsView(item)">
-              <div class="card-img" [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"></div>
+              <div class="card-img" [style.background-image]="'url('+url+'/image/' + item.pictures[0] + ')'"></div>
 
               <ion-fab vertical="top" horizontal="end" #like>
                 <ion-fab-button>

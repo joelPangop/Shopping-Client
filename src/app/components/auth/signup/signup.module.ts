@@ -1,12 +1,12 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { SignupPageRoutingModule } from './signup-routing.module';
+import {SignupPageRoutingModule} from './signup-routing.module';
 
-import { SignupPage } from './signup.page';
+import {SignupPage} from './signup.page';
 
 @NgModule({
     imports: [
@@ -16,7 +16,8 @@ import { SignupPage } from './signup.page';
         SignupPageRoutingModule,
         ReactiveFormsModule
     ],
-  declarations: [SignupPage],
+    declarations: [SignupPage],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
-export class SignupPageModule {}
+export class SignupPageModule {
+}

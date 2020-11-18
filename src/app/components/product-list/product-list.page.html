@@ -82,7 +82,6 @@
 
         <!-- Product View Options -->
         <div class="ion-text-end">
-
             <!-- One Column Option -->
             <ion-button fill="clear" [color]="oneColumn ? 'color1' : 'color2'" class="ion-no-padding"
                         (click)="showOneColumn()">
@@ -104,12 +103,12 @@
         <!-- Grid View Contents -->
         <ion-grid id="grid" *ngIf="grid">
             <ion-row>
-                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles">
+                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articleService.articles">
                     <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                         <!-- Product Image -->
                         <div class="card-img"
-                             [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                             [style.background-image]="'url('+url+'/image/' + item.pictures[0] + ')'"
                              (click)="showImage(item.pictures[0], item.title, $event)"></div>
 
                         <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -170,12 +169,12 @@
         <!-- One Column View Contents -->
         <ion-grid id="oneColumn" *ngIf="oneColumn">
             <ion-row>
-                <ion-col size="12" *ngFor="let item of articles">
+                <ion-col size="12" *ngFor="let item of articleService.articles">
                     <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                         <!-- Product Image -->
                         <div class="card-img"
-                             [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                             [style.background-image]="'url('+url+'/image/' + item.pictures[0] + ')'"
                              (click)="showImage(item.pictures[0], item.title, $event)"></div>
 
                         <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -232,7 +231,7 @@
         </ion-grid>
         <!-- List View Contents -->
         <div id="list" *ngIf="list">
-            <ion-card *ngFor="let item of articles" [ngClass]="blurClass">
+            <ion-card *ngFor="let item of articleService.articles" [ngClass]="blurClass">
                 <ion-list lines="none">
                     <ion-item class="ion-no-padding">
 
@@ -364,13 +363,13 @@
                     <!-- Grid View Contents -->
                     <ion-grid id="grid" *ngIf="grid">
                         <ion-row>
-                            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articles"
+                            <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let item of articleService.articles"
                                      class="">
                                 <ion-card class="ion-no-margin" [ngClass]="blurClass">
 
                                     <!-- Product Image -->
                                     <div class="card-img"
-                                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                                         [style.background-image]="'url('+url+'/image/' + item.pictures[0] + ')'"
                                          (click)="showImage(item.pictures[0], item.title, $event)"></div>
 
                                     <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -382,8 +381,11 @@
                                         </ion-fab-button>
                                     </ion-fab>
 
-                                    <ion-fab vertical="bottom" horizontal="end" (click)="showDetails(item._id)">
-                                        <button>
+                                    <ion-fab vertical="bottom" horizontal="end">
+                                        <button (click)="addToCartHandler(item)">
+                                            <ion-icon color="color1" name="cart" (click)="addToCartHandler(item)"></ion-icon>
+                                        </button>&nbsp;&nbsp;
+                                        <button (click)="showDetails(item._id)">
                                             <ion-icon color="color1" name="eye"></ion-icon>
                                         </button>
                                     </ion-fab>
@@ -432,11 +434,11 @@
                     <!-- One Column View Contents -->
                     <ion-grid id="oneColumn" *ngIf="oneColumn">
                         <ion-row>
-                            <ion-col size="12" *ngFor="let item of articles">
+                            <ion-col size="12" *ngFor="let item of articleService.articles">
                                 <ion-card class="ion-no-margin">
                                     <!-- Product Image -->
                                     <div class="card-img"
-                                         [style.background-image]="'url(https://egoalservice.azurewebsites.net/image/' + item.pictures[0] + ')'"
+                                         [style.background-image]="'url('+url+'/image/' + item.pictures[0] + ')'"
                                          (click)="showImage(item.pictures[0], item.title, $event)"></div>
 
                                     <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -496,7 +498,7 @@
                     </ion-grid>
                     <!-- List View Contents -->
                     <div id="list" *ngIf="list">
-                        <ion-card *ngFor="let item of articles">
+                        <ion-card *ngFor="let item of articleService.articles">
                             <ion-list lines="none">
                                 <ion-item class="ion-no-padding">
 
@@ -601,7 +603,6 @@
                 <ion-col size="2">
                 </ion-col>
             </ion-row>
-
         </ion-grid>
     </div>
     <app-footer></app-footer>

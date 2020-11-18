@@ -5,4 +5,5 @@ export interface itemCart {
     item: Article;
     qty: number;
     amount: number;
+    order?: any;
 }

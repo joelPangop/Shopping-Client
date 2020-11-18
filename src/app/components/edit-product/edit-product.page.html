@@ -36,7 +36,7 @@
                                                 </ion-button>
                                             </ion-fab>
                                             <img *ngIf="isImage(image)"
-                                                 src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                                 src="{{url}}/image/{{image}}"
                                                  height="400"
                                                  width="400"/>
                                             <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
@@ -97,11 +97,14 @@
                             {{'CREATE.detail' | translate}}
                         </ion-item-divider>
                         <ion-item>
-                            <ion-label position="floating">Nom</ion-label>
+                            <ion-label position="floating">{{'CREATE.nom' | translate}}</ion-label>
                             <ion-input type="text" [(ngModel)]="articleService.article.title"
                                        [ngModelOptions]="{standalone: true}"></ion-input>
                         </ion-item>
-
+                        <ion-item>
+                            <ion-label position="floating">{{'CREATE.quantity' | translate}}</ion-label>
+                            <ion-input type="text" [(ngModel)]="articleService.article.quantity"></ion-input>
+                        </ion-item>
                         <ion-grid>
                             <ion-row>
                                 <ion-col size="6">
@@ -336,11 +339,14 @@
             {{'CREATE.detail' | translate}}
         </ion-item-divider>
         <ion-item>
-            <ion-label position="floating">Nom</ion-label>
+            <ion-label position="floating">{{'CREATE.nom' | translate}}</ion-label>
             <ion-input type="text" [(ngModel)]="articleService.article.title"
                        [ngModelOptions]="{standalone: true}"></ion-input>
         </ion-item>
-
+        <ion-item>
+            <ion-label position="floating">{{'CREATE.quantity' | translate}}</ion-label>
+            <ion-input type="text" [(ngModel)]="articleService.article.quantity"></ion-input>
+        </ion-item>
         <ion-grid>
             <ion-row>
                 <ion-col size="6">

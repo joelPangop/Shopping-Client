@@ -19,6 +19,10 @@
                 <ion-icon name="heart"></ion-icon>
                 <ion-label>Likes</ion-label>
             </ion-segment-button>
+            <ion-segment-button value="orders" layout="icon-start">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <ion-label>Orders</ion-label>
+            </ion-segment-button>
         </ion-segment>
     </ion-toolbar>
 </ion-header>
@@ -77,6 +81,25 @@
                         </ion-col>
                     </ion-item>
                 </list>
+            </list>
+        </div>
+        <div *ngSwitchCase="'orders'">
+            <list>
+                <ion-item *ngFor="let orderNotif of ordersNotifications; let i = index">
+                    <ion-col class="col">
+                        <ion-label (click)="showDetails(orderNotif.item)">
+                            {{orderNotif.message}}
+                        </ion-label>
+                        <div class="time">
+                            <ion-text slot="start">
+                                {{orderNotif.item.amount}}
+                            </ion-text>
+                            <ion-note slot="end">
+                                {{getMomentDate(orderNotif.createdAt)}}
+                            </ion-note>
+                        </div>
+                    </ion-col>
+                </ion-item>
             </list>
         </div>
     </div>

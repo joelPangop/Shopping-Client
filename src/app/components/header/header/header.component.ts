@@ -110,8 +110,8 @@ export class HeaderComponent implements OnInit {
             'Jouet',
             'Divers'
         ];
-        if (this.authService.currentUser) {
-            await this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+        if (this.authService.currentUser._id) {
+            await this.cmdService.loadCheckoutCommande(this.authService.currentUser).subscribe((res) => {
                 {
                     let data = res;
                     this.cartService.setCartItemCount(data ? data.itemsCart.length : 0);

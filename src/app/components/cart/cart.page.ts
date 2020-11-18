@@ -12,6 +12,12 @@ import {Commande} from '../../models/commande-interface';
 import {CartService} from '../../services/cart.service';
 import {AuthService} from '../../services/auth.service';
 import {CurrencyService} from '../../services/currency.service';
+import {environment} from '../../models/environements';
+import {PaymentService} from '../../services/payment.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {NavigationExtras, Router} from '@angular/router';
+
+const {getCodes, getData, getNameList, getCodeList} = require('country-list');
 
 @Component({
     selector: 'app-cart',
@@ -27,12 +33,19 @@ export class CartPage implements OnInit {
     cartItemCount: BehaviorSubject<number> = new BehaviorSubject(0);
     imgURL: any;
     commande = {} as Commande;
+    taxAmount: number;
+    url = environment.api_url;
+    steps: any[] = [];
+    addrForm: FormGroup;
+    user_informations: any;
+
     @ViewChild('cart', {static: false, read: ElementRef}) fab: ElementRef;
 
     constructor(private storage: StorageService, private toastCtrl: ToastController, public modalController: ModalController,
                 private navCtrl: NavController, public platform: Platform, public storageService: StorageService,
                 private userStorageUtils: UserStorageUtils, private cartService: CartService, public autSrv: AuthService,
-                private cmdService: CommandeService, private  loadCtrl: LoadingController, public cuService: CurrencyService) {
+                private cmdService: CommandeService, private  loadCtrl: LoadingController, public cuService: CurrencyService,
+                private paymentService: PaymentService, public formBuilder: FormBuilder, private router: Router) {
         this.cartItemCount = this.cartService.getCartItemCount();
     }
 
@@ -40,41 +53,73 @@ export class CartPage implements OnInit {
         // this.returnPage = await this.storage.getItem('page');
         this.utilisateur = await this.autSrv.currentUser;
         this.loadCart();
+        console.log(getCodes());
+        console.log(getData());
+        console.log(getCodeList());
+        console.log(getNameList());
+        this.steps = [
+            {
+                step: 'Card',
+                isSelected: true
+            },
+            {
+                step: 'Billing',
+                isSelected: false
+            }
+        ];
+
+        this.addrForm = this.formBuilder.group({
+            name: ['', [Validators.required]],
+            addr_1: ['', [Validators.required]],
+            addr_2: [''],
+            app: [''],
+            phone: [''],
+            city: ['', [Validators.required]],
+            state: ['', [Validators.required]],
+            zipcode: ['', [Validators.required]],
+        });
     }
 
     async loadCart() {
         // this.cartItems = await this.storage.getItem('cart');
         if (this.utilisateur._id) {
-            this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
+            this.cmdService.loadCheckoutCommande(this.utilisateur).subscribe((res) => {
                 if (res) {
                     this.cmdService.commande = res;
-                    this.cartItems = this.cmdService.commande.itemsCart;
-                    this.cartItems.forEach(element => {
+                    this.cartService.cartItems = this.cmdService.commande.itemsCart;
+                    this.cartService.cartItems.forEach(element => {
                         if (element.item.availability.type === 'En Magasin') {
                             element.item.availability.feed = 0;
                         }
                         this.imgURL = element.item.pictures[0];
                         // @ts-ignore
-                        this.total += element.item.availability.feed + element.amount;
+                        this.cartService.total += element.item.availability.feed + element.amount;
                     });
+                    this.cartService.taxAmount = this.cartService.total * 0.1;
                 }
             });
         } else {
             await this.storage.getObject('cart').then((res: any) => {
-                this.cartItems = res;
+                if(res){
+                    this.cartService.cartItems = res.itemsCart;
+                } else {
+                    this.cartService.cartItems = [];
+                }
+
+                if (this.cartService.cartItems) {
+                    this.cartService.cartItems.forEach(element => {
+                        if (element.item.availability.type === 'En Magasin') {
+                            element.item.availability.feed = 0;
+                        }
+                        this.imgURL = element.item.pictures[0];
+                        // @ts-ignore
+                        this.cartService.total += element.item.availability.feed + element.amount;
+                    });
+                    this.cartService.taxAmount = this.cartService.total * 0.1;
+                } else {
+                    this.cartService.cartItems = [];
+                }
             });
-            if (this.cartItems) {
-                this.cartItems.forEach(element => {
-                    if (element.item.availability.type === 'En Magasin') {
-                        element.item.availability.feed = 0;
-                    }
-                    this.imgURL = element.item.pictures[0];
-                    // @ts-ignore
-                    this.total += element.item.availability.feed + element.amount;
-                });
-            } else {
-                this.cartItems = [];
-            }
         }
     }
 
@@ -96,30 +141,36 @@ export class CartPage implements OnInit {
             product.qty = product.qty + 1;
         }
         // this.total = this.total + product.discountPrice;
-        this.total = this.total + product.item.price;
+        this.cartService.total = this.cartService.total + product.item.price;
         product.amount = product.amount + product.item.price;
         // await this.storage.set('cart', this.cartItems);
         this.cartService.setCartItemCount(product.qty);
 
-        this.cmdService.commande.itemsCart = this.cartItems;
+        this.cmdService.commande.itemsCart = this.cartService.cartItems;
         let totalAmount = 0;
-        for (let c of this.cartItems) {
+        for (let c of this.cartService.cartItems) {
             totalAmount += c.amount;
         }
+        this.cartService.taxAmount = this.cartService.total * 0.1;
         this.cmdService.commande.amount = totalAmount;
         const loading = await this.loadCtrl.create({
             message: 'Please wait...'
         });
         await loading.present();
 
-        this.cmdService.updateCommande().subscribe(async (res) => {
-            this.cmdService.commande = res.article;
+        if (this.utilisateur._id) {
+            this.cmdService.updateCommande().subscribe(async (res) => {
+                this.cmdService.commande = res.article;
+                await this.storage.setObject('cart', this.cmdService.commande);
+                console.log('result', res.result);
+                if (res.result === 'successfull') {
+                    await loading.dismiss();
+                }
+            });
+        } else {
             await this.storage.setObject('cart', this.cmdService.commande);
-            console.log('result', res.result);
-            if (res.result === 'successfull') {
-                await loading.dismiss();
-            }
-        });
+            await loading.dismiss();
+        }
     }
 
     // // Remove Product From Cart
@@ -148,30 +199,35 @@ export class CartPage implements OnInit {
     async minusQuantity(product, index) {
         if (product.qty > 1) {
             product.qty = product.qty - 1;
-            this.total = this.total - product.item.price;
+            this.cartService.total = this.cartService.total - product.item.price;
             product.amount = product.amount - product.item.price;
-            this.cmdService.commande.itemsCart = this.cartItems;
+            this.cmdService.commande.itemsCart = this.cartService.cartItems;
             let totalAmount = 0;
-            for (let c of this.cartItems) {
+            for (let c of this.cartService.cartItems) {
                 totalAmount += c.amount;
             }
+            this.cartService.taxAmount = this.cartService.total * 0.1;
             this.cmdService.commande.amount = totalAmount;
-            this.cmdService.commande.quantity = this.cartItems.length;
+            this.cmdService.commande.quantity = this.cartService.cartItems.length;
             const loading = await this.loadCtrl.create({
                 message: 'Please wait...'
             });
             await loading.present();
-            this.cmdService.updateCommande().subscribe(async (res) => {
-                this.cmdService.commande = res.article;
+            if (this.utilisateur._id) {
+                this.cmdService.updateCommande().subscribe(async (res) => {
+                    this.cmdService.commande = res.article;
+                    await this.storage.setObject('cart', this.cmdService.commande);
+                    console.log('result', res.result);
+                    if (res.result === 'successfull') {
+                        await loading.dismiss();
+                    }
+                });
+            } else {
                 await this.storage.setObject('cart', this.cmdService.commande);
-                console.log('result', res.result);
-                if (res.result === 'successfull') {
-                    await loading.dismiss();
-                }
-            });
+                await loading.dismiss();
+            }
             // this.cartItemCount.next(this.cartItemCount.value - 1);
         }
-
     }
 
     // async add(item: itemCart) {
@@ -186,43 +242,9 @@ export class CartPage implements OnInit {
     // }
 
     async removeProduct(item: itemCart, index) {
-        const loading = await this.loadCtrl.create({
-            message: 'Please wait...'
+        this.cartService.removeProduct(item, index, this.utilisateur).then((res) => {
+            this.presentToast(res, 2000);
         });
-        await loading.present();
-        for (let it of this.cartItems) {
-            if (it.item._id === item.item._id) {
-                // this.cartItemCount.next(this.cartItemCount.value - 1);
-                this.cartItems.splice(index, 1);
-                this.cartService.setCartItemCount(this.cartItems.length);
-                this.total = this.total - (item.qty * item.amount);
-                // this.event.publish('cartItemCount', this.cartItems.length);
-                await this.storage.setObject('cart', this.cmdService.commande);
-            }
-        }
-        if (this.cartItems.length === 0) {
-            this.cmdService.deleteCommande().subscribe(async (res) => {
-                console.log('result', res);
-                await loading.dismiss();
-            });
-        } else {
-            this.cmdService.commande.itemsCart = this.cartItems;
-            let totalAmount = 0;
-            for (let c of this.cartItems) {
-                totalAmount += c.amount;
-            }
-            this.cmdService.commande.amount = totalAmount;
-            this.cmdService.commande.quantity = this.cartItems.length;
-            this.cmdService.updateCommande().subscribe(async (res) => {
-                this.cmdService.commande = res.article;
-                await this.storage.setObject('cart', this.cmdService.commande);
-                console.log('result', res.result);
-                if (res.result === 'successfull') {
-                    await loading.dismiss();
-                }
-                this.presentToast('Votre panier a ete mis a jour', 2000);
-            });
-        }
     }
 
     async presentToast(message: string, duration: number) {
@@ -246,7 +268,7 @@ export class CartPage implements OnInit {
     }
 
     checkout(param: string) {
-        const params = JSON.stringify({paymentAmount: this.total, currency: 'usd', currencyIcon: '$'});
+        const params = JSON.stringify({paymentAmount: this.total, currency: this.utilisateur.currency.currency});
         if (param === 'cc') {
             this.navCtrl.navigateForward('/stripe-web/' + params);
         } else if (param === 'paypal') {
@@ -261,11 +283,20 @@ export class CartPage implements OnInit {
     // Go to checkout page
     async goToCheckout() {
         this.dismiss();
-        const modal = await this.modalController.create({
-            component: CheckoutPage,
-            cssClass: 'cart-modal'
-        });
-        return await modal.present();
+        // const modal = await this.modalController.create({
+        //     component: CheckoutPage,
+        //     cssClass: 'cart-modal',
+        //     componentProps: {
+        //         totalAmount: this.total + this.taxAmount
+        //     }
+        // });
+        // return await modal.present();
+        const navigationExtras: NavigationExtras = {
+            queryParams: {
+                totalAmount: this.cartService.total + this.cartService.taxAmount
+            }
+        };
+        await this.router.navigate(['menu/tabs/checkout'], navigationExtras);
     }
 
     // Back to previous page options
@@ -291,5 +322,39 @@ export class CartPage implements OnInit {
     getRatedPrice(price: number, rate: number) {
         const retour = price * rate;
         return retour;
+    }
+
+    use_information_toggle() {
+        if (this.user_informations) {
+            this.addrForm.get('name').setValue(this.utilisateur.userInfo.firstName + ' ' + this.utilisateur.userInfo.lastName);
+            this.addrForm.get('addr_1').setValue(this.utilisateur.userInfo.address.roadName);
+            this.addrForm.get('app').setValue(this.utilisateur.userInfo.address.appartNumber);
+            this.addrForm.get('city').setValue(this.utilisateur.userInfo.address.town);
+            this.addrForm.get('phone').setValue(this.utilisateur.userInfo.telephones[0].numeroTelephone);
+            this.addrForm.get('state').setValue(this.utilisateur.userInfo.address.region);
+            this.addrForm.get('zipcode').setValue(this.utilisateur.userInfo.address.postalCode);
+        } else {
+            this.addrForm.get('name').setValue('');
+            this.addrForm.get('addr_1').setValue('');
+            this.addrForm.get('app').setValue('');
+            this.addrForm.get('city').setValue('');
+            this.addrForm.get('phone').setValue('');
+            this.addrForm.get('state').setValue('');
+            this.addrForm.get('zipcode').setValue('');
+        }
+    }
+
+    back() {
+        if (this.steps[1].isSelected) {
+            this.steps[0].isSelected = true;
+            this.steps[1].isSelected = false;
+        }
+    }
+
+    next() {
+        if (this.steps[0].isSelected) {
+            this.steps[1].isSelected = true;
+            this.steps[0].isSelected = false;
+        }
     }
 }

@@ -139,5 +139,19 @@
     "gen_condition": "General condition",
     "help": "Help",
     "about_us": "ABOUT US?"
+  },
+  "Souscription": {
+    "professionnel": "Professional",
+    "individuel": "Individual",
+    "company": "Company",
+    "option": "Account option",
+    "condition1": "This plan is for if you want ot sell less than 20 items per month",
+    "condition1_1": "This plan is for if you want ot sell more than 20 items per month",
+    "condition2": "1.5$ per sold item",
+    "condition2_1": "29.99 per month",
+    "condition3": "11% per sold item",
+    "condition4": "Delivery fee",
+    "user_info_request": "Use your informations",
+    "unsubscribtion": "Unsubscribtion"
   }
 }

@@ -18,11 +18,11 @@ export class CommandeService {
     }
 
     createCommande(): Observable<Commande> {
-        return this.http.post<Commande>(`${environment.api_url}/commande`, this.commande);
+        return this.http.post<Commande>(`${environment.api_url1}/commande`, this.commande);
     }
 
     updateCommande(): Observable<any> {
-        return this.http.put<any>(`${environment.api_url}/commande/${this.commande._id}`, this.commande);
+        return this.http.put<any>(`${environment.api_url1}/commande/${this.commande._id}`, this.commande);
     }
 
     deleteCommande(): Observable<Commande> {
@@ -31,6 +31,10 @@ export class CommandeService {
 
     loadCommande(user: Utilisateur): Observable<Commande> {
         return this.http.get<Commande>(`${environment.api_url}/commande/${user._id}`);
+    }
+
+    loadCheckoutCommande(user: Utilisateur): Observable<Commande> {
+        return this.http.get<Commande>(`${environment.api_url}/commande/checkout/${user._id}`);
     }
 
     getAll(user: Utilisateur): Observable<Commande[]> {

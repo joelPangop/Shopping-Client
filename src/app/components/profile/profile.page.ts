@@ -15,7 +15,8 @@ import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../../services/storage.service';
-import {EditProductPage} from '../edit-product/edit-product.page';
+import {File, FileInfo} from '../../models/file-interface';
+import {environment} from '../../models/environements';
 
 @Component({
     selector: 'app-profile',
@@ -46,6 +47,8 @@ export class ProfilePage implements OnInit {
     icon;
     currency;
     option: string;
+    uploadedFile = {} as File;
+    url = environment.api_url;
 
     constructor(public formBuilder: FormBuilder, private articleService: ArticleService, private storage: StorageService,
                 public authSrv: AuthService, private imgSrv: ImageService, private toastCtrl: ToastController, private router: Router,
@@ -85,7 +88,7 @@ export class ProfilePage implements OnInit {
 
         this.ischanged = false;
         this.passwordShown = false;
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar.path;
         this.loadData();
     }
 
@@ -131,7 +134,9 @@ export class ProfilePage implements OnInit {
         if (this.newImg) {
             this.uploadForm.get('image').setValue(this.newImg);
             await this.imgSrv.uploadImage(this.uploadForm).subscribe(async res => {
-                this.utilisateur.avatar = res.filename;
+                this.uploadedFile.path = res.filename;
+                this.utilisateur.avatar = this.uploadedFile;
+                console.log()
                 await this.authSrv.updateProfile(this.utilisateur).subscribe(async res1 => {
                     const rep = res1 as object;
                     // @ts-ignore
@@ -186,9 +191,15 @@ export class ProfilePage implements OnInit {
     onFileSelect(event) {
         this.imgURL = [];
         if (event.target.files.length > 0) {
-            const file = event.target.files[0];
+            // const file = event.target.files[0];
             this.newImg = event.target.files[0];
-            this.preview(file);
+            console.log(this.uploadedFile.fileInfo);
+            this.uploadedFile.fileInfo = new FileInfo();
+            this.uploadedFile.fileInfo.name = this.newImg.name;
+            this.uploadedFile.fileInfo.size = this.newImg.size;
+            this.uploadedFile.fileInfo.file_type = this.newImg.type;
+            this.uploadedFile.fileInfo.ownerId = this.utilisateur._id;
+            this.preview(this.newImg);
         }
     }
 

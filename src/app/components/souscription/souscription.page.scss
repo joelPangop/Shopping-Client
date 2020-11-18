@@ -2,9 +2,10 @@
 * Shows how you can use CSS to style your Element's container.
 */
 .MyCardElement {
+  margin: auto;
   height: 40px;
   padding: 10px 12px;
-  width: 100%;
+  width: 70%;
   color: #32325d;
   background-color: white;
   border: 1px solid transparent;
@@ -40,4 +41,111 @@
     font-weight: bold;
     font-size: 1.2rem;
   }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 50%;
+  }
+
+  ion-list {
+    display: inline-flex;
+  }
+
+}
+
+ion-radio-group {
+  width: 100%;
+}
+
+ion-item-group {
+  border-width: 2px;
+  border-radius: 5px;
+}
+
+#payment {
+  img {
+    width: 60px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding-left: 30px;
+    font-family: serif;
+  }
+}
+
+.toggle_box {
+  display: flex;
+  align-items: center;
+  min-width: fit-content;
+
+  span {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  ion-toggle {
+    --background: #6d6b6b;
+    --background-checked: #6d6b6b;
+    --handle-background: #464646;
+    --handle-background-checked: var(--ion-color-color1);
+    --handle-height: 13px;
+    --handle-width: 13px;
+    --handle-box-shadow: none;
+    height: 19px;
+    width: 34px;
+  }
+
+  &.in_stock {
+    span {
+      color: var(--ion-color-color1);
+    }
+  }
+}
+
+.card-img {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  //height: 150px;
+}
+//
+//#image:hover {
+//  border: 3px solid #ff8080 !important;
+//}
+
+//ion-img:active {
+//  border: 3px solid #ff8080 !important;
+//}
+//
+//ion-img:focus {
+//  border: 3px solid #ff8080 !important;
+//}
+
+ion-img:focus {
+  border: 3px solid #ff8080 !important;
+}
+
+.error-message {
+  color: red;
+  font-size: x-small;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }

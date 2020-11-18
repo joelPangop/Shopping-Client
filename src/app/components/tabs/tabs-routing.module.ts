@@ -125,11 +125,19 @@ const routes: Routes = [
             },
             {
                 path: 'tab-souscription',
-                loadChildren: () => import('../souscription/souscription.module').then( m => m.SouscriptionPageModule)
+                loadChildren: () => import('../souscription/souscription.module').then(m => m.SouscriptionPageModule)
+            },
+            {
+                path: 'bank',
+                loadChildren: () => import('../bank/bank.module').then(m => m.BankPageModule)
             },
             {
                 path: 'deal-list/:option',
-                loadChildren: () => import('../deal-list/deal-list.module').then( m => m.DealListPageModule)
+                loadChildren: () => import('../deal-list/deal-list.module').then(m => m.DealListPageModule)
+            },
+            {
+                path: 'checkout',
+                loadChildren: () => import('../checkout/checkout.module').then(m => m.CheckoutPageModule)
             }
         ]
     }

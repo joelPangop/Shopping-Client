@@ -135,5 +135,19 @@
     "gen_condition": "Condition general",
     "help": "Aide",
     "about_us": "QUI SOMMES NOUS?"
+  },
+  "Souscription": {
+    "professionnel": "Professionnel",
+    "individuel": "Individuel",
+    "company": "Compagnie",
+    "option": "Type de compte",
+    "condition1": "Ce plan est pour la vente de moins de 20 articles par mois",
+    "condition1_1": "Ce plan est pour la vente de plus de 20 articles par mois",
+    "condition2": "1.5$ par article vendu",
+    "condition2_1": "29.99 par mois",
+    "condition3": "11% par article vendu",
+    "condition4": "Frais de livraison",
+    "user_info_request": "Utiliser vos informations",
+    "unsubscribtion": "Désinscription"
   }
 }

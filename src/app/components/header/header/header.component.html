@@ -1,42 +1,42 @@
-<ion-toolbar color="color1">
-  <!--        <ion-button (click)="test()">-->
-  <!--            Test Websocket-->
-  <!--        </ion-button>-->
-  <!-- Menu Option -->
-  <ion-buttons slot="start">
-    <ion-menu-button></ion-menu-button>
-    <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
-  </ion-buttons>
-  <ion-buttons *ngIf="!platform.is('ios') && !platform.is('android')">
-    <ion-item lines="none">
-      <ion-label>Categories</ion-label>
-      <div class="item-content">
-        <ion-select [(ngModel)]="choosenCategories" multiple mode="md"
-                    interface="popover">
-          <!--                <ion-select-option value="All Categories">All Categories</ion-select-option>-->
-          <ion-select-option [value]="cat"
-                             *ngFor="let cat of searchCategories">{{cat}}</ion-select-option>
-        </ion-select>
-      </div>
-    </ion-item>
-    <ion-searchbar class="ion-no-padding" placeholder="Search your product"
-                   (ionFocus)="openSearch($event)" (ionInput)="search()"></ion-searchbar>
-  </ion-buttons>
+<ion-toolbar>
+    <!--        <ion-button (click)="test()">-->
+    <!--            Test Websocket-->
+    <!--        </ion-button>-->
+    <!-- Menu Option -->
+    <ion-buttons slot="start">
+        <ion-menu-button color="white"></ion-menu-button>
+        <h3 class="title"><img class="title-image" src="assets/egoal_logo.png" width="100" height="30"/></h3>
+    </ion-buttons>
+    <ion-buttons *ngIf="!platform.is('ios') && !platform.is('android')">
+        <ion-item lines="none">
+            <ion-label>Categories</ion-label>
+            <div class="item-content">
+                <ion-select [(ngModel)]="choosenCategories" multiple mode="md"
+                            interface="popover">
+                    <!--                <ion-select-option value="All Categories">All Categories</ion-select-option>-->
+                    <ion-select-option [value]="cat"
+                                       *ngFor="let cat of searchCategories">{{cat}}</ion-select-option>
+                </ion-select>
+            </div>
+        </ion-item>
+        <ion-searchbar class="ion-no-padding" placeholder="Search your product"
+                       (ionFocus)="openSearch($event)" (ionInput)="search()"></ion-searchbar>
+    </ion-buttons>
 
-  <!-- Cart Button Option -->
-  <ion-buttons slot="end">
-    <ion-nav-link style="font-style: italic; color: gray"
-                  [routerLink]="authService.currentUser._id ? '/menu/tabs/profile' : '/onbroading'"
-                  [routerDirection]="'root'">{{authService.currentUser._id ? 'Bienvenue ' + authService.currentUser.username : 'Sign in'}}</ion-nav-link>
-    <ion-button (click)="showOptions($event, 'language')">
-      <ion-icon src="assets/globe.svg"></ion-icon>
-      {{languageService.selected}}
-    </ion-button>
+    <!-- Cart Button Option -->
+    <ion-buttons slot="end">
+        <ion-nav-link style="font-style: italic; color: gray"
+                      [routerLink]="authService.currentUser._id ? '/menu/tabs/profile' : '/onbroading'"
+                      [routerDirection]="'root'">{{authService.currentUser._id ? 'Bienvenue ' + authService.currentUser.username : 'Sign in'}}</ion-nav-link>
+        <ion-button (click)="showOptions($event, 'language')">
+            <ion-icon src="assets/globe.svg" color="white"></ion-icon>
+            <ion-label color="white">{{languageService.selected}}</ion-label>
+        </ion-button>
 
-    <ion-button (click)="gotoCartPage()" #cart color="clear">
-      <div class="cart-length">{{ cartItemsCount.value }}</div>
-      <!--                <div class="cart-length">{{ cartService.cartItemCount | async }}</div>-->
-      <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
-    </ion-button>
-  </ion-buttons>
+        <ion-button (click)="gotoCartPage()" #cart color="clear">
+            <div class="cart-length">{{ cartItemsCount.value }}</div>
+            <!--                <div class="cart-length">{{ cartService.cartItemCount | async }}</div>-->
+            <ion-icon name="cart" class="cart-icon" color="white"></ion-icon>
+        </ion-button>
+    </ion-buttons>
 </ion-toolbar>

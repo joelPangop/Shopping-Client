@@ -23,18 +23,19 @@
     <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
     <!-- In the head of your document with your other CSS includes... -->
     <!-- Video.js base CSS -->
-    <link
-            href="https://unpkg.com/video.js@7/dist/video-js.min.css"
-            rel="stylesheet"
-    />
+    <link href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+            rel="stylesheet"/>
 
     <!-- City -->
-    <link
-            href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
-            rel="stylesheet"
-    />
-
+    <link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+            rel="stylesheet"/>
     <meta name="theme-color" content="#1976d2">
+    <!-- Load the client component. -->
+    <script src="https://js.braintreegateway.com/web/3.67.0/js/client.min.js"></script>
+
+    <!-- Load the PayPal Checkout component. -->
+    <script src="https://js.braintreegateway.com/web/3.67.0/js/paypal-checkout.min.js"></script>
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
 </head>
 
 <body>
@@ -51,24 +52,8 @@
 <!-- Initialize Firebase -->
 <script src="/__/firebase/init.js"></script>
 <link rel=”stylesheet” href=”https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity=”sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/” crossorigin=”anonymous”>
-<script>
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyAPhAsMPLUjU8eCDWOE17_yoIyaCu7D3kU",
-        authDomain: "egoal-shopping.firebaseapp.com",
-        databaseURL: "https://egoal-shopping.firebaseio.com",
-        projectId: "egoal-shopping",
-        storageBucket: "egoal-shopping.appspot.com",
-        messagingSenderId: "135938716350",
-        appId: "1:135938716350:web:8d5e38fada46137f26a4ef",
-        measurementId: "G-1QECVFYK2L"
-    };
-    // Initialize Firebasef
+<script src="js/fb_cred.js">
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    firebase.analytics();
 </script>
 <script src="https://vjs.zencdn.net/7.8.4/video.js"></script>
 <!--<script src="assets/js/index.js" type="application/javascript"></script>-->

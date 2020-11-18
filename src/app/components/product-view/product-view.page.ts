@@ -16,8 +16,8 @@ import {Notification} from '../../models/notification-interface';
 import {NotificationType} from '../../models/notificationType';
 import {LandingPagePage} from '../auth/landing-page/landing-page.page';
 import {CurrencyService} from '../../services/currency.service';
-import {SocialSharing} from '@ionic-native/social-sharing/ngx';
 import {AuthService} from '../../services/auth.service';
+import {OrderStatus} from '../../models/OrderStatus';
 
 @Component({
     selector: 'app-product-view',
@@ -83,7 +83,7 @@ export class ProductViewPage implements OnInit {
         this.currency = this.utilisateur.currency.currency;
         let data: Commande;
 
-        this.cmdService.loadCommande(this.utilisateur).subscribe((res) => {
+        this.cmdService.loadCheckoutCommande(this.utilisateur).subscribe((res) => {
             {
                 data = res;
                 this.cartItemCount = new BehaviorSubject(data ? data.itemsCart.length : 0);
@@ -91,7 +91,7 @@ export class ProductViewPage implements OnInit {
         });
 
         if (this.utilisateur._id) {
-            this.cmdService.loadCommande(this.utilisateur).subscribe((data) => {
+            this.cmdService.loadCheckoutCommande(this.utilisateur).subscribe((data) => {
                 if (data) {
                     this.commande = data;
                 } else {
@@ -140,6 +140,7 @@ export class ProductViewPage implements OnInit {
                         this.cmdService.commande.amount = this.product.price;
                         this.cmdService.commande.shipmentFee = 0;
                         this.cmdService.commande.quantity = data.length;
+                        this.cmdService.commande.status = OrderStatus.CREATED;
                         this.cmdService.createCommande().subscribe(async res => {
                             console.log('resultat', res);
                             this.cmdService.commande = res;
