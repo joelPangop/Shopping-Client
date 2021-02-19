@@ -238,7 +238,7 @@
                         <!-- Product Image -->
                         <ion-thumbnail slot="start" (click)="showImage(item.pictures[0], item.title, $event)">
                             <img style="vertical-align: middle;"
-                                 [src]="'https://egoalservice.azurewebsites.net/image/'+item.pictures[0]">
+                                 [src]="'https://egoal.herokuapp.com/image/'+item.pictures[0]">
                         </ion-thumbnail>
 
                         <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -506,7 +506,7 @@
                                     <ion-thumbnail slot="start"
                                                    (click)="showImage(item.pictures[0], item.title, $event)">
                                         <img style="vertical-align: middle;"
-                                             [src]="'https://egoalservice.azurewebsites.net/image/'+item.pictures[0]">
+                                             [src]="'https://egoal.herokuapp.com/image/'+item.pictures[0]">
                                     </ion-thumbnail>
 
                                     <!-- Wish Button or Product Like/Dislike Button Option -->
@@ -597,7 +597,7 @@
                         </ion-col>
                         <ion-col size="2"></ion-col>
                     </ion-row>
-                    <ion-button color="color1" *ngIf="authService.currentUser._id" translate
+                    <ion-button color="color1" *ngIf="authService.currentUser.subscription" translate
                                 (click)="goToCreate()">{{'HOME.action'}}</ion-button>
                 </ion-col>
                 <ion-col size="2">
@@ -609,7 +609,7 @@
 </ion-content>
 <ion-footer no-border *ngIf="platform.is('ios') || platform.is('android')">
     <ion-toolbar class="ion-padding" no-border fill="clear" color="shade">
-        <ion-button color="color1" expand="block" *ngIf="authService.currentUser._id"
+        <ion-button color="color1" expand="block" *ngIf="authService.currentUser.subscription"
                     (click)="goToCreate()">{{'HOME.action' | translate}}</ion-button>
     </ion-toolbar>
 </ion-footer>

@@ -44,7 +44,7 @@
                     <div>
                         <ion-thumbnail>
                             <ion-img
-                                    src="https://egoalservice.azurewebsites.net/image/{{msgNotif.article.pictures[0]}}"></ion-img>
+                                    src="https://egoal.herokuapp.com/image/{{msgNotif.article.pictures[0]}}"></ion-img>
                         </ion-thumbnail>
                     </div>
                     <ion-col class="col">
@@ -66,7 +66,7 @@
                     <ion-item *ngFor="let likeNotif of likeNotifications; let i = index">
                         <div>
                             <ion-thumbnail>
-                                <img src="https://egoalservice.azurewebsites.net/image/{{likeNotif.avatar}}"/>
+                                <img src="https://egoal.herokuapp.com/image/{{likeNotif.avatar}}"/>
                             </ion-thumbnail>
                         </div>
                         <ion-col class="col">
@@ -85,14 +85,14 @@
         </div>
         <div *ngSwitchCase="'orders'">
             <list>
-                <ion-item *ngFor="let orderNotif of ordersNotifications; let i = index">
+                <ion-item *ngFor="let orderNotif of messageService.orderNotifications; let i = index" (click)="showDetails(orderNotif.items)">
                     <ion-col class="col">
-                        <ion-label (click)="showDetails(orderNotif.item)">
+                        <ion-label>
                             {{orderNotif.message}}
                         </ion-label>
                         <div class="time">
                             <ion-text slot="start">
-                                {{orderNotif.item.amount}}
+                                {{order_amount(orderNotif.items)}}
                             </ion-text>
                             <ion-note slot="end">
                                 {{getMomentDate(orderNotif.createdAt)}}

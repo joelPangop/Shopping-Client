@@ -15,6 +15,7 @@ export interface Utilisateur {
     currency?: Currency;
     customer_profile?: any;
     payment_account?: any;
+    subscription?: Subscription;
     bank_account?: any[];
     verified?: boolean;
     _id ?: string;
@@ -28,4 +29,10 @@ export interface Currency {
 export interface Bank {
     bank_account?: any;
     appartNumber: string;
+}
+
+export interface Subscription {
+    type: string;
+    payment_type: string;
+    subscription_plan: any;
 }

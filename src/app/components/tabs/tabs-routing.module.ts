@@ -1,11 +1,15 @@
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 
 import {TabsPage} from './tabs.page';
-import {AuthGuardService} from '../../services/auth-guard.service';
+import {PaypalAgreementBillingService} from '../../services/paypal-agreement-billing.service';
 
 const routes: Routes = [
-
+    {
+        path: '/tabs',
+        redirectTo: '/tabs/tab1',
+        pathMatch: 'full'
+    },
     {
         path: '',
         component: TabsPage,
@@ -21,7 +25,6 @@ const routes: Routes = [
                 loadChildren: () =>
                     import('../deal/deal.module').then(m => m.DealPageModule)
             },
-
             {
                 path: 'tab3',
                 loadChildren: () =>
@@ -125,7 +128,13 @@ const routes: Routes = [
             },
             {
                 path: 'tab-souscription',
-                loadChildren: () => import('../souscription/souscription.module').then(m => m.SouscriptionPageModule)
+                loadChildren: () => import('../souscription/souscription.module').then(m => m.SouscriptionPageModule),
+                // canActivate: [PaypalAgreementBillingService]
+            },
+            {
+                path: 'tab-souscription?:body',
+                loadChildren: () => import('../souscription/souscription.module').then(m => m.SouscriptionPageModule),
+                canActivate: [PaypalAgreementBillingService]
             },
             {
                 path: 'bank',

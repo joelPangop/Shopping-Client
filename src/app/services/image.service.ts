@@ -28,7 +28,7 @@ export class ImageService {
         };
         const formData = new FormData();
         // const url = 'http://192.168.2.58:8080/upload';
-        const url = `${environment.api_url1}/upload`;
+        const url = `${environment.api_url}/upload`;
 
         for (const file of uploadForm.value.image) {
             formData.append('file', file);
@@ -47,7 +47,7 @@ export class ImageService {
             'Access-Control-Allow-Headers': 'Authorization, Origin, Content-Type, X-CSRF-Token'
         };
         const formData = new FormData();
-        const url = `${environment.api_url1}/uploadImgProfil`;
+        const url = `${environment.api_url}/uploadImgProfil`;
         formData.set('file', uploadForm.value.image);
         return this.http.post<any>(url, formData, {headers});
     }

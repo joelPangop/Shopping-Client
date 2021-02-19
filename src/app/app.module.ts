@@ -88,18 +88,18 @@ import localeFr from '@angular/common/locales/fr';
 import {StreamingMedia} from '@ionic-native/streaming-media/ngx';
 import {EmailComposer} from '@ionic-native/email-composer/ngx';
 import {SMS} from '@ionic-native/sms/ngx';
-import {BankPageModule} from './components/bank/bank.module';
 import {BankViewPage} from './components/bank-view/bank-view.page';
 import {BankViewPageModule} from './components/bank-view/bank-view.module';
 import {CommandeViewPage} from './components/commande-view/commande-view.page';
 import {CommandeViewPageModule} from './components/commande-view/commande-view.module';
+import {InAppBrowser} from '@ionic-native/in-app-browser/ngx';
 
 export function jwtOptionsFactory(storage) {
     return {
         tokenGetter: () => {
             return storage.get('access_token');
         },
-        whitelistedDomains: ['https://egoalservice.azurewebsites.net']
+        whitelistedDomains: [environment.url]
     };
 }
 
@@ -175,6 +175,7 @@ let CREDENTIALS = {
         SplashScreen,
         Facebook,
         PhotoViewer,
+        InAppBrowser,
         SocialSharing,
         IonicRatingModule,
         FileOpener,

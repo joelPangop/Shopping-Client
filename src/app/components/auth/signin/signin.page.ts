@@ -9,12 +9,9 @@ import {Utilisateur} from '../../../models/utilisateur-interface';
 import {environment} from '../../../models/environements';
 import {UserStorageUtils} from '../../../services/UserStorageUtils';
 import {Plugins} from '@capacitor/core';
-import {PagesService} from '../../../services/pages.service';
-import {MessageService} from '../../../services/message.service';
 import {CommandeService} from '../../../services/commande.service';
 import {CartService} from '../../../services/cart.service';
 import {StorageService} from '../../../services/storage.service';
-import {catchError} from 'rxjs/operators';
 
 const {CapacitorVideoPlayer, Device} = Plugins;
 

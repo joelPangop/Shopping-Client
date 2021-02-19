@@ -11,7 +11,6 @@ import {ShowOptionsPage} from '../show-options/show-options.page';
 import {CurrencyService} from '../../services/currency.service';
 import {UserStorageUtils} from '../../services/UserStorageUtils';
 import {CategoriesService} from '../../services/categories.service';
-import {Commande} from '../../models/commande-interface';
 import {CommandeService} from '../../services/commande.service';
 import {CartService} from '../../services/cart.service';
 import {SearchPage} from '../search/search.page';

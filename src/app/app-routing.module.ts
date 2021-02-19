@@ -4,7 +4,7 @@ import {AuthGuardService} from './services/auth-guard.service';
 
 const routes: Routes = [
     // {path: '', redirectTo: 'onbroading', pathMatch: 'full'},
-    {path: '', redirectTo: 'menu/tabs/tab1', pathMatch: 'full'},
+    {path: '', redirectTo: 'menu/tabs', pathMatch: 'full'},
     {
         path: 'menu', loadChildren: () => import('./components/menu/menu.module').then(m => m.MenuPageModule),
         // canActivate: [AuthGuardService]
@@ -58,7 +58,8 @@ const routes: Routes = [
     {
         path: 'bank',
         loadChildren: () => import('./components/bank/bank.module').then(m => m.BankPageModule)
-    },  {
+    },
+  {
     path: 'bank-view',
     loadChildren: () => import('./components/bank-view/bank-view.module').then( m => m.BankViewPageModule)
   },

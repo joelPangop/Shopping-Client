@@ -8,7 +8,7 @@ export interface Notification {
     message_id?: string;
     utilisateurId?: string;
     article?: Article;
-    item?: itemCart;
+    items?: string[];
     avatar?: string;
     createdAt?: number;
     read?: boolean;

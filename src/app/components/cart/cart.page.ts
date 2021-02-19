@@ -17,6 +17,7 @@ import {PaymentService} from '../../services/payment.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NavigationExtras, Router} from '@angular/router';
 
+// @ts-ignore
 const {getCodes, getData, getNameList, getCodeList} = require('country-list');
 
 @Component({
@@ -43,8 +44,8 @@ export class CartPage implements OnInit {
 
     constructor(private storage: StorageService, private toastCtrl: ToastController, public modalController: ModalController,
                 private navCtrl: NavController, public platform: Platform, public storageService: StorageService,
-                private userStorageUtils: UserStorageUtils, private cartService: CartService, public autSrv: AuthService,
-                private cmdService: CommandeService, private  loadCtrl: LoadingController, public cuService: CurrencyService,
+                private userStorageUtils: UserStorageUtils, public cartService: CartService, public autSrv: AuthService,
+                public cmdService: CommandeService, private  loadCtrl: LoadingController, public cuService: CurrencyService,
                 private paymentService: PaymentService, public formBuilder: FormBuilder, private router: Router) {
         this.cartItemCount = this.cartService.getCartItemCount();
     }

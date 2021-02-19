@@ -60,7 +60,8 @@
                             </ion-row>
                         </ion-radio-group>
 
-                        <ion-radio-group formControlName="option" (ionChange)="chooseOption()" *ngIf="!subscription_plan || subscription_plan.length === 0">
+                        <ion-radio-group formControlName="option" (ionChange)="chooseOption()"
+                                         *ngIf="!subscription_plan || subscription_plan.length === 0">
                             <ion-list-header class="ion-text-center">
                                 <ion-label>{{"Souscription.option" | translate}}</ion-label>
                             </ion-list-header>
@@ -144,57 +145,223 @@
                                         <h2>No subscription plan</h2>
                                     </div>
                                     <div *ngIf="subscription_plan">
-                                        <ion-row class="ion-align-items-center ion-justify-content-center">
-                                            <ion-col class="ion-text-center">
-                                                Status &nbsp;
-                                                <ion-text class="ion-text-center"
-                                                          style="font-size: small; font-family: 'Bauhaus 93'"
-                                                          color="success">{{subscription_plan.status}}</ion-text>
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size="3" class="ion-text-center">
-                                                Creation
-                                            </ion-col>
-                                            <ion-col size="3" class="ion-text-center">
-                                                Beginning
-                                            </ion-col>
-                                            <ion-col size="3" class="ion-text-center">
-                                                End
-                                            </ion-col>
-                                            <ion-col size="3" class="ion-text-center">
-                                                Recurring
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size="3" style="font-size: x-small"
-                                                     class="ion-text-center">
+                                        <div *ngIf="subscription_plan.payment_type === 'VISA'">
+                                            <ion-row class="ion-align-items-center ion-justify-content-center">
+                                                <ion-col class="ion-text-center">
+                                                    Status &nbsp;
+                                                    <ion-text class="ion-text-center"
+                                                              style="font-size: small; font-family: 'Bauhaus 93'"
+                                                              color="success">{{subscription_plan.subscription_plan.status}}</ion-text>
+                                                </ion-col>
+                                                <ion-col class="ion-text-center" size="6">
+                                                    Method &nbsp;
+                                                    <ion-text class="ion-text-center"
+                                                              style="font-size: small; font-family: 'Bauhaus 93'; color: #0c96df">{{subscription_plan.payment_type}}
+                                                    </ion-text>
+                                                </ion-col>
+                                            </ion-row>
+                                            <ion-row>
+                                                <ion-col size="3" class="ion-text-center">
+                                                    Creation
+                                                </ion-col>
+                                                <ion-col size="3" class="ion-text-center">
+                                                    Beginning
+                                                </ion-col>
+                                                <ion-col size="3" class="ion-text-center">
+                                                    End
+                                                </ion-col>
+                                                <ion-col size="3" class="ion-text-center">
+                                                    Recurring
+                                                </ion-col>
+                                            </ion-row>
+                                            <ion-row>
+                                                <ion-col size="3" style="font-size: x-small"
+                                                         class="ion-text-center">
+                                                    <ion-label
+                                                            color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.created * 1000)}}</ion-label>
+                                                </ion-col>
+                                                <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                         class="ion-text-center">
+                                                    <ion-label
+                                                            color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.current_period_start * 1000)}}</ion-label>
+                                                </ion-col>
+                                                <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                         class="ion-text-center">
+                                                    <ion-label
+                                                            color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.current_period_end * 1000)}}</ion-label>
+                                                </ion-col>
+                                                <ion-col size="3" style="font-size: x-small" color="dark-tint"
+                                                         class="ion-text-center">
+                                                    <ion-label
+                                                            color="color1">{{subscription_plan.subscription_plan.plan.interval}}</ion-label>
+                                                </ion-col>
+                                            </ion-row>
+                                        </div>
+                                        <div *ngIf="subscription_plan.payment_type === 'PAYPAL'">
+                                            <ion-row class="ion-align-items-center ion-justify-content-center">
+                                                <ion-col class="ion-text-center" size="6">
+                                                    Status &nbsp;
+                                                    <ion-text class="ion-text-center"
+                                                              style="font-size: small; font-family: 'Bauhaus 93'"
+                                                              color="success">{{subscription_plan.subscription_plan.state}}</ion-text>
+                                                </ion-col>
+                                                <ion-col class="ion-text-center" size="6">
+                                                    Method &nbsp;
+                                                    <ion-text class="ion-text-center"
+                                                              style="font-size: small; font-family: 'Bauhaus 93'; color: #0c96df">{{subscription_plan.subscription_plan.payer.payment_method}}
+                                                    </ion-text>
+                                                </ion-col>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Beginning: &nbsp;
                                                 <ion-label
-                                                        color="color1">{{getMomentForMobile(subscription_plan.created * 1000)}}</ion-label>
-                                            </ion-col>
-                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
-                                                     class="ion-text-center">
+                                                        color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.start_date)}}</ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Next billing date: &nbsp;
                                                 <ion-label
-                                                        color="color1">{{getMomentForMobile(subscription_plan.current_period_start * 1000)}}</ion-label>
-                                            </ion-col>
-                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
-                                                     class="ion-text-center">
+                                                        color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.agreement_details.next_billing_date)}}</ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Final Payment date: &nbsp;
                                                 <ion-label
-                                                        color="color1">{{getMomentForMobile(subscription_plan.current_period_end * 1000)}}</ion-label>
-                                            </ion-col>
-                                            <ion-col size="3" style="font-size: x-small" color="dark-tint"
-                                                     class="ion-text-center">
+                                                        color="color1">{{getMomentForMobile(subscription_plan.subscription_plan.agreement_details.final_payment_date)}}</ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Paypal profile: &nbsp;
                                                 <ion-label
-                                                        color="color1">{{subscription_plan.plan.interval}}</ion-label>
-                                            </ion-col>
-                                        </ion-row>
+                                                        color="color1">{{subscription_plan.subscription_plan.payer.payer_info.email}}
+                                                </ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Price: &nbsp;
+                                                <ion-label
+                                                        color="color1">{{getRatedPrice(subscription_plan.subscription_plan.plan.payment_definitions[0].amount.value, cuService.rate) | currency: authService.currency.currency: 'symbol-narrow':'.2'}}
+                                                </ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Mode: &nbsp;
+                                                <ion-label
+                                                        color="color1">{{subscription_plan.subscription_plan.plan.payment_definitions[0].type}}
+                                                </ion-label>
+                                            </ion-row>
+                                            <br/>
+                                            <ion-row class="ion-text-center">
+                                                Frequency: &nbsp;
+                                                <ion-label
+                                                        color="color1">{{subscription_plan.subscription_plan.plan.payment_definitions[0].frequency}}
+                                                </ion-label>
+                                            </ion-row>
+
+                                        </div>
                                     </div>
                                 </ion-row>
                             </ion-grid>
                         </ion-card>
                     </div>
+                    <div id="payment" *ngIf="steps[1].isSelected">
+                        <p class="title">Select Payment</p>
+
+                        <!-- Payment Card Options -->
+                        <ion-radio-group>
+                            <ion-row>
+                                <ion-col *ngFor="let item of cards | keyvalue">
+                                    <ion-item lines="none">
+                                        <!--                                        <ion-radio color="color1" mode="ios" [value]="item.key"-->
+                                        <!--                                                   (click)="showPaymentOption(item.key)"></ion-radio>-->
+                                        <ion-img (click)="showPaymentOption(item.key)" [src]="item.value"></ion-img>
+                                    </ion-item>
+                                </ion-col>
+                            </ion-row>
+                        </ion-radio-group>
+                        <div *ngIf="cc">
+                            <!-- Card Information Form -->
+                            <!--                        <form class="ion-padding">-->
+                            <!-- Cardholder Name -->
+                            <ion-card>
+                                <ion-item>
+                                    <ion-input placeholder="Cardholder Name" formControlName="cardName"></ion-input>
+                                </ion-item>
+
+                                <!-- Card Number -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="Card Number"
+                                               formControlName="cardNumber"></ion-input>
+                                </ion-item>
+
+                                <ion-row>
+                                    <ion-col>
+                                        <!-- MM -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="MM"
+                                                       formControlName="exp_month"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                    <ion-col>
+                                        <!-- YY -->
+                                        <ion-item class="ion-padding-top">
+                                            <ion-input type="text" placeholder="YY"
+                                                       formControlName="exp_year"></ion-input>
+                                        </ion-item>
+                                    </ion-col>
+                                </ion-row>
+
+                                <!-- CVV -->
+                                <ion-item class="ion-padding-top">
+                                    <ion-input type="text" placeholder="CVV" formControlName="cvv"
+                                               (ionInput)="test($event)"></ion-input>
+                                </ion-item>
+                                <!--                                <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>-->
+                                <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
+                                <!--                        </form>-->
+                            </ion-card>
+                        </div>
+                        <div *ngIf="paypal">
+                            <form class="ion-padding" id="paypalFormId">
+                                <ion-grid>
+                                    <ion-row>
+                                        <ion-col>
+                                            Use this Pay button in your app's payment page with the attached logic.
+                                        </ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                                <ion-card class="welcome-card">
+                                    <ion-img src="/assets/paypal.jpg"></ion-img>
+                                    <ion-card-header>
+                                        <ion-card-subtitle>Get Started</ion-card-subtitle>
+                                        <ion-card-title>PayPal Sample</ion-card-title>
+                                        <ion-row>
+                                            <ion-col>
+                                                Total Payment
+                                            </ion-col>
+                                            <ion-col>
+                                                {{currencyIcon}}{{paymentAmount}}
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-card-header>
+                                    <ion-card-content>
+                                        <!--                                    <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">-->
+                                        <ion-button expand="full" color="success"
+                                                    (click)="payWithPaypal()">Pay with PayPal
+                                        </ion-button>
+                                    </ion-card-content>
+                                    <!--                                    <div *ngIf="!platform.is('ios') && !platform.is('android')"-->
+                                    <!--                                         id="paypal-button-container"></div>-->
+                                </ion-card>
+                            </form>
+                        </div>
+                        <!-- We'll put the error messages in this element -->
+                        <div id="card-errors" role="alert"></div>
+                        <!--                        <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>-->
+                    </div>
                     <!-- Billing Section -->
-                    <div id="billing" *ngIf="steps[1].isSelected">
+                    <div id="billing" *ngIf="steps[2].isSelected">
                         <div class="ion-padding">
                             <div style="margin: auto; width: 70%;">
                                 <div class="toggle_box in_stock end">
@@ -399,7 +566,8 @@
                                     </ion-avatar>
 
                                     <ion-buttons slot="end">
-                                        <input type="file" name="file" id="comp_file_id" (change)="onCompanyFileSelect($event)"
+                                        <input type="file" name="file" id="comp_file_id"
+                                               (change)="onCompanyFileSelect($event)"
                                                formControlName="comp_image"
                                                class="inputfile"/>
                                         <label color="secondary" class="custom-file-upload" for="comp_file_id">
@@ -583,100 +751,7 @@
                             </ion-card>
                         </div>
                     </div>
-                    <div id="payment" *ngIf="steps[2].isSelected">
-                        <p class="title">Select Payment</p>
 
-                        <!-- Payment Card Options -->
-                        <ion-radio-group>
-                            <ion-row>
-                                <ion-col *ngFor="let item of cards | keyvalue">
-                                    <ion-item lines="none">
-                                        <!--                                        <ion-radio color="color1" mode="ios" [value]="item.key"-->
-                                        <!--                                                   (click)="showPaymentOption(item.key)"></ion-radio>-->
-                                        <ion-img (click)="showPaymentOption(item.key)" [src]="item.value"></ion-img>
-                                    </ion-item>
-                                </ion-col>
-                            </ion-row>
-                        </ion-radio-group>
-                        <div *ngIf="cc">
-                            <!-- Card Information Form -->
-                            <!--                        <form class="ion-padding">-->
-                            <!-- Cardholder Name -->
-                            <ion-card>
-                                <ion-item>
-                                    <ion-input placeholder="Cardholder Name" formControlName="cardName"></ion-input>
-                                </ion-item>
-
-                                <!-- Card Number -->
-                                <ion-item class="ion-padding-top">
-                                    <ion-input type="text" placeholder="Card Number"
-                                               formControlName="cardNumber"></ion-input>
-                                </ion-item>
-
-                                <ion-row>
-                                    <ion-col>
-                                        <!-- MM -->
-                                        <ion-item class="ion-padding-top">
-                                            <ion-input type="text" placeholder="MM"
-                                                       formControlName="exp_month"></ion-input>
-                                        </ion-item>
-                                    </ion-col>
-                                    <ion-col>
-                                        <!-- YY -->
-                                        <ion-item class="ion-padding-top">
-                                            <ion-input type="text" placeholder="YY"
-                                                       formControlName="exp_year"></ion-input>
-                                        </ion-item>
-                                    </ion-col>
-                                </ion-row>
-
-                                <!-- CVV -->
-                                <ion-item class="ion-padding-top">
-                                    <ion-input type="text" placeholder="CVV" formControlName="cvv"
-                                               (ionInput)="test($event)"></ion-input>
-                                </ion-item>
-                                <!--                                <ion-button expand="full" color="color1" (click)="createPayment()">Pay</ion-button>-->
-                                <!--                            <ion-button expand="full" color="color1" (click)="payWithStripe()">Pay</ion-button>-->
-                                <!--                        </form>-->
-                            </ion-card>
-                        </div>
-                        <div *ngIf="paypal">
-                            <form class="ion-padding" id="paypalFormId">
-                                <ion-grid>
-                                    <ion-row>
-                                        <ion-col>
-                                            Use this Pay button in your app's payment page with the attached logic.
-                                        </ion-col>
-                                    </ion-row>
-                                </ion-grid>
-                                <ion-card class="welcome-card">
-                                    <ion-img src="/assets/paypal.jpg"></ion-img>
-                                    <ion-card-header>
-                                        <ion-card-subtitle>Get Started</ion-card-subtitle>
-                                        <ion-card-title>PayPal Sample</ion-card-title>
-                                        <ion-row>
-                                            <ion-col>
-                                                Total Payment
-                                            </ion-col>
-                                            <ion-col>
-                                                {{currencyIcon}}{{paymentAmount}}
-                                            </ion-col>
-                                        </ion-row>
-                                    </ion-card-header>
-                                    <ion-card-content *ngIf="platform.is('ios') || platform.is('android')">
-                                        <ion-button expand="full" color="success"
-                                                    (click)="payWithPaypal()">Pay with PayPal
-                                        </ion-button>
-                                    </ion-card-content>
-                                    <div *ngIf="!platform.is('ios') && !platform.is('android')"
-                                         id="paypal-button-container"></div>
-                                </ion-card>
-                            </form>
-                        </div>
-                        <!-- We'll put the error messages in this element -->
-                        <div id="card-errors" role="alert"></div>
-                        <!--                        <ion-button type="submit" color="color1" expand="full">Subscribe</ion-button>-->
-                    </div>
                     <div id="complete-section" *ngIf="steps[3].isSelected">
                         <div style="margin: auto; width: 70%;" class="ion-padding">
                             <div class="toggle_box in_stock end">
@@ -779,7 +854,8 @@
                             (click)="next()">Next
                     </ion-button>
 
-                    <ion-row *ngIf="!steps[3].isSelected && (steps[1].isSelected || steps[2].isSelected) && !subscription_plan">
+                    <ion-row
+                            *ngIf="!steps[3].isSelected && (steps[1].isSelected || steps[2].isSelected) && !subscription_plan">
                         <ion-col>
                             <ion-button color="color1" (click)="back()" expand="block">Back
                             </ion-button>
@@ -819,7 +895,7 @@
             </ion-col>
             <ion-col size="3"></ion-col>
         </ion-row>
-        <ion-row class="ion-align-items-center ion-justify-content-center">
+        <ion-row class="ion-align-items-center ion-justify-content-center" *ngIf="authService.currentUser.subscription && authService.currentUser.subscription.payment_type === 'VISA'">
             <ion-col size="3"></ion-col>
             <ion-col size="6">
                 <div class="ion-text-center ion-padding">
@@ -1133,10 +1209,11 @@
                     </ion-row>
                     <br/>
                     <ion-item>
-<!--                        <ion-input color="medium" type="date" id="birthday" formControlName="birthday"-->
-<!--                                   name="birthday"></ion-input>-->
+                        <!--                        <ion-input color="medium" type="date" id="birthday" formControlName="birthday"-->
+                        <!--                                   name="birthday"></ion-input>-->
                         <ion-datetime displayFormat="DD/MMMM/YYYY" min="1870" max="2300-10-31" pickerFormat="YYYY-MM-DD"
-                                      style="font-family: 'Franklin Gothic Heavy'" placeholder-color=brown size=4 placeholder="Birthday"
+                                      style="font-family: 'Franklin Gothic Heavy'" placeholder-color=brown size=4
+                                      placeholder="Birthday"
                                       formControlName="birthday">
                         </ion-datetime>
                     </ion-item>
@@ -1561,7 +1638,6 @@
                     color="color1" expand="block"
                     (click)="next()">Next
             </ion-button>
-
             <ion-row *ngIf="!steps[3].isSelected && (steps[1].isSelected || steps[2].isSelected) && !subscription_plan">
                 <ion-col>
                     <ion-button color="color1" (click)="back()" expand="block">Back
@@ -1573,7 +1649,6 @@
                     </ion-button>
                 </ion-col>
             </ion-row>
-
             <ion-row *ngIf="!steps[4].isSelected && steps[3].isSelected && !subscription_plan">
                 <ion-col>
                     <ion-button color="color1" (click)="back()" expand="block">Back
@@ -1585,14 +1660,13 @@
                     </ion-button>
                 </ion-col>
             </ion-row>
-
             <!-- Go To Order Page Button Option  -->
             <!-- This Option will be visible on Step 3 -->
             <ion-button *ngIf="steps[4].isSelected" color="color1" fill="outline" expand="block"
                         (click)="gotoStatus()">Go to Status
             </ion-button>
         </form>
-        <ion-row *ngIf="subscription_plan" class="ion-align-items-center ion-justify-content-center">
+        <ion-row *ngIf="subscription_plan && subscription_plan.payment_type === 'STRIPE'" class="ion-align-items-center ion-justify-content-center">
             <ion-col size="3"></ion-col>
             <ion-col size="6">
                 <div class="ion-text-center ion-padding">

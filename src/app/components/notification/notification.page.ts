@@ -12,6 +12,7 @@ import {Commande} from '../../models/commande-interface';
 import {OrderViewPage} from '../order-view/order-view.page';
 import {CommandeViewPage} from '../commande-view/commande-view.page';
 import {itemCart} from '../../models/itemCart-interface';
+import {CommandeService} from '../../services/commande.service';
 
 @Component({
     selector: 'app-notification',
@@ -26,9 +27,9 @@ export class NotificationPage implements OnInit {
     ordersNotifications: Notification[] = [];
     utilisateur = {} as Utilisateur;
 
-    constructor(private messageService: MessageService, private activatedRoute: ActivatedRoute,
+    constructor(public messageService: MessageService, private activatedRoute: ActivatedRoute,
                 private navCtrl: NavController, private userStorageUtils: UserStorageUtils,
-                private modalController: ModalController) {
+                private modalController: ModalController, private cmdService: CommandeService) {
         this.likeNotifications = [] as Notification[];
         this.messageNotifications = [] as Notification[];
         this.ordersNotifications = [] as Notification[];
@@ -159,11 +160,15 @@ export class NotificationPage implements OnInit {
 
     loadOrdersNotifications(){
         this.messageService.loadReceivedOrdersNotifications(this.utilisateur._id).subscribe((res) => {
-            this.messageService.likeNotifications = res;
-            this.ordersNotifications = this.messageService.likeNotifications.reverse().filter((thing, i, arr) => {
-                return arr.indexOf(arr.find(t => t.sender === thing.sender && t.avatar === thing.avatar)) === i;
-            });
-            console.log('Elements distincts', this.likeNotifications);
+            this.messageService.orderNotifications = res;
+            this.ordersNotifications = this.messageService.orderNotifications;
+            // this.ordersNotifications = this.messageService.likeNotifications.reverse().filter((thing, i, arr) => {
+            //     return arr.indexOf(arr.find(t => t.sender === thing.sender && t.avatar === thing.avatar)) === i;
+            // });
+            // this.ordersNotifications.forEach((res) => {
+            //     this.cmdService.received_orders.push(res.items);
+            // });
+            console.log('Elements distincts', this.ordersNotifications);
         });
     }
 
@@ -203,12 +208,32 @@ export class NotificationPage implements OnInit {
         this.navCtrl.navigateForward(`/menu/tabs/action-message/${msgNotif.message_id}/read/${1000}/${msgNotif.article._id}`);
     }
 
-    async showDetails(item: itemCart) {
-        const modal = await this.modalController.create({
-            component: CommandeViewPage,
-            componentProps: item,
-            cssClass: 'cart-modal'
+    async showDetails(items: string[]) {
+        let itemsCart = [];
+        this.cmdService.getCmdByItem(items[0]).subscribe(async (res) => {
+            let command: Commande = res;
+            itemsCart = command.itemsCart.filter(
+                function(e) {
+                    return items.includes(e._id);
+                    // return this.indexOf(e._id);
+                },
+                items
+            );
+            this.cmdService.received_orders = itemsCart;
+            const modal = await this.modalController.create({
+                component: CommandeViewPage,
+                cssClass: 'cart-modal'
+            });
+            return await modal.present();
+        })
+
+    }
+
+    order_amount(items: itemCart[]) {
+        let amount = 0;
+        items.forEach((it) => {
+            amount += it.amount;
         });
-        return await modal.present();
+        return amount;
     }
 }

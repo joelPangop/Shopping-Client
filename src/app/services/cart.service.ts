@@ -10,6 +10,7 @@ import {Commande} from '../models/commande-interface';
 import {Utilisateur} from '../models/utilisateur-interface';
 import {AuthService} from './auth.service';
 import {OrderStatus} from '../models/OrderStatus';
+import {itemStatus} from '../models/itemStatus';
 
 @Injectable({
     providedIn: 'root'
@@ -69,7 +70,8 @@ export class CartService {
             this.dataI.push({
                 item: article,
                 qty: 1,
-                amount: article.price
+                amount: article.price,
+                status: itemStatus.ORDERED
             });
             this.cartItemCount.next(this.cartItemCount.value + 1);
             const timestamp = new Date().getUTCMilliseconds();
@@ -98,7 +100,8 @@ export class CartService {
                 this.dataI.push({
                     item: article,
                     qty: 1,
-                    amount: article.price
+                    amount: article.price,
+                    status: itemStatus.ORDERED
                 });
                 this.cartItemCount.next(this.cartItemCount.value + 1);
                 // this.event.publish('cartItemCount', this.cartItemCount.value);
@@ -166,7 +169,7 @@ export class CartService {
             }
         }
         if (this.cartItems.length === 0) {
-            if(user._id){
+            if (user._id) {
                 this.cmdService.deleteCommande().subscribe(async (res) => {
                     console.log('result', res);
                     await loading.dismiss();

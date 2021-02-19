@@ -45,7 +45,7 @@
                 <ion-item-sliding *ngFor="let msg of messages_received; let i = index">
                     <ion-item button (click)="messageView(msg, i)">
                         <ion-avatar slot="start">
-                            <ion-img src="https://egoalservice.azurewebsites.net/image/{{msg.picture}}"></ion-img>
+                            <ion-img src="https://egoal.herokuapp.com/image/{{msg.picture}}"></ion-img>
                         </ion-avatar>
                         <ion-label>
                             <h2>{{msg.title}}</h2>

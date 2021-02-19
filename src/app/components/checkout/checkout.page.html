@@ -137,7 +137,6 @@
                             <ion-input type="text" placeholder="Phone" name="phone" [(ngModel)]="addrDetails.phone"
                                        formControlName="phone"></ion-input>
                         </ion-item>
-
                     </form>
                 </div>
                 <!-- End billing section -->
@@ -246,7 +245,7 @@
                                             Total Payment
                                         </ion-col>
                                         <ion-col>
-                                            {{currencyIcon}}{{paymentAmount}}
+                                            {{currencyIcon}}{{amount}}
                                         </ion-col>
                                     </ion-row>
                                 </ion-card-header>
@@ -255,8 +254,8 @@
                                 <!--                                                (click)="payWithPaypal()">Pay with PayPal-->
                                 <!--                                    </ion-button>-->
                                 <!--                                </ion-card-content>-->
-                                <div *ngIf="!platform.is('ios') && !platform.is('android')"
-                                     id="paypal-button-container"></div>
+<!--                                <div *ngIf="!platform.is('ios') && !platform.is('android')"-->
+<!--                                     id="paypal-button-container"></div>-->
                             </ion-card>
                         </form>
                     </div>
@@ -284,11 +283,14 @@
                     <ion-card>
                         <ion-item style="font-size: small;" lines="none">
                             <img width="60" height="40" slot="start" [src]="cards.get(choosenOption)" alt="card image">
-                            <ion-label>
+                            <ion-label *ngIf="cc">
                                 <ion-text>****{{getLast4Digits(cardForm.value.cardNumber)}}</ion-text> &nbsp;&nbsp;
                                 <ion-text color="medium">{{cardForm.value.cardName}}</ion-text> &nbsp;&nbsp;
                                 <ion-text color="medium">Expire le {{cardForm.value.exp_year}}
                                     /{{cardForm.value.exp_month}}</ion-text>
+                            </ion-label>
+                            <ion-label *ngIf="paypal">
+                                <ion-text>{{getRatedPrice(amount, cuService.rate) | currency: authService.currency.currency}}</ion-text>
                             </ion-label>
                             <ion-router-link (click)="goToInfo('paiement')">Change</ion-router-link>
                         </ion-item>
@@ -394,6 +396,9 @@
                     <ion-button expand="full" color="color1" (click)="payWithStripe()"
                                 *ngIf="steps[2].isSelected && cc">Pay
                     </ion-button>
+                    <ion-button expand="full" color="success" *ngIf="steps[2].isSelected && paypal"
+                                (click)="payWithPaypal()">Pay with PayPal
+                    </ion-button>
                 </ion-list>
             </ion-col>
             <ion-col size="1">
@@ -415,9 +420,9 @@
                     (click)="back()">Back
         </ion-button>
         <!--        <ion-button expand="full" color="color1" (click)="payWithStripe()" *ngIf="!steps[3].isSelected && paypal">Pay</ion-button>-->
-        <ion-button expand="full" color="success" *ngIf="steps[2].isSelected && paypal"
-                    (click)="payWithPaypal()">Pay with PayPal
-        </ion-button>
+<!--        <ion-button expand="full" color="success" *ngIf="steps[2].isSelected && paypal"-->
+<!--                    (click)="payWithPaypal()">Pay with PayPal-->
+<!--        </ion-button>-->
         <!-- Go To Order Page Button Option  -->
         <!-- This Option will be visible on Step 3 -->
         <ion-button *ngIf="steps[1].isSelected" color="color1" fill="outline" expand="block" (click)="createOrder()">

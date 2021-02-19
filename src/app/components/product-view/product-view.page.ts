@@ -18,6 +18,7 @@ import {LandingPagePage} from '../auth/landing-page/landing-page.page';
 import {CurrencyService} from '../../services/currency.service';
 import {AuthService} from '../../services/auth.service';
 import {OrderStatus} from '../../models/OrderStatus';
+import {itemStatus} from '../../models/itemStatus';
 
 @Component({
     selector: 'app-product-view',
@@ -128,7 +129,8 @@ export class ProductViewPage implements OnInit {
                         data.push({
                             item: this.product,
                             qty: 1,
-                            amount: this.product.price
+                            amount: this.product.price,
+                            status: itemStatus.ORDERED
                         });
                         this.cartItemCount.next(this.cartItemCount.value + 1);
                         const timestamp = new Date().getUTCMilliseconds();
@@ -158,7 +160,8 @@ export class ProductViewPage implements OnInit {
                             data.push({
                                 item: this.product,
                                 qty: 1,
-                                amount: this.product.price
+                                amount: this.product.price,
+                                status: itemStatus.ORDERED
                             });
                             this.cartItemCount.next(this.cartItemCount.value + 1);
                             // this.event.publish('cartItemCount', this.cartItemCount.value);
@@ -207,7 +210,8 @@ export class ProductViewPage implements OnInit {
                         myData.push({
                             item: this.product,
                             qty: 1,
-                            amount: this.product.price
+                            amount: this.product.price,
+                            status: itemStatus.ORDERED
                         });
                         await this.storage.set('cart', myData);
                         this.presentToast('Votre panier a été mis à jour', 1500);

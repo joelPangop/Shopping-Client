@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {LoadingController, ModalController, Platform, ToastController} from '@ionic/angular';
+import {LoadingController, ModalController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
 import {PaymentMethods} from '../../models/PaymentMethods';
 import {PayPal, PayPalConfiguration, PayPalPayment} from '@ionic-native/paypal/ngx';
 import {CommandeService} from '../../services/commande.service';
@@ -28,6 +28,8 @@ import {Telephone} from '../../models/telephone-interface';
 import {Plugins} from '@capacitor/core';
 import {Device} from '../../models/device-interface';
 import {OrderStatus} from '../../models/OrderStatus';
+import {ArticleService} from '../../services/article.service';
+import {InAppBrowser} from '@ionic-native/in-app-browser/ngx';
 
 const {CapacitorVideoPlayer, Device} = Plugins;
 const PURE_EMAIL_REGEXP = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -62,12 +64,13 @@ export class CheckoutPage implements OnInit {
     total = 0;
     quantity: number;
 
-    constructor(public modalController: ModalController, private cmdService: CommandeService, private stripe: Stripe,
+    constructor(public modalController: ModalController, public cmdService: CommandeService, private stripe: Stripe,
                 private router: Router, private payPal: PayPal, private userStorageUtils: UserStorageUtils, private toastCtrl: ToastController,
                 private http: HttpClient, public platform: Platform, public formBuilder: FormBuilder, public cartService: CartService,
-                private authService: AuthService, private paymentService: PaymentService, public cuService: CurrencyService,
+                public authService: AuthService, private paymentService: PaymentService, public cuService: CurrencyService,
                 private activatedRoute: ActivatedRoute, public msgService: MessageService, private websocketService: WebsocketService,
-                private storage: StorageService, private loadCtrl: LoadingController) {
+                private storage: StorageService, private loadCtrl: LoadingController, private navCtrl: NavController,
+                private articleService: ArticleService, private inAppBrowser: InAppBrowser) {
 
         this.cardForm = this.formBuilder.group({
             cardName: ['', [Validators.required]],
@@ -92,18 +95,6 @@ export class CheckoutPage implements OnInit {
             country: ['', [Validators.required]],
             zipcode: ['', [Validators.required]],
         });
-    }
-
-    ionViewDidEnter(){
-        this.activatedRoute.queryParams.subscribe(params => {
-            if (params && params.special) {
-                this.amount = params.totalAmount;
-            }
-        });
-    }
-
-    async ngOnInit() {
-        console.log(this.platform.platforms());
         // Checkout steps
         this.steps = [
             {
@@ -123,8 +114,62 @@ export class CheckoutPage implements OnInit {
                 isSelected: false
             }
         ];
-        this.cards = new Map<string, string>();
+    }
+
+    ionViewDidEnter() {
+        this.activatedRoute.queryParams.subscribe(params => {
+            // if (params && params.special) {
+            if (params) {
+                this.amount = params.totalAmount;
+            }
+        });
+    }
+
+    async ngOnInit() {
+        console.log(this.platform.platforms());
+        const queryParams = await this.activatedRoute.snapshot.queryParams as {};
+        if (this.activatedRoute.snapshot.queryParams.token) {
+            console.log(queryParams);
+            const loading = await this.loadCtrl.create({
+                message: 'Please wait...'
+            });
+            await loading.present();
+            this.cmdService.loadCommande(this.authService.currentUser).subscribe((res) => {
+                const commande = res;
+                console.log(this.activatedRoute.snapshot.queryParams);
+                const paymentInfos = {queryParams, commande: commande}
+                this.paymentService.executePaypalPayment(paymentInfos, this.authService.currentUser._id).subscribe(async (res) => {
+                    this.steps[0].isSelected = false;
+                    this.steps[1].isSelected = false;
+                    this.steps[2].isSelected = false;
+                    this.steps[3].isSelected = true;
+                    await loading.dismiss();
+                    await this.presentToast(res.msg, 2000);
+                });
+            })
+
+        }
+        // Checkout steps
+        // this.steps = [
+        //     {
+        //         step: 'Billing',
+        //         isSelected: true
+        //     },
+        //     {
+        //         step: 'Payment',
+        //         isSelected: false
+        //     },
+        //     {
+        //         step: 'Confirm',
+        //         isSelected: false
+        //     },
+        //     {
+        //         step: 'Result',
+        //         isSelected: false
+        //     }
+        // ];
         this.utilisateur = await this.authService.currentUser;
+        this.cards = new Map<string, string>();
         // this.cartItems = this.cmdService.commande.itemsCart;
 
         // Payment cards images
@@ -132,6 +177,7 @@ export class CheckoutPage implements OnInit {
         for (const item in PaymentMethods) {
             this.cards.set(item, PaymentMethods[item]);
         }
+
         console.log(this.cards);
         // this.paymentAmount = '' + this.cmdService.commande.amount;
         // this.cards = ["assets/images/cards/visa.png",
@@ -155,7 +201,8 @@ export class CheckoutPage implements OnInit {
             }
             // @ts-ignore
             this.total += element.item.availability.feed + element.amount;
-        };
+        }
+        ;
     }
 
     getRatedPrice(price: number, rate: number) {
@@ -212,22 +259,42 @@ export class CheckoutPage implements OnInit {
 
         this.paymentService.checkout(this.cardDetails, this.addrDetails, commande).subscribe(async (res) => {
             console.log(res);
+            this.cmdService.commande = res;
             if (res.result === 'Success') {
                 await this.storage.removeItem('cart');
                 this.cmdService.commande = res.commande;
                 this.cmdService.commande.status = OrderStatus.PAID;
-                this.cmdService.updateCommande().subscribe((res) => {
-                    this.cmdService.commande = {} as Commande;
-                });
-                for (let cmd of this.cmdService.commande.itemsCart) {
+                this.cmdService.commande.amount = this.cartService.total;
+                // this.cmdService.updateCommande().subscribe((res) => {
+                //     this.cmdService.commande = {} as Commande;
+                // });
+                const grouped = this.cmdService.commande.itemsCart.reduce((r, a) => {
+                    console.log('a', a);
+                    console.log('r', r);
+                    r[a.item.utilisateurId] = [...r[a.item.utilisateurId] || [], a];
+                    return r;
+                }, {});
+
+                console.log(grouped);
+
+                const array = Object.values(grouped).reverse();
+
+                console.log(JSON.stringify(array));
+
+                for (let cmd of array) {
+                    let ids = [];
+                    for (let c of cmd as itemCart[]) {
+                        ids.push(c._id);
+                    }
+                    const msg = 'Vous avez une nouvelle commande de ' + this.utilisateur._id ? this.addrDetails.name : this.cmdService.commande.userInfo.firstName;
                     const notification: Notification = {
                         title: 'Nouvelle commande',
-                        message: 'Vous avez une nouvelle commande de ' + this.utilisateur._id ? this.utilisateur.username : this.cmdService.commande.userInfo.firstName,
+                        message: msg,
                         // message_id: msg._id,
-                        utilisateurId: cmd.item.utilisateurId,
+                        utilisateurId: cmd[0].item.utilisateurId,
                         // avatar: this.utilisateur.avatar.path,
-                        article: cmd.item,
-                        item: cmd,
+                        // article: cmd.item,
+                        items: ids,
                         read: false,
                         type: NotificationType.RECEIVED_ORDER,
                         sender: this.utilisateur._id
@@ -235,7 +302,6 @@ export class CheckoutPage implements OnInit {
                     this.msgService.addNotification(notification).subscribe(res => {
                         let not = res as Notification;
                         let res_str = JSON.stringify(not);
-
                         if (!this.websocketService.getWebSocket()) {
                             console.log('No WebSocket connected :(');
                             return;
@@ -243,6 +309,18 @@ export class CheckoutPage implements OnInit {
                         this.websocketService.getWebSocket().send(res_str);
                     });
                 }
+                this.cmdService.updateCommande().subscribe((res) => {
+                    console.log(res);
+                    const command: Commande = res.article;
+                    for (let item of command.itemsCart) {
+                        item.item.quantity -= item.qty;
+                        this.articleService.update(item.item).subscribe((res) => {
+                            console.info(res);
+                        });
+                    }
+                    this.cmdService.commande = {} as Commande;
+                });
+                this.cmdService.cartItemCount.next(0);
                 this.steps[0].isSelected = false;
                 this.steps[1].isSelected = false;
                 this.steps[2].isSelected = false;
@@ -269,48 +347,62 @@ export class CheckoutPage implements OnInit {
             });
     }
 
-    payWithPaypal() {
-        console.log('Pay ????');
-        this.payPal.init({
-            PayPalEnvironmentProduction: 'pk_test_h4xJdyRxCxwG8AxSIzzDYd4600RtNJA1ha',
-            PayPalEnvironmentSandbox: 'AW_6b6jtwQ-erzTNpij929f3--m_jXImBcHdhYI_n_hom6Nv7EgIewumGIuua9W8x1TTqZQz_BLYWv2H'
-        }).then(() => {
-            // Environments: PayPalEnvironmentNoNetwork, PayPalEnvironmentSandbox, PayPalEnvironmentProduction
-            this.payPal.prepareToRender('PayPalEnvironmentSandbox', new PayPalConfiguration({
-                // Only needed if you get an "Internal Service Error" after PayPal login!
-                //payPalShippingAddressOption: 2 // PayPalShippingAddressOptionPayPal
-            })).then(() => {
-                let payment = new PayPalPayment(this.paymentAmount, this.currency, 'Description', 'sale');
-                this.payPal.renderSinglePaymentUI(payment).then((res) => {
-                    console.log(res);
-                    // Successfully paid
-
-                    // Example sandbox response
-                    //
-                    // {
-                    //   "client": {
-                    //     "environment": "sandbox",
-                    //     "product_name": "PayPal iOS SDK",
-                    //     "paypal_sdk_version": "2.16.0",
-                    //     "platform": "iOS"
-                    //   },
-                    //   "response_type": "payment",
-                    //   "response": {
-                    //     "id": "PAY-1AB23456CD789012EF34GHIJ",
-                    //     "state": "approved",
-                    //     "create_time": "2016-10-03T13:33:33Z",
-                    //     "intent": "sale"
-                    //   }
-                    // }
-                }, () => {
-                    // Error or render dialog closed without being successful
-                });
-            }, () => {
-                // Error in configuration
-            });
-        }, () => {
-            // Error in initialization, maybe PayPal isn't supported or something else
+    async payWithPaypal() {
+        let amount_infos = {
+            amount: this.getRatedPrice(this.amount, this.cuService.rate),
+            subTotal: this.getRatedPrice(this.cartService.total, this.cuService.rate),
+            tax: this.getRatedPrice(this.cartService.taxAmount, this.cuService.rate),
+            currency: this.authService.currency.currency
+        }
+        // const loading = await this.loadCtrl.create({
+        //     message: 'Please wait...'
+        // });
+        // await loading.present();
+        this.paymentService.payWitPaypal(this.addrDetails, this.cmdService.commande, amount_infos).subscribe(res => {
+            console.log(res);
+            this.inAppBrowser.create(res.url);
         });
+        // console.log('Pay ????');
+        // this.payPal.init({
+        //     PayPalEnvironmentProduction: 'pk_test_h4xJdyRxCxwG8AxSIzzDYd4600RtNJA1ha',
+        //     PayPalEnvironmentSandbox: 'AW_6b6jtwQ-erzTNpij929f3--m_jXImBcHdhYI_n_hom6Nv7EgIewumGIuua9W8x1TTqZQz_BLYWv2H'
+        // }).then(() => {
+        //     // Environments: PayPalEnvironmentNoNetwork, PayPalEnvironmentSandbox, PayPalEnvironmentProduction
+        //     this.payPal.prepareToRender('PayPalEnvironmentSandbox', new PayPalConfiguration({
+        //         // Only needed if you get an "Internal Service Error" after PayPal login!
+        //         //payPalShippingAddressOption: 2 // PayPalShippingAddressOptionPayPal
+        //     })).then(() => {
+        //         let payment = new PayPalPayment(this.amount, this.currency, 'Description', 'sale');
+        //         this.payPal.renderSinglePaymentUI(payment).then((res) => {
+        //             console.log(res);
+        //             // Successfully paid
+        //
+        //             // Example sandbox response
+        //             //
+        //             // {
+        //             //   "client": {
+        //             //     "environment": "sandbox",
+        //             //     "product_name": "PayPal iOS SDK",
+        //             //     "paypal_sdk_version": "2.16.0",
+        //             //     "platform": "iOS"
+        //             //   },
+        //             //   "response_type": "payment",
+        //             //   "response": {
+        //             //     "id": "PAY-1AB23456CD789012EF34GHIJ",
+        //             //     "state": "approved",
+        //             //     "create_time": "2016-10-03T13:33:33Z",
+        //             //     "intent": "sale"
+        //             //   }
+        //             // }
+        //         }, () => {
+        //             // Error or render dialog closed without being successful
+        //         });
+        //     }, () => {
+        //         // Error in configuration
+        //     });
+        // }, () => {
+        //     // Error in initialization, maybe PayPal isn't supported or something else
+        // });
     }
 
     // Go to xext section function
@@ -385,9 +477,10 @@ export class CheckoutPage implements OnInit {
     }
 
     // Go to product page
-    gotoProductsPage() {
-        this.dismiss();
-        this.router.navigate(['/menu/tabs/products']);
+    async gotoProductsPage() {
+        // this.dismiss();
+        await this.router.navigate(['/menu/tabs/products']);
+        // await this.navCtrl.navigateRoot('/menu/tabs/products');
     }
 
     // Back to previous screen
@@ -400,9 +493,9 @@ export class CheckoutPage implements OnInit {
     }
 
     showPaymentOption(option) {
+        this.choosenOption = option;
         switch (option) {
             case 'VISA':
-                this.choosenOption = option;
                 this.cardForm.get('cardNumber').setValue(4242424242424242);
                 this.cardForm.get('cardName').setValue('test');
                 this.cardForm.get('exp_month').setValue(12);
@@ -449,7 +542,7 @@ export class CheckoutPage implements OnInit {
     }
 
     use_information_toggle() {
-        if(this.utilisateur._id) {
+        if (this.utilisateur._id) {
             if (this.user_informations) {
                 this.addrForm.get('name').setValue(this.utilisateur.userInfo.firstName + ' ' + this.utilisateur.userInfo.lastName);
                 this.addrForm.get('addr_1').setValue(this.utilisateur.userInfo.address.roadName);

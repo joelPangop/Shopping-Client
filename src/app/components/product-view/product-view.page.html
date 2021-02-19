@@ -33,10 +33,10 @@
         <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top">
             <ion-slide *ngFor="let item of product.pictures">
                 <ion-img *ngIf="isImage(item)"
-                         src="https://egoalservice.azurewebsites.net/image/{{item}}" height="400"
+                         src="https://egoal.herokuapp.com/image/{{item}}" height="400"
                          width="400"></ion-img>
                 <video *ngIf="!isImage(item)" controls preload height="400" width="400">
-                    <source src="https://egoalservice.azurewebsites.net/image/{{item}}" id="video_here"
+                    <source src="https://egoal.herokuapp.com/image/{{item}}" id="video_here"
                             type="video/mp4">
                     Your browser does not support HTML5 video.
                 </video>

@@ -27,6 +27,7 @@ import {StreamingMedia, StreamingVideoOptions} from '@ionic-native/streaming-med
 import {StorageService} from '../../services/storage.service';
 import {WebsocketService} from '../../services/websocket.service';
 import {OrderStatus} from '../../models/OrderStatus';
+import {itemStatus} from '../../models/itemStatus';
 
 const {CapacitorVideoPlayer, Device} = Plugins;
 
@@ -342,7 +343,8 @@ export class ProductDetailPage implements OnInit {
                     this.data.push({
                         item: this.article,
                         qty: 1,
-                        amount: this.article.price
+                        amount: this.article.price,
+                        status: itemStatus.ORDERED
                     });
                     this.cartItemCount.next(this.cartItemCount.value + 1);
                     const timestamp = new Date().getUTCMilliseconds();
@@ -376,7 +378,8 @@ export class ProductDetailPage implements OnInit {
                         this.data.push({
                             item: this.article,
                             qty: 1,
-                            amount: this.article.price
+                            amount: this.article.price,
+                            status: itemStatus.ORDERED
                         });
                         this.cartItemCount.next(this.cartItemCount.value + 1);
                         // this.event.publish('cartItemCount', this.cartItemCount.value);
@@ -433,7 +436,8 @@ export class ProductDetailPage implements OnInit {
                     myData.push({
                         item: this.article,
                         qty: 1,
-                        amount: this.article.price
+                        amount: this.article.price,
+                        status: itemStatus.ORDERED
                     });
                     await this.storage.setObject('cart', myData);
                     this.presentToast('Votre panier a été mis à jour', 1500);

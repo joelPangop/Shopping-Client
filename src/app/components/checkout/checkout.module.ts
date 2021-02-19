@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { CheckoutPageRoutingModule } from './checkout-routing.module';
+import {CheckoutPageRoutingModule} from './checkout-routing.module';
 
-import { CheckoutPage } from './checkout.page';
+import {CheckoutPage} from './checkout.page';
 import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
@@ -18,6 +18,8 @@ import {TranslateModule} from '@ngx-translate/core';
         ReactiveFormsModule,
         TranslateModule
     ],
-  declarations: [CheckoutPage]
+    declarations: [CheckoutPage],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CheckoutPageModule {}
+export class CheckoutPageModule {
+}

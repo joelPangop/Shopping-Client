@@ -498,7 +498,9 @@ export class ProductListPage implements OnInit {
         if (this.utilisateur._id && this.utilisateur._id === article.utilisateurId) {
             this.presentToast('Vous ne pouvez pas ajouter votre propre article a la cart', 2000);
         } else {
-            this.cartService.addArticle(article).then((res) => {console.log(res)});
+            this.cartService.addArticle(article).then((res) => {
+                console.log(res);
+            });
         }
     }
 

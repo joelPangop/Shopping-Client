@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {catchError, tap} from 'rxjs/operators';
 import {environment} from '../models/environements';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {AlertController, Platform} from '@ionic/angular';
 import {Currency, Utilisateur} from '../models/utilisateur-interface';
 import {JwtHelperService} from '@auth0/angular-jwt';
@@ -117,7 +117,7 @@ export class AuthService {
     }
 
     register(credentials): Observable<AuthResponse> {
-        return this.http.post<any>(`${environment.api_url1}/api/register`, credentials).pipe(
+        return this.http.post<any>(`${environment.api_url}/api/register`, credentials).pipe(
             tap(async (res) => {
                 // this.user = this.helper.decodeToken(res['user']);
                 this.user = res;
@@ -144,7 +144,7 @@ export class AuthService {
         );
     }
 
-    verification_user(utilisateur): Observable<any>{
+    verification_user(utilisateur): Observable<any> {
         return this.http.put<any>(`${environment.api_url}/update_verification`, utilisateur)
             .pipe(
                 tap(async res => {
@@ -190,7 +190,7 @@ export class AuthService {
     }
 
     updateProfile(utilisateur): Observable<AuthResponse> {
-        return this.http.put<any>(`${environment.api_url1}/user`, utilisateur)
+        return this.http.put<any>(`${environment.api_url}/user`, utilisateur)
             .pipe(
                 tap(async res => {
                     // if (this.plt.is('android') || this.plt.is('ios')) {
@@ -250,6 +250,12 @@ export class AuthService {
     //           })
     //       );
     // }
+
+    // @ts-ignore
+    getUserName(token: any): Observable<any> {
+        const url = `${environment.api_url}/user/username/${token}`;
+        return this.http.get<any>(url);
+    }
 
     async logout(): Promise<boolean> {
 

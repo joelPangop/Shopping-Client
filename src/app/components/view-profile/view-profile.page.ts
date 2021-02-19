@@ -24,7 +24,7 @@ export class ViewProfilePage implements OnInit {
     async ngOnInit() {
         this.utilisateur = await this.userStorageUtils.getUser();
         console.log('utilisateur', this.utilisateur);
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoal.herokuapp.com/image/' + this.utilisateur.avatar;
     }
 
     openProfil() {

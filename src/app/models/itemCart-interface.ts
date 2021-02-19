@@ -1,9 +1,11 @@
-import { Article } from './article-interface';
+import {Article} from './article-interface';
+import {itemStatus} from './itemStatus';
 
-// tslint:disable-next-line:class-name
 export interface itemCart {
+    _id?: string;
     item: Article;
     qty: number;
     amount: number;
+    status: itemStatus;
     order?: any;
 }

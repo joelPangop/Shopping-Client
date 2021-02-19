@@ -46,15 +46,14 @@
                                 <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
                                 <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
                                 <!--                                </ion-button>-->
-
                                 <video *ngIf="!isImage(image)" id="my-video"
                                        class="video-js vjs-theme-city"
                                        controls
                                        preload="auto"
                                        height="400" width="400" data-setup="{}">
-                                    <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                    <source src="https://egoal.herokuapp.com/image/{{image}}"
                                             id="video_here" type="video/mp4">
-                                    <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                    <source src="https://egoal.herokuapp.com/image/{{image}}"
                                             id="video_here" type="video/webm">
                                     Your browser does not support HTML5 video.
                                 </video>
@@ -215,14 +214,14 @@
                         <ion-slides pager="true" [options]="slideOpts" class="ion-padding-top" #slideWithNav>
                             <ion-slide (click)="showImage(image, article.title)" *ngFor="let image of images">
                                 <img *ngIf="isImage(image)"
-                                     src="https://egoalservice.azurewebsites.net/image/{{image}}" height="400"
+                                     src="https://egoal.herokuapp.com/image/{{image}}" height="400"
                                      width="400"/>
                                 <!--                                <ion-button *ngIf="!isImage(image)" slot="end" fill="clean" size="large" (click)="openModal('https://egoalservice.azurewebsites.net/image/'+ image)">-->
                                 <!--                                    <ion-icon name="play-circle-outline"></ion-icon>-->
                                 <!--                                </ion-button>-->
                                 <video *ngIf="!isImage(image)"
                                        controls preload height="400" width="400" #video>
-                                    <source src="https://egoalservice.azurewebsites.net/image/{{image}}"
+                                    <source src="https://egoal.herokuapp.com/image/{{image}}"
                                             id="video_here" type="video/mp4">
                                     Your browser does not support HTML5 video.
                                 </video>

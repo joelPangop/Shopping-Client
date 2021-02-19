@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AlertController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
+import {AlertController, LoadingController, NavController, Platform, PopoverController, ToastController} from '@ionic/angular';
 import {PaymentMethods} from '../../models/PaymentMethods';
 import {Stripe} from '@ionic-native/stripe/ngx';
 import {PaymentService} from '../../services/payment.service';
@@ -11,7 +11,10 @@ import * as moment from 'moment';
 import {PayPal, PayPalPayment, PayPalConfiguration} from '@ionic-native/paypal/ngx';
 import {ShowOptionsPage} from '../show-options/show-options.page';
 import {Currencies} from '../../models/Currencies';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {InAppBrowser} from '@ionic-native/in-app-browser/ngx';
+import {ActivatedRoute} from '@angular/router';
+import {CurrencyService} from '../../services/currency.service';
 
 const PURE_EMAIL_REGEXP = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -60,11 +63,13 @@ export class SouscriptionPage implements OnInit {
     // @ts-ignore
     currIconOptionSubject: BehaviorSubject<any> = new BehaviorSubject();
     company_image: any;
+    paypalSubscriptionInfo: any;
 
     constructor(public authService: AuthService, public formBuilder: FormBuilder, private stripe: Stripe, private payPal: PayPal,
                 public platform: Platform, private paymentService: PaymentService, private toastCtrl: ToastController,
                 private storage: StorageService, private alertController: AlertController, private navCtrl: NavController,
-                private popoverController: PopoverController) {
+                private popoverController: PopoverController, private inAppBrowser: InAppBrowser, private activatedRoute: ActivatedRoute,
+                public cuService: CurrencyService, private loadCtrl: LoadingController) {
         this.subscriptionForm = this.formBuilder.group({
             email: [authService.currentUser.email, Validators.compose([
                 Validators.pattern(PURE_EMAIL_REGEXP),
@@ -122,6 +127,28 @@ export class SouscriptionPage implements OnInit {
         }, {validator: this.birthdayValidator});
 
         this.cards = new Map<string, string>();
+        this.steps = [
+            {
+                step: 'Status',
+                isSelected: true
+            },
+            {
+                step: 'Billing',
+                isSelected: false
+            },
+            {
+                step: 'Payment',
+                isSelected: false
+            },
+            {
+                step: 'Bank Informations',
+                isSelected: false
+            },
+            {
+                step: 'Confirm',
+                isSelected: false
+            }
+        ];
         // this.cardNumber = '';
     }
 
@@ -148,21 +175,21 @@ export class SouscriptionPage implements OnInit {
                 isSelected: false
             }
         ];
-        this.authService.getUserById(this.authService.currentUser._id).subscribe((res) => {
-            this.utilisateur = res;
-            if (this.utilisateur.customer_profile.subscriptions) {
-                for (const subscription of this.utilisateur.customer_profile.subscriptions.data) {
-                    if (subscription.plan.nickname == 'Professionnel' || subscription.plan.nickname == 'Individuel') {
-                        this.subscription_plan = subscription;
-                        this.subscriptionForm.get('option').setValue(subscription.plan.nickname);
-                        this.option = subscription.plan.nickname;
-                    }
-                }
-            }
-        });
+        // this.authService.getUserById(this.authService.currentUser._id).subscribe((res) => {
+        //     this.utilisateur = res;
+        //     if (this.utilisateur.customer_profile.subscriptions) {
+        //         for (const subscription of this.utilisateur.customer_profile.subscriptions.data) {
+        //             if (subscription.plan.nickname == 'Professionnel' || subscription.plan.nickname == 'Individuel') {
+        //                 this.subscription_plan = subscription;
+        //                 this.subscriptionForm.get('option').setValue(subscription.plan.nickname);
+        //                 this.option = subscription.plan.nickname;
+        //             }
+        //         }
+        //     }
+        // });
     }
 
-    ngOnInit() {
+    ionViewDidEnter() {
         this.steps = [
             {
                 step: 'Status',
@@ -185,20 +212,73 @@ export class SouscriptionPage implements OnInit {
                 isSelected: false
             }
         ];
+        // this.authService.getUserById(this.authService.currentUser._id).subscribe((res) => {
+        //     this.utilisateur = res;
+        //     if (this.utilisateur.customer_profile.subscriptions) {
+        //         for (const subscription of this.utilisateur.customer_profile.subscriptions.data) {
+        //             if (subscription.plan.nickname == 'Professionnel' || subscription.plan.nickname == 'Individuel') {
+        //                 this.subscription_plan = subscription;
+        //                 this.subscriptionForm.get('option').setValue(subscription.plan.nickname);
+        //                 this.option = subscription.plan.nickname;
+        //             }
+        //         }
+        //     }
+        // });
+    }
+
+    async ngOnInit() {
+        const queryParams = await this.activatedRoute.snapshot.queryParams as {};
+        if (Object.keys(queryParams).length !== 0 && queryParams.constructor === Object) {
+            console.log(queryParams);
+            this.paypalSubscriptionInfo = this.activatedRoute.snapshot.queryParams.token;
+            const loading = await this.loadCtrl.create({
+                message: 'Please wait...'
+            });
+            await loading.present();
+            if (this.paypalSubscriptionInfo) {
+                console.log('Paypal Subscription infos', this.paypalSubscriptionInfo);
+                this.paymentService.executeBillingPayment(this.paypalSubscriptionInfo, this.authService.currentUser).subscribe(async (res) => {
+                    console.log(res);
+                    await loading.dismiss();
+                    if (res.user && res.billingAgreement) {
+                        await this.storage.setObject('Utilisateur', res.user);
+                        this.authService.currentUser = res.user;
+                        this.subscription_plan = res.user.subscription;
+                        this.subscriptionForm.get('option').setValue(res.user.subscription.type);
+                    }
+                    this.msg_err = res.message;
+                });
+            }
+        }
 
         this.authService.getUserById(this.authService.currentUser._id).subscribe((res) => {
-            this.utilisateur = res;
+            this.utilisateur = this.authService.currentUser;
 
-            if (this.utilisateur.customer_profile.subscriptions) {
-                for (const subscription of this.utilisateur.customer_profile.subscriptions.data) {
-                    if (subscription.plan.nickname == 'Professionnel' || subscription.plan.nickname == 'Individuel') {
-                        this.subscription_plan = subscription;
-                        this.subscriptionForm.get('option').setValue(subscription.plan.nickname);
-                        this.option = subscription.plan.nickname;
+            if (this.utilisateur.subscription) {
+                if (this.utilisateur.subscription.payment_type === 'PAYPAL') {
+                    this.subscriptionForm.get('option').setValue(this.utilisateur.subscription.type);
+                    this.option = this.utilisateur.subscription.type;
+                    this.subscription_plan = this.utilisateur.subscription;
+                    this.getRate(this.subscription_plan.subscription_plan.plan.payment_definitions[0].amount.currency, this.authService.currency.currency);
+                } else {
+                    // if (this.utilisateur.customer_profile.subscriptions) {
+                    //     for (const subscription of this.utilisateur.customer_profile.subscriptions.data) {
+                    //         if (subscription.plan.nickname == 'Professionnel' || subscription.plan.nickname == 'Individuel') {
+                    //             this.subscription_plan = subscription;
+                    //             this.subscriptionForm.get('option').setValue(subscription.plan.nickname);
+                    //             this.option = subscription.plan.nickname;
+                    //         }
+                    //     }
+                    // }
+                    if (this.authService.currentUser.subscription) {
+                        this.subscription_plan = this.authService.currentUser.subscription;
+                        this.subscriptionForm.get('option').setValue(this.subscription_plan.subscription_plan.plan.nickname);
+                        this.option = this.subscription_plan.subscription_plan.plan.nickname;
                     }
                 }
             }
         });
+
         for (const item in PaymentMethods) {
             this.cards.set(item, PaymentMethods[item]);
         }
@@ -296,7 +376,7 @@ export class SouscriptionPage implements OnInit {
         this.subscriptionForm.get('exp_month').setValue(12);
         this.subscriptionForm.get('exp_year').setValue(2020);
         this.subscriptionForm.get('cvv').setValue(220);
-
+        console.log(this.steps);
     }
 
     birthdayValidator(formGroup: FormGroup): { [err: string]: any } {
@@ -463,8 +543,20 @@ export class SouscriptionPage implements OnInit {
 
     }
 
-    payWithPaypal() {
-
+    async payWithPaypal() {
+        const plan: string = this.subscriptionForm.value.option;
+        let subscription: any = {};
+        subscription.type = plan;
+        subscription.payment_type = 'PAYPAL';
+        this.authService.currentUser.subscription = subscription;
+        const loading = await this.loadCtrl.create({
+            message: 'Please wait...'
+        });
+        await loading.present();
+        this.paymentService.subscribeWithPaypal(plan, this.authService.currentUser).subscribe((res) => {
+            console.log('paypal plan', res);
+            this.inAppBrowser.create(res.url);
+        });
     }
 
     chooseOption() {
@@ -529,7 +621,10 @@ export class SouscriptionPage implements OnInit {
             birthday: this.subscriptionForm.value.birthday,
             image: this.fileData
         };
-
+        let subscription: any = {};
+        subscription.type = this.subscriptionForm.value.option;
+        subscription.payment_type = 'VISA';
+        this.authService.currentUser.subscription = subscription;
         this.authService.getUserById(this.utilisateur._id).subscribe((res) => {
             if (res.customer_profile.subscriptions.data.length > 0 && (res.customer_profile.subscriptions.data.plan.nickname == 'Professionnel' || res.customer_profile.subscriptions.data.plan.nickname == 'Individuel')) {
                 this.presentToast('Already a subscribed plan. May be you have to refresh your page', 2000);
@@ -538,7 +633,7 @@ export class SouscriptionPage implements OnInit {
                     console.log(res);
                     await this.storage.setObject('Utilisateur', res.user);
                     this.authService.currentUser = res.user;
-                    this.subscription_plan = res.subscription;
+                    this.subscription_plan = this.authService.currentUser.subscription.subscription_plan;
                     this.steps[0].isSelected = false;
                     this.steps[1].isSelected = false;
                     this.steps[2].isSelected = false;
@@ -615,6 +710,10 @@ export class SouscriptionPage implements OnInit {
             this.subscriptionForm.get('state').setValue(this.utilisateur.userInfo.address.region);
             this.subscriptionForm.get('zipcode').setValue(this.utilisateur.userInfo.address.postalCode);
             this.subscriptionForm.get('country').setValue(this.utilisateur.userInfo.address.country);
+            this.subscriptionForm.get('routing_number').setValue('11000-000');
+            this.subscriptionForm.get('account_number').setValue('000123456789');
+            this.subscriptionForm.get('account_holder_name').setValue(this.utilisateur.userInfo.firstName+' '+this.utilisateur.userInfo.lastName);
+            this.subscriptionForm.get('currency').setValue('cad');
         } else {
             this.subscriptionForm.get('first_name').setValue('');
             this.subscriptionForm.get('last_name').setValue('');
@@ -654,36 +753,61 @@ export class SouscriptionPage implements OnInit {
     }
 
     async handleUnSubscription($event) {
-        const alert = await this.alertController.create({
-            message: 'Unsubscribe...',
-            buttons: [
-                {
-                    text: 'No',
-                    role: 'cancel',
-                    handler: () => {
-                        console.log('No');
-                    }
-                },
-                {
-                    text: 'Now',
-                    role: 'OK',
-                    handler: () => {
-                        console.log('Now');
-                        this.handleUnSubscribeTime('Now');
-                    }
-                },
-                {
-                    text: 'At the end of this period',
-                    role: 'OK',
-                    handler: () => {
-                        console.log('At the end of this period');
-                        this.handleUnSubscribeTime('End');
-                    }
-                }]
-        });
-        return alert.present().then(r => {
-            console.log('res:', r);
-        });
+        if (this.authService.currentUser.subscription.payment_type === 'PAYPAL') {
+            const alert = await this.alertController.create({
+                message: 'Unsubscribe...',
+                buttons: [
+                    {
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {
+                            console.log('No');
+                        }
+                    },
+                    {
+                        text: 'Yes',
+                        role: 'OK',
+                        handler: () => {
+                            console.log('Now');
+                            this.unSubscriptionPaypal();
+                        }
+                    }]
+            });
+            return alert.present().then(r => {
+                console.log('res:', r);
+            });
+        } else if (this.authService.currentUser.subscription.payment_type === 'STRIPE') {
+            const alert = await this.alertController.create({
+                message: 'Unsubscribe...',
+                buttons: [
+                    {
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {
+                            console.log('No');
+                        }
+                    },
+                    {
+                        text: 'Now',
+                        role: 'OK',
+                        handler: () => {
+                            console.log('Now');
+                            this.handleUnSubscribeTime('Now');
+                        }
+                    },
+                    {
+                        text: 'At the end of this period',
+                        role: 'OK',
+                        handler: () => {
+                            console.log('At the end of this period');
+                            this.handleUnSubscribeTime('End');
+                        }
+                    }]
+            });
+            return alert.present().then(r => {
+                console.log('res:', r);
+            });
+        }
     }
 
     async handleUnSubscribeTime(time: string) {
@@ -711,9 +835,18 @@ export class SouscriptionPage implements OnInit {
         });
     }
 
+    unSubscriptionPaypal() {
+        this.paymentService.cancelPaypalSubscription(this.authService.currentUser.subscription.subscription_plan.id, this.authService.currentUser._id).subscribe(async (res) => {
+            this.authService.currentUser = res.user;
+            await this.storage.setObject('Utilisateur', res.user);
+            this.subscription_plan = undefined;
+            this.option = '';
+            this.subscriptionForm.get('option').setValue('');
+        });
+    }
+
     unSubscription(time: string) {
         console.log('now', this.getMomentForMobile(Date.now()));
-
         const time1 = new Date(this.subscription_plan.current_period_end * 1000).getTime();
         const time2 = new Date(this.subscription_plan.current_period_start * 1000).getTime();
         console.log('start period', this.getMomentForMobile(time2));
@@ -743,6 +876,22 @@ export class SouscriptionPage implements OnInit {
 
     getMomentForMobile(date: any) {
         return moment(date).format('lll');
+    }
+
+    rate = 1;
+
+    getRate(c1, c2): Subscription {
+        return this.cuService.convertCurrency(c1, c2)
+            .subscribe(
+                response => {
+                    this.rate = parseFloat(Object.entries(response)[0][1].toFixed(3));
+                    console.log('service rate', this.rate);
+                }
+            );
+    }
+
+    getRatedPrice(price, rate) {
+        return price * rate;
     }
 
     close_msg() {

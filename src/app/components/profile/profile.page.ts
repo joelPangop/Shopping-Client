@@ -88,7 +88,7 @@ export class ProfilePage implements OnInit {
 
         this.ischanged = false;
         this.passwordShown = false;
-        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoalservice.azurewebsites.net/image/' + this.utilisateur.avatar.path;
+        this.imgURL = !this.utilisateur.avatar ? 'assets/profile_img.svg' : 'https://egoal.herokuapp.com/image/' + this.utilisateur.avatar.path;
         this.loadData();
     }
 

@@ -8,7 +8,7 @@ import {Deeplinks} from '@ionic-native/deeplinks/ngx';
 import {ProductDetailPage} from './components/product-detail/product-detail.page';
 import {Utilisateur} from './models/utilisateur-interface';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from './services/auth.service';
 import {Storage} from '@ionic/storage';
 import {PagesService} from './services/pages.service';
@@ -19,6 +19,8 @@ import {LanguageService} from './services/language.service';
 import {MessageService} from './services/message.service';
 import {WebsocketService} from './services/websocket.service';
 import {StorageService} from './services/storage.service';
+import {environment} from './models/environements';
+import {error} from 'firebase-functions/lib/logger';
 
 @Component({
     selector: 'app-root',
@@ -33,6 +35,9 @@ export class AppComponent {
     isMain: boolean = true;
     public catTitle: string;
     showSplash = true;
+    url = environment.api_url;
+    username = '';
+    token: any;
 
     constructor(
         private platform: Platform,
@@ -52,7 +57,8 @@ export class AppComponent {
         public translate: TranslateService,
         private languageService: LanguageService,
         private websocketService: WebsocketService,
-        private storage: StorageService
+        private storage: StorageService,
+        private activatedRoute: ActivatedRoute
         // private socket: Socket
     ) {
         this.categories = categories;
@@ -68,6 +74,17 @@ export class AppComponent {
             this.languageService.setLanguage(language);
         });
 
+        this.storage.getObject('access_token').then((res) => {
+            this.token = res;
+            this.authService.getUserName(this.token).subscribe(
+                data => {
+                    this.username = data.toString();
+                    console.log(this.username);
+                },
+                error => this.router.navigate(['menu/tabs/products'], {relativeTo: this.activatedRoute})
+            );
+        });
+
         // let language = this.languageService.getLanguage();
         this.initializeApp();
     }
@@ -77,7 +94,13 @@ export class AppComponent {
         this.platform.ready().then(async () => {
 
             // this.websocketService.init('wss://egoal.herokuapp.com/');
-            this.websocketService.init('ws://localhost:8080');
+            let str = '';
+            if (this.url.includes('http')) {
+                str = this.url.replace('http', 'ws');
+            } else if (this.url.includes('https')) {
+                str = this.url.replace('https', 'wss');
+            }
+            this.websocketService.init(str);
 
             this.localNotifications.on('trigger').subscribe(res => {
                 console.log('trigger', res);
@@ -97,13 +120,14 @@ export class AppComponent {
             this.userStorageUtils.getUser().then((res) => {
                 console.log(res);
             });
-            this.authService.isAuthenticated.subscribe(state => {
-                if (state) {
-                    this.router.navigate(['menu/tabs/tab1']);
-                } else {
-                    this.router.navigate(['menu/tabs/products']);
-                }
-            });
+
+            // this.authService.isAuthenticated.subscribe(state => {
+            //     if (state) {
+            //         this.router.navigate(['menu/tabs/tab1'], {relativeTo: this.activatedRoute});
+            //     } else {
+            //         this.router.navigate(['menu/tabs/products'], {relativeTo: this.activatedRoute});
+            //     }
+            // });
             // Get Menus For Side Menu
             this.appPages = this.pagesService.getPages();
         });

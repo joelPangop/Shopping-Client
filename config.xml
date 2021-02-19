@@ -3,7 +3,7 @@
     <name>EGoal</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.2.58:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -110,4 +110,5 @@
     <allow-navigation href="http://192.168.2.75:8101" sessionid="da2bcb66" />
     <allow-navigation href="http://192.168.2.75:8102" sessionid="7d67fb6a" />
     <allow-navigation href="https://192.168.2.58:8100" sessionid="43546075" />
+    <allow-navigation href="http://192.168.56.1:8100" sessionid="3b0ff055" />
 </widget>

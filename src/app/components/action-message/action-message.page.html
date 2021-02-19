@@ -8,7 +8,7 @@
         <!--        <ion-title *ngIf="uid !== '1000'">Contacter le vendeur</ion-title>-->
         <ion-buttons>
             <ion-avatar>
-                <ion-img src="https://egoalservice.azurewebsites.net/image/{{interlocutor.avatar}}"></ion-img>
+                <ion-img src="https://egoal.herokuapp.com/image/{{interlocutor.avatar}}"></ion-img>
             </ion-avatar>
             <ion-title slot="start" style="font-size: small">{{interlocutor.username}}</ion-title>
         </ion-buttons>
@@ -24,7 +24,7 @@
         <ion-buttons (click)="showDetails(article._id)">
             <div>
                 <ion-thumbnail slot="start">
-                    <ion-img src="https://egoalservice.azurewebsites.net/image/{{image}}"></ion-img>
+                    <ion-img src="https://egoal.herokuapp.com/image/{{image}}"></ion-img>
                 </ion-thumbnail>
             </div>
 
@@ -80,8 +80,8 @@
                             </div>
                             <div style="float: right">
                                 <ion-avatar>
-                                    <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoalservice.azurewebsites.net/image/'+ interlocutor.avatar:
-                             'https://egoalservice.azurewebsites.net/image/'+ authSrv.currentUser.avatar"
+                                    <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoal.herokuapp.com/image/'+ interlocutor.avatar:
+                             'https://egoal.herokuapp.com/image/'+ authSrv.currentUser.avatar"
                                     >
                                 </ion-avatar>
                             </div>
@@ -108,8 +108,8 @@
                                  [ngClass]="{ 'reverse': msg.title === authSrv.currentUser.username}">
                             <div class="avatar-parent">
                                 <div class="avatar-border"></div>
-                                <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoalservice.azurewebsites.net/image/'+ interlocutor.avatar:
-                             'https://egoalservice.azurewebsites.net/image/'+ authSrv.currentUser.avatar"
+                                <img [src]="msg.title !== authSrv.currentUser.username ? 'https://egoal.herokuapp.com/image/'+ interlocutor.avatar:
+                             'https://egoal.herokuapp.com/image/'+ authSrv.currentUser.avatar"
                                      class="avatar">
                             </div>
                             <div [ngClass]="{ 'name-row-parent-right': msg.title === authSrv.currentUser.username ,
