@@ -43,11 +43,11 @@ export class SouscriptionPage implements OnInit {
     paymentAmount: any;
     currencyIcon: any;
     cards: Map<string, string>;
-    stripe_key = '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';
-    stripe_key_test = 'sk_test_uDpsb45Q2RafPC94m1LKGYt800b1sJ6Aa5';
-    prof_price_plan = 'price_1Hg9gzE9FSiwzakmuRQD0W1k';
-    ind_price_plan = 'price_1Hg9fIE9FSiwzakm1ZQPexbc';
-    saler_plan = 'price_1HYavwE9FSiwzakm4jPO7Gtw';
+    // stripe_key = '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';
+    // stripe_key_test = 'sk_test_uDpsb45Q2RafPC94m1LKGYt800b1sJ6Aa5';
+    // prof_price_plan = 'price_1Hg9gzE9FSiwzakmuRQD0W1k';
+    // ind_price_plan = 'price_1Hg9fIE9FSiwzakm1ZQPexbc';
+    // saler_plan = 'price_1HYavwE9FSiwzakm4jPO7Gtw';
     option: string = '';
     steps: any = [];
     user_informations: boolean = false;
