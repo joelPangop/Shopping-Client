@@ -16,7 +16,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="34">
+          <list size="35">
             <item index="0" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="1" class="java.lang.String" itemvalue="main" />
             <item index="2" class="java.lang.String" itemvalue="button" />
@@ -51,6 +51,7 @@
             <item index="31" class="java.lang.String" itemvalue="no-margin" />
             <item index="32" class="java.lang.String" itemvalue="padding-vertical" />
             <item index="33" class="java.lang.String" itemvalue="placeholder-color" />
+            <item index="34" class="java.lang.String" itemvalue="text-center" />
           </list>
         </value>
       </option>
